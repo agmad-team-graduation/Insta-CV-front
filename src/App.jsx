@@ -1,14 +1,24 @@
-import { BrowserRouter as Router , Route, Routes} from 'react-router';
-import Navbar from "./navbar";
+import { BrowserRouter as Router , Route, Routes} from 'react-router-dom';
 import './App.css'
-import { CardWithForm } from './card';
+import Navbar from "./navbar";
+import Home from "./home"
+import Footer from './footer';
 
 
 function App() {
   return (
     <div className="app">
-      <p>ES7aaaaaaaaaaa</p>
-      <CardWithForm />
+      <div className="w-full">
+        <Router>
+          <Navbar />
+          <div className="content">
+            <Routes>
+              <Route path='/' element={<Home />} />
+            </Routes>
+          </div>
+          <Footer />
+        </Router>
+      </div>
     </div>
   );
 }
