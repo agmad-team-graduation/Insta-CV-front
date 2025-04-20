@@ -21,9 +21,8 @@ import {
                 <img 
                   src="/logos/InstaCV.png" 
                   alt="InstaCV Logo" 
-                  className="w-10 h-10 bg-[#111827] rounded-lg p-2"
+                  className="w-30 h-30  rounded-lg p-2"
                 />
-                <span className="text-2xl font-semibold">InstaCV</span>
               </div>
               <p className="text-gray-600">
                 AI-powered CV generation platform for modern job seekers.

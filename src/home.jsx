@@ -17,7 +17,7 @@ const Home = () => {
             <div className="relative flex flex-col items-center justify-start pt-32 min-h-[85vh] text-center px-4">
                 <div className="mb-12">
                     <img 
-                        src="/logos/InstaCV.png" 
+                        src="/logos/main-icon.png" 
                         alt="InstaCV Logo" 
                         className="w-24 h-24 bg-[#111827] rounded-3xl p-4"
                     />

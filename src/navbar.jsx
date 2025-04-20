@@ -5,7 +5,7 @@ import { CornerDownRight } from 'lucide-react'
 
 const Navbar = () => {
   return (
-    <nav className="w-full bg-white">
+    <nav className="w-full bg-white pt-1">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
@@ -14,7 +14,7 @@ const Navbar = () => {
               <img
                 src="/logos/InstaCV.png" 
                 alt="InstaCV"
-                className="h-70 w-auto"
+                className="h-60 w-auto"
               />
             </Link>
           </div>

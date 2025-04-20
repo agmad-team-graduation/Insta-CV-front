@@ -44,9 +44,9 @@ const IntegrationSection = () => {
         {/* Center Logo */}
         <Card className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 p-4 bg-black w-16 h-16 flex items-center justify-center">
           <img
-            src="/logos/InstaCV.png"
+            src="/logos/main-icon.png"
             alt="InstaCV Logo"
-            className="w-10 h-10"
+            className="w-30 h-30"
           />
         </Card>
 
