@@ -33,6 +33,12 @@
   }
 }
 
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, #000 1px, transparent 1px),
+                    linear-gradient(to bottom, #000 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
 .card {
   padding: 2em;
 }
@@ -42,4 +48,19 @@
 }
 .p {
   text-align: center;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.metric-card {
+  animation: slide-up 0.5s ease-out;
 }
