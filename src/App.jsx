@@ -4,7 +4,7 @@ import Navbar from "./navbar";
 import Home from "./home"
 import Footer from './footer';
 import Hero from './hero';
-import JobDetails from './jobDetials';
+import JobDetails from './jobDetails';
 
 // Array of paths where we don't want to show navbar and footer
 const noNavbarFooterRoutes = ['/hero', '/jobDetails'];
