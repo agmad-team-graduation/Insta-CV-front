@@ -4,9 +4,10 @@ import Navbar from "./navbar";
 import Home from "./home"
 import Footer from './footer';
 import Hero from './hero';
+import JobDetails from './jobDetials';
 
 // Array of paths where we don't want to show navbar and footer
-const noNavbarFooterRoutes = ['/hero'];
+const noNavbarFooterRoutes = ['/hero', '/jobDetails'];
 
 function App() {
   const currentPath = window.location.pathname;
@@ -21,6 +22,7 @@ function App() {
             <Routes>
               <Route path='/' element={<Home />} />
               <Route path='/hero' element={<Hero />} />
+              <Route path='/jobDetails' element={<JobDetails />} />
             </Routes>
           </div>
           {shouldShowNavbarFooter && <Footer />}
