@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { UseAuth } from './Context/ContextSignUp';
 
 
-export function Honda() {
+export function SignUpForm() {
   const {
       email,
       setEmail,
@@ -91,7 +91,11 @@ export function Honda() {
               )}
             />
             {/* Make the submit button wider */}
-            <Button type="submit" className="w-full py-3 text-lg">
+            <Button 
+              type="submit" 
+              className="w-full py-3 text-lg text-white hover:bg-[#4750a0]"
+              style={{ background: "#505ABB" }}
+            >
               Sign Up
             </Button>
           </form>

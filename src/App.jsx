@@ -11,11 +11,11 @@ import Hero from './hero';
 import JobDetails from './jobDetails';
 
 // Array of paths where we don't want to show navbar and footer
-const noNavbarFooterRoutes = ['/hero', '/jobDetails'];
+const NavbarFooterRoutes = ['/'];
 
 function App() {
   const currentPath = window.location.pathname;
-  const shouldShowNavbarFooter = !noNavbarFooterRoutes.includes(currentPath);
+  const shouldShowNavbarFooter = NavbarFooterRoutes.includes(currentPath);
 
   return (
     <div className="app">
