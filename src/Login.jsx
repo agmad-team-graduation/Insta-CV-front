@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 
 function Login() {
-        const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="h-screen w-screen m-0 p-0 overflow-hidden">

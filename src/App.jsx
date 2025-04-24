@@ -19,7 +19,7 @@ function AppContent() {
   const location = useLocation();
   const shouldShowNavbarFooter = NavbarFooterRoutes.includes(location.pathname);
   const [cookies] = useCookies(['isLoggedIn']);
-
+  
   return (
     <>
       {shouldShowNavbarFooter && <Navbar />}
