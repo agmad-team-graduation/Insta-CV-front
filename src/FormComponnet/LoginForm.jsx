@@ -15,16 +15,16 @@ import {
 import { useState } from "react";
 
 export function LoginForm() {
-   const {
-        email,
-        setEmail,
-        password,
-        setPassword,
-        message,
-        setMessage,
-        handleSubmit,
-      } = UseAuth();
-   
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    message,
+    setMessage,
+    handleSubmit,
+  } = UseAuth();
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -40,7 +40,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 w-full max-w-md rounded-2xl shadow-md">
+    <div className="w-full max-w-md">
       <h3 className="text-lg font-medium mb-4">Log in</h3>
 
       <Form {...form}>
@@ -52,11 +52,12 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel className="text-sm">Email address</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="" {...field}
+                  <Input
+                    type="email"
+                    placeholder=""
+                    {...field}
                     value={email}
-                       onChange={(e) => setEmail(e.target.value)}
-                    
-                  
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -77,9 +78,8 @@ export function LoginForm() {
                       placeholder=""
                       {...field}
                       className="pr-20"
-                       value={password}
-                       onChange={(e) => setPassword(e.target.value)}
-                   
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 cursor-pointer"
@@ -100,14 +100,16 @@ export function LoginForm() {
             </a>
           </div>
 
-          <Button type="submit" className="w-36 pt-4 pb-4 rounded-2xl py-2 text-base">
+          <Button
+            type="submit"
+            className="w-36 pt-4 pb-4 rounded-2xl py-2 text-base"
+          >
             Log in
           </Button>
         </form>
       </Form>
-      <div>
-       <p>{ message}</p>
-      </div>
+
+      {message && <p className="mt-4 text-sm text-center text-red-500">{message}</p>}
     </div>
   );
 }
