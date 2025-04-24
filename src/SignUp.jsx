@@ -1,7 +1,8 @@
 import logo2 from './images/signUp.jpg';  // Make sure this path matches your actual image location
-import { GoogleSignUpButton } from './ButtonForSignUp';
-import { SignUpForm } from './FormSignUp';
+import { SignUpForm } from './FormComponnet/FormSignUp';
 import { Link } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc"; // use Google's official look
+import { Button } from "@/components/ui/button";
 
 function SignUp(){
     return(
@@ -24,7 +25,13 @@ function SignUp(){
                 </div>
                 
                 <div>
-                    <GoogleSignUpButton/>
+                     <Button
+                          className="w-90 justify-center gap-3 rounded-xl text-white hover:bg-[#4750a0] text-base font-medium shadow-sm"
+                          style={{ background: "#505ABB" }}
+                        >
+                          <FcGoogle className="w-5 h-5" />
+                          Sign up with your Google account
+                        </Button>
                 </div>
                 
                 <p className="text-sm text-center text-gray-600 mt-4">
@@ -41,7 +48,7 @@ function SignUp(){
                 <img 
                     src='/images/signup.png'  // Use the imported image
                     alt='Sign up illustration'
-                    className="w-full h-full object-cover"
+                    className=""
                 />
             </div>
         </div>
