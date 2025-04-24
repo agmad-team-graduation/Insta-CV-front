@@ -49,13 +49,15 @@ const Navbar = () => {
 
           {/* Get Started Button */}
           <div className="flex items-center mr-[-1rem]">
-            <Button 
-              variant="default" 
-              className="bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg px-6 h-12 flex items-center"
-            >
-              <CornerDownRight />
-              Get Started
-            </Button>
+            <Link to="/login">
+              <Button 
+                variant="default" 
+                className="bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg px-6 h-12 flex items-center"
+              >
+                <CornerDownRight />
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
