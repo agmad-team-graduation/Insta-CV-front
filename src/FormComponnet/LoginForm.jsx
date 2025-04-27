@@ -95,7 +95,7 @@ export function LoginForm() {
           />
 
           <div className="text-right text-sm">
-            <a href="#" className="text-gray-600 underline">
+            <a href="/SetEmail" className="text-gray-600 underline">
               Forget your password
             </a>
           </div>

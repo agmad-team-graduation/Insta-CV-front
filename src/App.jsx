@@ -10,6 +10,8 @@ import Footer from './footer';
 import Home from './home';
 import JobDetails from './jobDetails';
 import { useCookies } from 'react-cookie';
+import SetEmail from './emailForgetPassword';
+import SetPassword from './SetPassword';
 
 // Array of paths where we want to show navbar and footer
 const NavbarFooterRoutes = ['/', '/signup'];
@@ -36,6 +38,11 @@ function AppContent() {
               <Login/>
             </LoginProvider>
           }/>
+          <Route path='/SetEmail' element={
+              <SetEmail/>
+            
+          }/>
+          <Route path='/SetPassword' element={<SetPassword />} />
           <Route path='/home' element={cookies.isLoggedIn ? <Home /> : <Navigate to="/" />} />
           <Route path='/jobDetails' element={cookies.isLoggedIn ? <JobDetails /> : <Navigate to="/" />} />
         </Routes>
