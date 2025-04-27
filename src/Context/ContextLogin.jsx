@@ -1,11 +1,11 @@
 import React, { createContext, useState, useContext } from 'react';
-import { useCookies } from 'react-cookie'; // ✅ import useCookies
+import { useCookies } from 'react-cookie'; 
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const LoginProvider = ({ children }) => {
-    const navigate = useNavigate(); // ✅ use the hook here
+    const navigate = useNavigate(); 
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,8 +31,9 @@ export const LoginProvider = ({ children }) => {
       }
 
       const data = await response.json(); 
+      console.log(data);
 
-      setCookie('isLoggedIn', JSON.stringify(data), { path: '/', maxAge: 86400 }); 
+      setCookie('isLoggedIn', data.token, { path: '/', maxAge: 86400 }); 
 
       setMessage('Login successful!');
       setEmail('');
