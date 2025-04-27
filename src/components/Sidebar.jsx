@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: User, label: 'My Profile', href: '/profile' },
-  { icon: Briefcase, label: 'Active jobs', href: '/' },
+  { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },
 ];

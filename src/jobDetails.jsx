@@ -89,14 +89,6 @@ function JobDetails() {
             <ArrowLeft className="w-6 h-6" />
             <span>Back</span>
           </Button>
-          
-          <Button 
-            className="flex items-center space-x-2"
-            onClick={() => navigate("/jobs/add")}
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Job</span>
-          </Button>
         </div>
 
         {/* Main content area with left taking 2/3 and right taking 1/3 */}

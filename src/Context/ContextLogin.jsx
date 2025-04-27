@@ -43,7 +43,7 @@ export const LoginProvider = ({ children }) => {
 
     } catch (err) {
       console.error(err);
-      setMessage('Login Failed');
+      setMessage('Invalid email or password');
     }
   };
 
