@@ -1,6 +1,6 @@
 export const fetchJobs = async (token) => {
     try {
-      const response = await fetch('/api/v1/jobs/all', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/jobs/all`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

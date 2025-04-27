@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config'; 
 
 const AuthContext = createContext();
 export const SignUpProvider = ({children})=>{
@@ -12,7 +13,7 @@ export const SignUpProvider = ({children})=>{
         
         const newUser = {email,name,password};
         try{
-            const response = await fetch('http://localhost:8080/api/v1/auth/register',{
+            const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`,{
                method: 'POST',
                headers: {
                    'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie'; 
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config'; 
 
 const AuthContext = createContext();
 
@@ -18,7 +19,7 @@ export const LoginProvider = ({ children }) => {
     const newUser = { email, password };
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
