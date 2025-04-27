@@ -1,0 +1,66 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, User, Briefcase, GraduationCap, FileText } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+  { icon: User, label: 'My Profile', href: '/profile' },
+  { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
+  { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
+  { icon: FileText, label: 'Payout & Reports', href: '/reports' },
+];
+
+const Sidebar = () => {
+  const location = useLocation();
+
+  return (
+    <div className="h-screen w-56 bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0">
+      <div className="p-4 border-b border-gray-200">
+        <Link to="/" className="flex items-center">
+          <span className="text-blue-600 font-bold text-xl">InstaCV</span>
+        </Link>
+      </div>
+      
+      <nav className="flex-1 pt-4">
+        <ul className="space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.href;
+            
+            return (
+              <li key={item.href}>
+                <Link
+                  to={item.href}
+                  className={cn(
+                    "flex items-center px-4 py-3 mx-2 rounded-md transition-colors",
+                    "hover:bg-gray-50 hover:text-blue-600",
+                    isActive ? "bg-blue-50 text-blue-600" : "text-gray-600"
+                  )}
+                >
+                  <Icon className="h-5 w-5 mr-3" />
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+      
+      <div className="p-4 border-t border-gray-200">
+        <div className="flex items-center">
+          <Avatar>
+            <AvatarFallback className="bg-gray-200 text-gray-700">U</AvatarFallback>
+          </Avatar>
+          <div className="ml-2">
+            <p className="text-sm font-medium text-gray-700 truncate">User Name</p>
+            <p className="text-xs text-gray-500 truncate">user@example.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;

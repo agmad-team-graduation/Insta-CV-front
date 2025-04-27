@@ -10,6 +10,8 @@ import Footer from './footer';
 import Home from './home';
 import JobDetails from './jobDetails';
 import { useCookies } from 'react-cookie';
+import Jobs from './jobs';
+import AuthLayout from './components/AuthLayout';
 import SetEmail from './emailForgetPassword';
 import SetPassword from './SetPassword';
 
@@ -43,8 +45,13 @@ function AppContent() {
             
           }/>
           <Route path='/SetPassword' element={<SetPassword />} />
-          <Route path='/home' element={cookies.isLoggedIn ? <Home /> : <Navigate to="/" />} />
-          <Route path='/jobDetails' element={cookies.isLoggedIn ? <JobDetails /> : <Navigate to="/" />} />
+          
+          {/* Protected routes with sidebar */}
+          <Route element={<AuthLayout />}>
+            <Route path='/home' element={<Home />} />
+            <Route path='/jobs' element={<Jobs />} />
+            <Route path='/job-details/:jobID' element={<JobDetails />} />
+          </Route>
         </Routes>
       </div>
       {shouldShowNavbarFooter && <Footer />}
