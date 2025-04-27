@@ -1,8 +1,12 @@
 import React from 'react';
 import JobsList from './components/jobsList';
-import { Briefcase, Filter } from 'lucide-react';
+import { Briefcase, Filter, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
 
 const Jobs = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <header className="bg-white shadow-sm">
@@ -20,6 +24,13 @@ const Jobs = () => {
               <a href="/applied-jobs" className="text-blue-600 hover:underline text-sm">
                 Applied jobs <span className="text-xs">→</span>
               </a>
+              <Button 
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => navigate("/jobs/add")}
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Job</span>
+              </Button>
             </div>
           </div>
         </div>
