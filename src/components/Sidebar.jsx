@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, User, Briefcase, GraduationCap, FileText } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { useCookies } from 'react-cookie';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -14,6 +16,13 @@ const navItems = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+
+  const handleLogout = () => {
+    removeCookie('isLoggedIn', { path: '/' });
+    navigate('/');
+  };
 
   return (
     <div className="h-screen w-56 bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0">
@@ -58,6 +67,14 @@ const Sidebar = () => {
             <p className="text-xs text-gray-500 truncate">user@example.com</p>
           </div>
         </div>
+        
+        <Button 
+          onClick={handleLogout}
+          className="w-full mt-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white group flex items-center justify-center py-2 rounded-lg transition-all duration-300 font-medium"
+        >
+          <LogOut className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+          Logout
+        </Button>
       </div>
     </div>
   );

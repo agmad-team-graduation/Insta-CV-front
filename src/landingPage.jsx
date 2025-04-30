@@ -3,7 +3,7 @@ import { CircleHelp } from 'lucide-react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { User, Package, LineChart, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import IntegrationSection from "./homediagram";
+import IntegrationSection from "./components/homediagram";
 
 const LandingPage = () => {
     return ( 
@@ -35,7 +35,7 @@ const LandingPage = () => {
                 </p>
 
                 <div className="flex gap-6 mb-24">
-                    <Link to="/login">
+                    <Link to="/signup">
                     <Button 
                         className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-6 rounded-xl text-lg font-medium flex items-center h-16"
                     >

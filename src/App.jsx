@@ -4,9 +4,9 @@ import { SignUpProvider } from './Context/ContextSignUp';
 import { LoginProvider } from './Context/ContextLogin';
 import Login from './Login';
 import './App.css'
-import Navbar from "./navbar";
+import Navbar from "./components/navbar";
 import LandingPage from "./landingPage"
-import Footer from './footer';
+import Footer from './components/footer';
 import Home from './home';
 import JobDetails from './jobDetails';
 import { useCookies } from 'react-cookie';
@@ -14,6 +14,7 @@ import Jobs from './jobs';
 import AuthLayout from './components/AuthLayout';
 import SetEmail from './emailForgetPassword';
 import SetPassword from './SetPassword';
+import AddJobCard from './addJob';
 
 // Array of paths where we want to show navbar and footer
 const NavbarFooterRoutes = ['/', '/signup'];
@@ -51,6 +52,7 @@ function AppContent() {
             <Route path='/home' element={<Home />} />
             <Route path='/jobs' element={<Jobs />} />
             <Route path='/job-details/:jobID' element={<JobDetails />} />
+            <Route path='/jobs/add' element={<AddJobCard />} />
           </Route>
         </Routes>
       </div>

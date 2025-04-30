@@ -47,14 +47,22 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Get Started Button */}
-          <div className="flex items-center mr-[-1rem]">
+          {/* Buttons Section */}
+          <div className="flex items-center space-x-4">
             <Link to="/login">
               <Button 
+                className="bg-[#505ABB] hover:bg-[#4750a0] text-white px-6 py-3 h-12 rounded-lg text-base font-medium flex items-center"
+                style={{ minWidth: "130px" }}>
+                  Login
+              </Button>
+            </Link>
+
+            <Link to="/signup">
+              <Button 
                 variant="default" 
-                className="bg-[#1e3a8a] hover:bg-[#1e40af] text-white rounded-lg px-6 h-12 flex items-center"
+                className="bg-[#1e3a8a] hover:bg-[#1e40af] text-white px-6 py-3 h-12 rounded-lg text-base font-medium flex items-center"
               >
-                <CornerDownRight />
+                <CornerDownRight className="mr-2 h-4 w-4" />
                 Get Started
               </Button>
             </Link>

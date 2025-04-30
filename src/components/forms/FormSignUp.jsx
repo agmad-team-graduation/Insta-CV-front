@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { UseAuth } from '../Context/ContextSignUp';
+import { UseAuth } from '../../Context/ContextSignUp';
 
 
 export function SignUpForm() {

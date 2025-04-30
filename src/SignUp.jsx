@@ -1,5 +1,5 @@
 import logo2 from './images/signUp.jpg';  // Make sure this path matches your actual image location
-import { SignUpForm } from './FormComponnet/FormSignUp';
+import { SignUpForm } from './components/forms/FormSignUp';
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc"; // use Google's official look
 import { Button } from "@/components/ui/button";

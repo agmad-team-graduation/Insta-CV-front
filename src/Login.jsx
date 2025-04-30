@@ -1,5 +1,5 @@
 import React from 'react';
-import { LoginForm } from './FormComponnet/LoginForm';
+import { LoginForm } from './components/forms/LoginForm';
 import Icon from './images/Icon.png';
 import backgroundImage from './images/background.jpg';
 import { FcGoogle } from "react-icons/fc"; // use Google's official look
