@@ -12,22 +12,23 @@ import JobDetails from './jobDetails';
 import { useCookies } from 'react-cookie';
 import Jobs from './jobs';
 import AuthLayout from './components/AuthLayout';
+import SetEmail from './emailForgetPassword';
+import SetPassword from './SetPassword';
 
 // Array of paths where we want to show navbar and footer
-const PublicRoutes = ['/', '/signup'];
+const NavbarFooterRoutes = ['/', '/signup'];
 
 // Create a wrapper component to use useLocation hook
 function AppContent() {
   const location = useLocation();
-  const isPublicRoute = PublicRoutes.includes(location.pathname);
+  const shouldShowNavbarFooter = NavbarFooterRoutes.includes(location.pathname);
   const [cookies] = useCookies(['isLoggedIn']);
   
   return (
     <>
-      {isPublicRoute && <Navbar />}
+      {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
-          {/* Public routes */}
           <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/home" /> : <LandingPage />} />
           <Route path='/signup' element={
             <SignUpProvider>
@@ -39,6 +40,11 @@ function AppContent() {
               <Login/>
             </LoginProvider>
           }/>
+          <Route path='/SetEmail' element={
+              <SetEmail/>
+            
+          }/>
+          <Route path='/SetPassword' element={<SetPassword />} />
           
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
@@ -48,7 +54,7 @@ function AppContent() {
           </Route>
         </Routes>
       </div>
-      {isPublicRoute && <Footer />}
+      {shouldShowNavbarFooter && <Footer />}
     </>
   );
 }

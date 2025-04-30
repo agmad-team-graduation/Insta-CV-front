@@ -21,7 +21,6 @@ export const LoginProvider = ({ children }) => {
     try {
       // now using axios instance
       const { data } = await apiClient.post('/api/v1/auth/login', newUser);
-      
       console.log(data);
 
       setCookie('isLoggedIn', data.token, { path: '/', maxAge: 86400 }); 
