@@ -1,21 +1,17 @@
+import apiClient from '../utils/apiClient';
+
 export const fetchJobs = async (token) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/jobs/all`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || ''}`,
-        },
-        credentials: 'include',
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to fetch jobs');
-      }
-  
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching jobs:', error);
-      return [];
-    }
-  };
+  try {
+    const response = await apiClient.get('/api/v1/jobs/all', {
+      headers: {
+        'Authorization': `Bearer ${token || ''}`,
+      },
+      withCredentials: true,
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    return [];
+  }
+};

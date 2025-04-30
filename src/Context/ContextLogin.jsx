@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie'; 
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../config'; 
+import apiClient from '@/utils/apiClient';    // ← use your absolute alias, adjust path if needed
 
 const AuthContext = createContext();
 
@@ -19,19 +19,9 @@ export const LoginProvider = ({ children }) => {
     const newUser = { email, password };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json(); 
+      // now using axios instance
+      const { data } = await apiClient.post('/api/v1/auth/login', newUser);
+      
       console.log(data);
 
       setCookie('isLoggedIn', data.token, { path: '/', maxAge: 86400 }); 

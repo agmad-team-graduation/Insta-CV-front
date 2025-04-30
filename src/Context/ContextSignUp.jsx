@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../config'; 
+import apiClient from '../utils/apiClient';
 
 const AuthContext = createContext();
 export const SignUpProvider = ({children})=>{
@@ -13,29 +13,16 @@ export const SignUpProvider = ({children})=>{
         
         const newUser = {email,name,password};
         try{
-            const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`,{
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newUser),
-               });
-            if (!response.ok) {
-                throw new Error('Signup failed');
-            }
+            const response = await apiClient.post('/api/v1/auth/register', newUser);
             setMessage('Signup successful!');
             setEmail('');
             setName('');
             setPassword('');
             navigate('/Login'); 
-
-    
-    
            }
         catch(err){
             console.error(err);
             setMessage("SignUp Failed")
-    
            }
         };
     return (
