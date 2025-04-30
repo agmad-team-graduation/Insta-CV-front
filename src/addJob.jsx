@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AddJobForm } from "./components/forms/addJobForm";
 import apiClient from './utils/apiClient';
-
+import { useCookies } from 'react-cookie';
+  
 export default function AddJobCard() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -10,6 +11,8 @@ export default function AddJobCard() {
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [cookies] = useCookies(['isLoggedIn']);
+  const token = cookies.isLoggedIn || '';
 
   const handleSubmit = async () => {
     if (!title || !company || !description) {
@@ -27,7 +30,12 @@ export default function AddJobCard() {
     };
     
     try {
-      await apiClient.post("/api/v1/jobs/add", newJob);
+      await apiClient.post('/api/v1/jobs/add', {
+        headers: {
+          'Authorization': `Bearer ${token || ''}`,
+        },
+        withCredentials: true,
+      });
       
       // Clear form
       setTitle("");
