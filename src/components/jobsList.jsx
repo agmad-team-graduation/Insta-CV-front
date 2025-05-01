@@ -15,8 +15,8 @@ const JobsList = () => {
     const loadJobs = async () => {
       try {
         setLoading(true);
-        const token = cookies.isLoggedIn || '';
-        const jobsData = await fetchJobs(token);
+        // No need to pass token anymore since apiClient handles it
+        const jobsData = await fetchJobs();
         setJobs(jobsData);
         setError(null);
       } catch (err) {
@@ -28,7 +28,7 @@ const JobsList = () => {
     };
 
     loadJobs();
-  }, [cookies.isLoggedIn]);
+  }, [cookies.isLoggedIn]); // Still depend on cookies to trigger reload when auth changes
 
   if (loading) {
     return (
