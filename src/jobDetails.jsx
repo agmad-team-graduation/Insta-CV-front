@@ -5,6 +5,7 @@ import { ArrowLeft, Star, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCookies } from 'react-cookie';
+import apiClient from './utils/apiClient';
 
 function JobDetails() {
   const [job, setJob] = useState(null);
@@ -17,20 +18,9 @@ function JobDetails() {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const response = await fetch(`/api/v1/jobs/${jobID}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token || ''}`,
-          }
-        });
+        const response = await apiClient.get(`/api/v1/jobs/${jobID}`);
         
-        if (!response.ok) {
-          throw new Error("Failed to fetch job details");
-        }
-        const data = await response.json();
-        setJob(data);
+        setJob(response.data);
       } catch (error) {
         console.error("Error fetching job details:", error);
       } finally {

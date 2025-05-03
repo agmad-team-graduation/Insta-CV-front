@@ -30,12 +30,7 @@ export default function AddJobCard() {
     };
     
     try {
-      await apiClient.post('/api/v1/jobs/add', {
-        headers: {
-          'Authorization': `Bearer ${token || ''}`,
-        },
-        withCredentials: true,
-      });
+      const response = await apiClient.post('/api/v1/jobs/add', newJob);
       
       // Clear form
       setTitle("");
