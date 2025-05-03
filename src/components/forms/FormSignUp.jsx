@@ -16,8 +16,6 @@ export function SignUpForm() {
       setName,
       password,
       setPassword,
-      message,
-      setMessage,
       handleSubmit,
     } = UseAuth();
   
@@ -100,7 +98,6 @@ export function SignUpForm() {
             </Button>
           </form>
         </Form>
-              {message && <p className="mt-4 text-sm text-center text-red-500">{message}</p>}
 
       </div>
     </div>

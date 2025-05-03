@@ -20,8 +20,6 @@ export function LoginForm() {
     setEmail,
     password,
     setPassword,
-    message,
-    setMessage,
     handleSubmit,
   } = UseAuth();
 
@@ -109,7 +107,6 @@ export function LoginForm() {
         </form>
       </Form>
 
-      {message && <p className="mt-4 text-sm text-center text-red-500">{message}</p>}
     </div>
   );
 }

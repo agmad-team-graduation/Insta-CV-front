@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Icon from './images/Icon.png';
 import backgroundImage from './images/background.jpg';
 import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 function SetPassword() {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ function SetPassword() {
   
 
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,12 +36,12 @@ function SetPassword() {
       }
 
       const data = await response.json();
-      setMessage(data.message);
+      toast.sucess(data.message);
       navigate('/Login'); 
 
     } catch (error) {
       console.error('Error:', error);
-      setMessage('An error occurred. Please try again.');
+      toast.error("An error occurred. Please try again.");
     }
   };
 
@@ -90,9 +90,7 @@ function SetPassword() {
             {/* End Form */}
 
             {/* Message */}
-            {message && (
-              <p className="mt-4 text-center text-sm text-red-500">{message}</p>
-            )}
+            
           </div>      
         </div>
       </div>

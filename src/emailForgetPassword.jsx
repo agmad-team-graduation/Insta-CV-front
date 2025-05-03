@@ -1,11 +1,12 @@
 import React, { useState } from 'react';  // Also missing import useState
 import Icon from './images/Icon.png';
 import backgroundImage from './images/background.jpg';
+import { toast } from 'sonner';
+
 
 function SetEmail() {
     
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
@@ -23,11 +24,12 @@ function SetEmail() {
       }
       
       const data = await response.json();
-      setMessage(data.message);
-
-    } catch (error) {
-      console.error('Error:', error);
-      setMessage('An error occurred. Please try again.');
+      toast.success(data.message,{
+        bodyClassName:"mt-4 text-center text-green-600 text-sm",
+      });
+    } catch (err) {
+      console.error('Error:', err);
+      toast.error("Something Wrong");
     }
   };
 
@@ -76,10 +78,7 @@ function SetEmail() {
             </form>
 
             {/* Display server message if available */}
-            {message && (
-              <p className="mt-4 text-center text-green-600 text-sm">{message}</p>
-            )}
-
+            
           </div>      
         </div>
       </div>

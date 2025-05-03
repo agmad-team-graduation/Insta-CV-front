@@ -15,6 +15,9 @@ import AuthLayout from './components/AuthLayout';
 import SetEmail from './emailForgetPassword';
 import SetPassword from './SetPassword';
 import AddJobCard from './addJob';
+import { Toaster } from 'sonner';
+import OAuth2Success from './oauth2-success';
+
 
 // Array of paths where we want to show navbar and footer
 const NavbarFooterRoutes = ['/', '/signup'];
@@ -27,6 +30,8 @@ function AppContent() {
   
   return (
     <>
+            <Toaster />
+
       {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
@@ -46,6 +51,8 @@ function AppContent() {
             
           }/>
           <Route path='/SetPassword' element={<SetPassword />} />
+          <Route path='/oauth2-success' element={<OAuth2Success />} />
+
           
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
