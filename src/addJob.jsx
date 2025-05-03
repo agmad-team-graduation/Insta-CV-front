@@ -11,8 +11,6 @@ export default function AddJobCard() {
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [cookies] = useCookies(['isLoggedIn']);
-  const token = cookies.isLoggedIn || '';
 
   const handleSubmit = async () => {
     if (!title || !company || !description) {

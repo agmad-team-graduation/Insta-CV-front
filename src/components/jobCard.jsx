@@ -1,8 +1,15 @@
-import React from 'react';
-import { Calendar, MapPin, Users, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Calendar, MapPin, Users, Info, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import JobAnalysisDialog from './JobAnalysisDialog';
+import apiClient from '../utils/apiClient';
 
 const JobCard = ({ job }) => {
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [currentJob, setCurrentJob] = useState(null);
+  const [pollingInterval, setPollingInterval] = useState(null);
+  const navigate = useNavigate();
+
   const shortDescription = job.description.length > 100 
     ? `${job.description.substring(0, 100)}...` 
     : job.description;
@@ -13,8 +20,89 @@ const JobCard = ({ job }) => {
     day: 'numeric',
   });
 
+  useEffect(() => {
+    // Clean up polling interval when component unmounts
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [pollingInterval]);
+
+  const checkJobStatus = useCallback(async (jobId) => {
+    try {
+      const response = await apiClient.get(`/api/v1/jobs/${jobId}`);
+      
+      if (response.data.analyzed && response.data.skillMatchingAnalyzed) {
+        // Job is analyzed, clear interval and navigate
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+          setPollingInterval(null);
+        }
+        setIsAnalysisDialogOpen(false);
+        navigate(`/job-details/${jobId}`);
+      }
+    } catch (error) {
+      console.error("Error checking job status:", error);
+      // Stop polling on error
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        setPollingInterval(null);
+      }
+      setIsAnalysisDialogOpen(false);
+    }
+  }, [navigate, pollingInterval]);
+
+  const handleViewDetails = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await apiClient.get(`/api/v1/jobs/${job.id}`);
+      
+      if (response.data.analyzed) {
+        // If already analyzed, go directly to job details
+        navigate(`/job-details/${job.id}`);
+      } else {
+        // Start polling for job analysis status
+        setCurrentJob(job);
+        setIsAnalysisDialogOpen(true);
+        
+        // Poll every 5 seconds
+        const interval = setInterval(() => {
+          checkJobStatus(job.id);
+        }, 5000);
+        
+        setPollingInterval(interval);
+      }
+    } catch (error) {
+      console.error("Error checking job analysis status:", error);
+      // On error, navigate to details page anyway
+      navigate(`/job-details/${job.id}`);
+    }
+  };
+
+  const handleDeleteJob = async (e) => {
+    e.stopPropagation();
+    
+    try {
+      console.log(job.id);
+      await apiClient.delete(`/api/v1/jobs/${job.id}`);
+      navigate('/jobs');
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
+      <button 
+        onClick={handleDeleteJob}
+        className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors z-10"
+        aria-label="Delete job"
+      >
+        <X size={16} />
+      </button>
+
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-xl font-semibold text-gray-800">{job.title}</h3>
@@ -69,14 +157,19 @@ const JobCard = ({ job }) => {
           </div>
         )}
         
-        <Link 
-          to={`/job-details/${job.id}`}
+        <button
+          onClick={handleViewDetails}
           className="flex items-center justify-center w-full py-2 mt-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors duration-200"
         >
           <Info size={16} className="mr-1" />
           View details
-        </Link>
+        </button>
       </div>
+
+      <JobAnalysisDialog 
+        open={isAnalysisDialogOpen} 
+        onOpenChange={setIsAnalysisDialogOpen}
+      />
     </div>
   );
 };
