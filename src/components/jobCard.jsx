@@ -57,9 +57,10 @@ const JobCard = ({ job }) => {
     e.preventDefault();
     
     try {
+      setIsAnalysisDialogOpen(true);
       const response = await apiClient.get(`/api/v1/jobs/${job.id}`);
       
-      if (response.data.analyzed) {
+      if (response.data.analyzed && response.data.skillMatchingAnalyzed) {
         // If already analyzed, go directly to job details
         navigate(`/job-details/${job.id}`);
       } else {
