@@ -1,7 +1,9 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie'; 
 import { useNavigate } from 'react-router-dom';
-import apiClient from '@/utils/apiClient';    // ← use your absolute alias, adjust path if needed
+import apiClient from '@/utils/apiClient'; 
+import { toast } from 'sonner';
+
 
 const AuthContext = createContext();
 
@@ -10,7 +12,6 @@ export const LoginProvider = ({ children }) => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
 
   const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken']);
 
@@ -20,19 +21,16 @@ export const LoginProvider = ({ children }) => {
 
     try {
       // now using axios instance
-      const { data } = await apiClient.post('/api/v1/auth/login', newUser);
-      console.log(data);
+      const {data} = await apiClient.post('/api/v1/auth/login', newUser);
 
       setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn}); 
-
-      setMessage('Login successful!');
-      setEmail('');
-      setPassword('');
       navigate('/home'); 
 
+      setEmail('');
+      setPassword('');
+
     } catch (err) {
-      console.error(err);
-      setMessage('Invalid email or password');
+      toast.error(err.response.data.message,);
     }
   };
 
@@ -43,8 +41,6 @@ export const LoginProvider = ({ children }) => {
         setEmail,
         password,
         setPassword,
-        message,
-        setMessage,
         handleSubmit,
       }}
     >
