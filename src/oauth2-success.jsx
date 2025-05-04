@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
+import { useEffect } from "react";
 import Cookies from "js-cookie";
 
 const OAuth2Success = () => {
@@ -7,11 +8,11 @@ const OAuth2Success = () => {
     const token = params.get("token");
     const expiresIn = params.get("expiresIn");
 
-    Cookies.set("isLoggedIn", token,  { path: '/', maxAge: expiresIn});
+    useEffect(() => {
+      Cookies.set("isLoggedIn", token,  { path: '/', maxAge: expiresIn});
+      navigate("/home");
+    }, []);
 
-    navigate("/home");
-
-  return <p>Redirecting...</p>;
 };
 
 export default OAuth2Success;
