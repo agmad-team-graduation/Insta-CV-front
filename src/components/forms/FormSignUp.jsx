@@ -14,8 +14,6 @@ export function SignUpForm() {
       setEmail,
       name,
       setName,
-      password,
-      setPassword,
       handleSubmit,
     } = UseAuth();
   
@@ -23,7 +21,6 @@ export function SignUpForm() {
     defaultValues: {
       name: "",
       email: "",
-      password: "",
     },
   })
 
@@ -64,23 +61,6 @@ export function SignUpForm() {
                     <Input type="email" placeholder="" {...field} 
                        value={email}
                        onChange={(e) => setEmail(e.target.value)}
-                    
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm">Password</FormLabel> {/* Smaller label */}
-                  <FormControl>
-                    <Input type="password" placeholder="" {...field} 
-                         value={password}
-                         onChange={(e) => setPassword(e.target.value)}
                     
                     />
                   </FormControl>

@@ -1,7 +1,6 @@
 "use client"
 
 import React, { createContext, useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import apiClient from '../utils/apiClient';
 import { toast } from 'sonner';
 
@@ -9,21 +8,18 @@ const AuthContext = createContext();
 export const SignUpProvider = ({children})=>{
     const [email,setEmail]=useState('');
     const [name,setName]=useState('');
-    const [password,setPassword]=useState('');
-    const navigate = useNavigate(); 
     const handleSubmit = async ()=>{
         
-        const newUser = {email,name,password};
+        const newUser = {email,name};
         
         try{
-            const response = await apiClient.post('/api/v1/auth/register', newUser);
+            const response = await apiClient.post('/api/v1/email/send-verification', newUser);
             
            
-  navigate('/Login');
+           toast.success(response.data.message);
            
             setEmail('');
             setName('');
-            setPassword('');
 }
            
         catch(err){
@@ -38,8 +34,6 @@ export const SignUpProvider = ({children})=>{
         setEmail,
         name,
         setName,
-        password,
-        setPassword,
         handleSubmit,
       }}
     >
