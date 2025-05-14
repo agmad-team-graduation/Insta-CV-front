@@ -18,6 +18,7 @@ import AddJobCard from './addJob';
 import { Toaster } from 'sonner';
 import OAuth2Success from './oauth2-success';
 import VerifyPassword from './VerifyPassword';
+import Profile from './profile';
 
 
 // Array of paths where we want to show navbar and footer
@@ -54,7 +55,6 @@ function AppContent() {
           <Route path='/SetPassword' element={<SetPassword />} />
           <Route path='/email-verification' element={<VerifyPassword />}/>
           <Route path='/oauth2-success' element={<OAuth2Success />} />
-
           
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
@@ -62,6 +62,7 @@ function AppContent() {
             <Route path='/jobs' element={<Jobs />} />
             <Route path='/job-details/:jobID' element={<JobDetails />} />
             <Route path='/jobs/add' element={<AddJobCard />} />
+            <Route path='/profile' element={<Profile />} />
           </Route>
         </Routes>
       </div>

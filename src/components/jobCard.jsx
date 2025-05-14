@@ -86,9 +86,8 @@ const JobCard = ({ job }) => {
     e.stopPropagation();
     
     try {
-      console.log(job.id);
       await apiClient.delete(`/api/v1/jobs/${job.id}`);
-      navigate('/jobs');
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting job:", error);
     }
