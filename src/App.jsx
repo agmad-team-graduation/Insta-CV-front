@@ -18,7 +18,7 @@ import AddJobCard from './addJob';
 import { Toaster } from 'sonner';
 import OAuth2Success from './oauth2-success';
 import VerifyPassword from './VerifyPassword';
-
+import ResumeBuilder from './components/resume-builder/ResumeBuilder'
 
 // Array of paths where we want to show navbar and footer
 const NavbarFooterRoutes = ['/', '/signup'];
@@ -51,6 +51,12 @@ function AppContent() {
               <SetEmail/>
             
           }/>
+          <Route path='/Resume' element={
+              <ResumeBuilder/>
+            
+          }/>
+          
+
           <Route path='/SetPassword' element={<SetPassword />} />
           <Route path='/email-verification' element={<VerifyPassword />}/>
           <Route path='/oauth2-success' element={<OAuth2Success />} />
