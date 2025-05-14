@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { ProfileHeader } from "@/components/ProfileHeader";
-import SkillsSection from "@/components/SkillSection";
-import EducationSection from "@/components/EducationSection";
-import ExperienceSection from "@/components/ExperienceSection";
+import ProfileHeader from "@/components/profile/ProfileHeader";
+import SkillsSection from "@/components/profile/SkillSection";
+import EducationSection from "@/components/profile/EducationSection";
+import ExperienceSection from "@/components/profile/ExperienceSection";
 import apiClient from "./utils/apiClient";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import ProjectSection from "@/components/ProjectSection";
-import PersonalDetailsSection from "@/components/PersonalDetailsSection";
+import ProjectSection from "@/components/profile/ProjectSection";
+import PersonalDetailsSection from "@/components/profile/PersonalDetailsSection";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);

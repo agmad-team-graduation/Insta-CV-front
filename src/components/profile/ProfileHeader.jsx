@@ -2,7 +2,7 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Mail, Phone, MapPin, Briefcase } from "lucide-react";
 
-export const ProfileHeader = ({
+const ProfileHeader = ({
   name,
   title,
   avatar,
@@ -40,3 +40,5 @@ export const ProfileHeader = ({
     </div>
   );
 };
+
+export default ProfileHeader;
