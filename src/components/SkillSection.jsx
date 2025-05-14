@@ -27,6 +27,7 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
   const [skills, setSkills] = useState(data);
   const [editingId, setEditingId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [unsavedSkillIds, setUnsavedSkillIds] = useState([]);
 
   const form = useForm({
     resolver: zodResolver(skillSchema),
@@ -35,6 +36,12 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
       proficiency: "",
     },
   });
+
+  // When data changes from parent (e.g., after save), clear unsaved highlights
+  React.useEffect(() => {
+    setSkills(data);
+    setUnsavedSkillIds([]);
+  }, [data]);
 
   const handleEdit = (skill) => {
     form.reset(skill);
@@ -64,10 +71,12 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
     if (isAdding) {
       const newSkill = {
         ...values,
+        proficiency: values.proficiency,
         id: Date.now().toString(),
       };
       const updatedSkills = [...skills, newSkill];
       setSkills(updatedSkills);
+      setUnsavedSkillIds(prev => [...prev, newSkill.id]);
       onUpdate(updatedSkills);
       setIsAdding(false);
     } else if (editingId) {
@@ -139,40 +148,38 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
 
   const getProficiencyClass = (proficiency) => {
     switch (proficiency) {
-      case 'amateur':
+      case 'beginner':
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
+      case 'intermediate':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'advanced':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
       case 'expert':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'competent':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'proficient':
-        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl">Skills</CardTitle>
+        <CardTitle className="font-bold text-xl text-black text-left">Skills</CardTitle>
         <div className="flex items-center gap-2">
           {/* Skill Level Guide */}
           <div className="hidden md:flex items-center gap-2 mr-4 text-xs">
             <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-blue-100 dark:bg-blue-900 mr-1"></div>
-              <span>Amateur</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-purple-100 dark:bg-purple-900 mr-1"></div>
-              <span>Competent</span>
-            </div>
-            <div className="flex items-center">
               <div className="w-3 h-3 rounded-full bg-amber-100 dark:bg-amber-900 mr-1"></div>
-              <span>Proficient</span>
+              <span>Beginner</span>
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 rounded-full bg-green-100 dark:bg-green-900 mr-1"></div>
+              <span>Intermediate</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-blue-100 dark:bg-blue-900 mr-1"></div>
+              <span>Advanced</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-purple-100 dark:bg-purple-900 mr-1"></div>
               <span>Expert</span>
             </div>
           </div>
@@ -201,10 +208,11 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
           <div className="flex flex-wrap gap-2 mb-4">
             {skills.map((skill) => (
               <div
-                key={skill.id}
+                key={skill.id || `${skill.name}-${skill.proficiency}`}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm",
                   getProficiencyClass(skill.level),
+                  unsavedSkillIds.includes(skill.id) && "bg-yellow-100 border border-yellow-400",
                   editingId === skill.id && "ring-2 ring-primary"
                 )}
               >

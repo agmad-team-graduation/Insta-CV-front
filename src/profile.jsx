@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import SkillsSection from "@/components/SkillSection";
 import EducationSection from "@/components/EducationSection";
-import { ExperienceSection } from "@/components/ExperienceSection";
+import ExperienceSection from "@/components/ExperienceSection";
 import apiClient from "./utils/apiClient";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import ProjectSection from "@/components/ProjectSection";
+import PersonalDetailsSection from "@/components/PersonalDetailsSection";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -40,9 +43,13 @@ const Profile = () => {
         personalDetails: profileData.personalDetails,
         educationList: profileData.educationList,
         experienceList: profileData.experienceList,
-        userSkills: profileData.userSkills,
+        userSkills: profileData.userSkills.map(skill => ({
+          ...skill,
+          level: skill.level ? skill.level.toUpperCase() : skill.level
+        })),
         projects: profileData.projects
       };
+      
       
       // Send the PUT request
       await apiClient.put("/api/v1/profiles/update", dataToSave);
@@ -77,8 +84,14 @@ const Profile = () => {
   const mappedExperiences = profileData?.experienceList?.map(exp => ({
     companyLogo: "https://via.placeholder.com/40", // Placeholder until you have actual logos
     position: exp.jobTitle,
+    city: exp.city,
+    country: exp.country,
     company: exp.company,
+    startDate: exp.startDate,
+    endDate: exp.endDate,
+    present: exp.present,
     location: `${exp.city}, ${exp.country}`,
+    description: exp.description,
     duration: {
       startDate: formatDate(exp.startDate),
       endDate: exp.present ? "Present" : formatDate(exp.endDate)
@@ -90,12 +103,25 @@ const Profile = () => {
 
   // Map educations to the format expected by EducationSection component
   const mappedEducations = profileData?.educationList?.map(edu => ({
-    degree: edu.degree,
-    institution: edu.school,
+    ...edu,
     duration: {
       startDate: formatDate(edu.startDate),
       endDate: edu.present ? "Present" : formatDate(edu.endDate)
     }
+  })) || [];
+
+  // Map projects to the format expected by ProjectSection component
+  const mappedProjects = profileData?.projects?.map(project => ({
+    ...project,
+    duration: {
+      startDate: formatDate(project.startDate),
+      endDate: project.present ? "Present" : formatDate(project.endDate)
+    },
+    // Optionally map skills if needed
+    skills: project.skills?.map(skill => ({
+      id: skill.id,
+      skill: skill.skill
+    })) || []
   })) || [];
 
   return (
@@ -112,38 +138,115 @@ const Profile = () => {
       </div>
 
       {profileData && (
-        <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Personal Information</h2>
-          <ProfileHeader 
-            name={profileData.personalDetails?.fullName || ""}
-            title={profileData.personalDetails?.jobTitle || "Software Engineer"}
-            avatar="/lovable-uploads/3a91b290-2dee-4e8c-99ab-1ee517bcf7a0.png"
-            country={profileData.personalDetails?.address?.split(", ")[2] || ""}
-            countryFlag="🇪🇬"
-            email={profileData.personalDetails?.email || ""}
-            phone={profileData.personalDetails?.phone || ""}
-            linkedinUrl=""
-            isVerified={true}
-            creationDate="Mar 26, 2025"
-            expectedPay="$4500/month"
-          />
-        </div>
+        <>
+          <Card className="mb-6">
+            <CardContent>
+              <ProfileHeader
+                name={profileData.personalDetails?.fullName || ""}
+                title={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                avatar="/lovable-uploads/3a91b290-2dee-4e8c-99ab-1ee517bcf7a0.png"
+                country={profileData.personalDetails?.address?.split(", ")[2] || ""}
+                email={profileData.personalDetails?.email || ""}
+                phone={profileData.personalDetails?.phone || ""}
+                location={profileData.personalDetails?.address || ""}
+                jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
+              />
+            </CardContent>
+          </Card>
+          <Card className="mb-6">
+            <CardContent>
+              <PersonalDetailsSection
+                name={profileData.personalDetails?.fullName || ""}
+                email={profileData.personalDetails?.email || ""}
+                phone={profileData.personalDetails?.phone || ""}
+                jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                location={profileData.personalDetails?.address || ""}
+                about={profileData.personalDetails?.about || ""}
+                isEditMode={true}
+                onUpdate={updated => setProfileData(prev => ({
+                  ...prev,
+                  personalDetails: {
+                    ...prev.personalDetails,
+                    fullName: updated.name,
+                    email: updated.email,
+                    phone: updated.phone,
+                    jobTitle: updated.jobTitle,
+                    address: updated.location,
+                    about: updated.about
+                  }
+                }))}
+              />
+            </CardContent>
+          </Card>
+        </>
       )}
       
       {/* Skills Section */}
-      <div className="mb-6 bg-white rounded-lg">
-        <SkillsSection data={mappedSkills} />
+      <div className="mb-6">
+        <SkillsSection 
+          data={mappedSkills}
+          isEditMode={true}
+          onUpdate={updatedSkills => setProfileData(prev => ({
+            ...prev,
+            userSkills: updatedSkills.map(skill => ({
+              id: skill.id,
+              skill: skill.name,
+              level: skill.proficiency || skill.level
+            }))
+          }))}
+        />
       </div>
       
       {/* Experience Section */}
-      <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">Work Experience</h2>
-        <ExperienceSection experiences={mappedExperiences} />
+      <div className="mb-6">
+        <ExperienceSection 
+          experiences={mappedExperiences}
+          onAdd={newExp => setProfileData(prev => ({
+            ...prev,
+            experienceList: [...prev.experienceList, newExp]
+          }))}
+          onDelete={index => setProfileData(prev => ({
+            ...prev,
+            experienceList: prev.experienceList.filter((_, i) => i !== index)
+          }))}
+          onEdit={(index, updatedExp) => setProfileData(prev => ({
+            ...prev,
+            experienceList: prev.experienceList.map((exp, i) => i === index ? {
+              ...exp,
+              ...updatedExp
+            } : exp)
+          }))}
+        />
       </div>
       
       {/* Education Section */}
-      <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-        <EducationSection educations={mappedEducations} />
+      <div className="mb-6">
+        <EducationSection
+          educations={mappedEducations}
+          onAdd={newEdu => setProfileData(prev => ({
+            ...prev,
+            educationList: [...prev.educationList, newEdu]
+          }))}
+          onDelete={index => setProfileData(prev => ({
+            ...prev,
+            educationList: prev.educationList.filter((_, i) => i !== index)
+          }))}
+        />
+      </div>
+
+      {/* Projects Section */}
+      <div className="mb-6">
+        <ProjectSection 
+          projects={mappedProjects}
+          onAdd={newProj => setProfileData(prev => ({
+            ...prev,
+            projects: [...prev.projects, newProj]
+          }))}
+          onDelete={index => setProfileData(prev => ({
+            ...prev,
+            projects: prev.projects.filter((_, i) => i !== index)
+          }))}
+        />
       </div>
 
       {/* Save Button - Also at the bottom for convenience */}

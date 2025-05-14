@@ -1,49 +1,369 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Edit, Plus } from "lucide-react";
+import { Edit, Plus, GraduationCap, Trash2, PlusCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/utils/formatters";
 
-export const EducationItem = ({
-  logo,
-  degree,
-  institution,
-  duration,
-}) => {
+const EducationItem = (props) => {
+  const { degree, school, city, country, startDate, endDate, description, present } = props;
   return (
-    <div className="border rounded-lg p-4 mb-4">
-      <div className="flex justify-between">
-        <div className="flex gap-4">
-          
-          <div>
-            <h3 className="font-semibold">{degree}</h3>
-            <p className="text-gray-600">{institution}</p>
-            <p className="text-sm text-gray-500">
-              {duration.startDate} - {duration.endDate}
-            </p>
+    <Card className="mb-4">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left: Icon and main info */}
+          <div className="flex items-center gap-6 flex-1 min-w-0">
+            {/* Circular icon */}
+            <div className="flex-shrink-0">
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                <GraduationCap className="w-8 h-8 text-gray-700" />
+              </div>
+            </div>
+            {/* Main info */}
+            <div className="min-w-0 text-left">
+              <div className="font-semibold text-lg leading-tight mb-0.5">{degree}</div>
+              <div className="text-gray-500 text-base mb-1">{school}</div>
+              {(city || country) && <div className="text-gray-700 text-base mb-1">{[city, country].filter(Boolean).join(", ")}</div>}
+              {description && <div className="text-black text-base mt-2">{description}</div>}
+            </div>
+          </div>
+          {/* Right: Date range badge */}
+          <div className="flex-shrink-0">
+            <span className="bg-gray-100 text-gray-700 rounded-lg px-4 py-2 text-base font-medium">
+              {formatDate(startDate)} - {present ? 'Present' : (endDate === "Present" ? "Present" : formatDate(endDate))}
+            </span>
           </div>
         </div>
-        
-        <Button variant="ghost" size="icon">
-          <Edit className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export const EducationSection = ({ educations }) => {
+const initialForm = {
+  degree: "",
+  school: "",
+  city: "",
+  country: "",
+  startDate: "",
+  endDate: "",
+  description: "",
+  present: false
+};
+
+const EducationSection = ({ educations, onAdd, onDelete, onEdit }) => {
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState("");
+  const formRef = useRef(null);
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm({
+      ...form,
+      [name]: type === "checkbox" ? checked : value
+    });
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    setError("");
+    if (!form.degree || !form.school) return;
+    const today = new Date().toISOString().slice(0, 7); // YYYY-MM
+    if (form.startDate && form.startDate > today) {
+      setError("Start date cannot be in the future.");
+      return;
+    }
+    if (form.startDate && form.endDate && form.endDate < form.startDate && !form.present) {
+      setError("End date must be after start date.");
+      return;
+    }
+    const newEducation = {
+      degree: form.degree,
+      school: form.school,
+      city: form.city,
+      country: form.country,
+      startDate: form.startDate ? form.startDate + '-01' : '',
+      endDate: form.present ? '' : (form.endDate ? form.endDate + '-01' : ''),
+      description: form.description,
+      present: !!form.present
+    };
+    onAdd(newEducation);
+    setForm(initialForm);
+    setShowForm(false);
+  };
+
+  const handleDelete = (index) => {
+    onDelete(index);
+  };
+
+  const handleShowForm = () => {
+    setShowForm(true);
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 0);
+  };
+
+  const handleEditClick = (index) => {
+    setEditingIndex(index);
+    setForm({
+      degree: educations[index].degree || "",
+      school: educations[index].school || "",
+      city: educations[index].city || "",
+      country: educations[index].country || "",
+      startDate: educations[index].startDate ? educations[index].startDate.slice(0, 7) : "",
+      endDate: educations[index].endDate ? educations[index].endDate.slice(0, 7) : "",
+      description: educations[index].description || "",
+      present: !!educations[index].present
+    });
+    setShowForm(false);
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 0);
+  };
+
+  const handleEditSave = (e) => {
+    e.preventDefault();
+    setError("");
+    if (!form.degree || !form.school) return;
+    const today = new Date().toISOString().slice(0, 7);
+    if (form.startDate && form.startDate > today) {
+      setError("Start date cannot be in the future.");
+      return;
+    }
+    if (form.startDate && form.endDate && form.endDate < form.startDate && !form.present) {
+      setError("End date must be after start date.");
+      return;
+    }
+    const updatedEducation = {
+      degree: form.degree,
+      school: form.school,
+      city: form.city,
+      country: form.country,
+      startDate: form.startDate ? form.startDate + '-01' : '',
+      endDate: form.present ? '' : (form.endDate ? form.endDate + '-01' : ''),
+      description: form.description,
+      present: !!form.present
+    };
+    onEdit(editingIndex, updatedEducation);
+    setEditingIndex(null);
+    setForm(initialForm);
+  };
+
+  const handleEditCancel = () => {
+    setEditingIndex(null);
+    setForm(initialForm);
+  };
+
   return (
-    <div className="mb-6">
-      
-      {educations.map((education, index) => (
-        <EducationItem key={index} {...education} />
-      ))}
-      
-      <div className="flex justify-center mt-4">
-        <Button variant="outline" size="sm" className="flex items-center gap-1 text-blue-600">
-          <Plus className="h-4 w-4" />
-          <span>Add more</span>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="font-bold text-xl text-black text-left">Education</CardTitle>
+        <Button 
+          onClick={handleShowForm}
+          size="sm"
+          variant="outline"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" /> Add Education
         </Button>
-      </div>
-    </div>
+      </CardHeader>
+      <CardContent>
+        {educations.length === 0 && (
+          <div className="text-center text-muted-foreground py-4">No education added yet.</div>
+        )}
+        {educations && educations.map((education, index) => (
+          <div key={index} className="relative">
+            {editingIndex === index ? (
+              <form ref={formRef} onSubmit={handleEditSave} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
+                {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+                <div className="flex flex-col md:flex-row gap-3">
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="degree"
+                    placeholder="Degree"
+                    value={form.degree}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="school"
+                    placeholder="School"
+                    value={form.school}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row gap-3">
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="city"
+                    placeholder="City"
+                    value={form.city}
+                    onChange={handleChange}
+                  />
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="country"
+                    placeholder="Country"
+                    value={form.country}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="startDate"
+                    type="month"
+                    placeholder="Start Date"
+                    value={form.startDate}
+                    onChange={handleChange}
+                  />
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="endDate"
+                    type="month"
+                    placeholder="End Date"
+                    value={form.endDate}
+                    onChange={handleChange}
+                    disabled={form.present}
+                  />
+                </div>
+                <textarea
+                  className="border rounded px-3 py-2"
+                  name="description"
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={handleChange}
+                />
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="present"
+                    checked={form.present}
+                    onChange={handleChange}
+                  />
+                  Present
+                </label>
+                <div className="flex gap-2 justify-end">
+                  <Button type="button" variant="outline" size="sm" onClick={handleEditCancel}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="sm">
+                    Save
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <EducationItem {...education} />
+                <button
+                  className="absolute top-2 right-10 text-blue-600 hover:text-blue-800 bg-white rounded-full p-1 shadow"
+                  onClick={() => handleEditClick(index)}
+                  title="Edit"
+                  style={{ zIndex: 10 }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="absolute top-2 right-2 text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"
+                  onClick={() => handleDelete(index)}
+                  title="Delete"
+                  style={{ zIndex: 10 }}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+        {showForm && (
+          <form ref={formRef} onSubmit={handleAdd} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
+            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            <div className="flex flex-col md:flex-row gap-3">
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="degree"
+                placeholder="Degree"
+                value={form.degree}
+                onChange={handleChange}
+                required
+              />
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="school"
+                placeholder="School"
+                value={form.school}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="flex flex-col md:flex-row gap-3">
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="city"
+                placeholder="City"
+                value={form.city}
+                onChange={handleChange}
+              />
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="country"
+                placeholder="Country"
+                value={form.country}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="flex gap-3">
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="startDate"
+                type="month"
+                placeholder="Start Date"
+                value={form.startDate}
+                onChange={handleChange}
+              />
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="endDate"
+                type="month"
+                placeholder="End Date"
+                value={form.endDate}
+                onChange={handleChange}
+              />
+            </div>
+            <textarea
+              className="border rounded px-3 py-2"
+              name="description"
+              placeholder="Description"
+              value={form.description}
+              onChange={handleChange}
+            />
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="present"
+                checked={form.present}
+                onChange={handleChange}
+              />
+              Present
+            </label>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm">
+                Add
+              </Button>
+            </div>
+          </form>
+        )}
+      </CardContent>
+    </Card>
   );
 };
+
+export default EducationSection;
