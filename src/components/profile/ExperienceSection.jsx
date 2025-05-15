@@ -269,12 +269,13 @@ const ExperienceSection = ({ experiences, onAdd, onDelete, onEdit }) => {
               <>
                 <ExperienceItem {...experience} />
                 <button
-                  className="absolute top-2 right-10 text-blue-600 hover:text-blue-800 bg-white rounded-full p-1 shadow"
+                  className="absolute top-2 right-10 bg-white rounded-full p-1 shadow"
                   onClick={() => handleEditClick(index)}
                   title="Edit"
                   style={{ zIndex: 10 }}
+                  type="button"
                 >
-                  Edit
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
                 </button>
                 <button
                   className="absolute top-2 right-2 text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"

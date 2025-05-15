@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import SignUp from './SignUp';
 import { SignUpProvider } from './Context/ContextSignUp';
 import { LoginProvider } from './Context/ContextLogin';
@@ -75,9 +75,7 @@ function App() {
   return (
     <div className="app">
       <div className="w-full">
-        <Router>
-          <AppContent />
-        </Router>
+        <AppContent />
       </div>
     </div>
   );

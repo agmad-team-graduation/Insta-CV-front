@@ -60,12 +60,13 @@ const initialForm = {
   skills: []
 };
 
-const ProjectSection = ({ projects, onAdd, onDelete }) => {
+const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [abilityInput, setAbilityInput] = useState("");
   const [abilities, setAbilities] = useState([]);
   const [error, setError] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
   const formRef = useRef(null);
 
   const handleChange = (e) => {
@@ -87,7 +88,7 @@ const ProjectSection = ({ projects, onAdd, onDelete }) => {
     setAbilities(prev => prev.filter(a => a.id !== id));
   };
 
-  const handleAdd = (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     setError("");
     if (!form.title) return;
@@ -95,7 +96,7 @@ const ProjectSection = ({ projects, onAdd, onDelete }) => {
       setError("End date must be after start date.");
       return;
     }
-    const newProject = {
+    const projectData = {
       title: form.title,
       startDate: form.startDate ? form.startDate + '-01' : '',
       endDate: form.endDate ? form.endDate + '-01' : '',
@@ -103,18 +104,54 @@ const ProjectSection = ({ projects, onAdd, onDelete }) => {
       present: form.present,
       skills: abilities
     };
-    onAdd(newProject);
+    if (editIndex !== null) {
+      onEdit(editIndex, projectData);
+    } else {
+      onAdd(projectData);
+    }
     setForm(initialForm);
     setAbilities([]);
     setShowForm(false);
+    setEditIndex(null);
   };
 
   const handleDelete = (index) => {
     onDelete(index);
+    // If deleting the project being edited, reset form
+    if (editIndex === index) {
+      setForm(initialForm);
+      setAbilities([]);
+      setShowForm(false);
+      setEditIndex(null);
+    }
   };
 
   const handleShowForm = () => {
     setShowForm(true);
+    setEditIndex(null);
+    setForm(initialForm);
+    setAbilities([]);
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 0);
+  };
+
+  const handleEdit = (index) => {
+    const project = projects[index];
+    setForm({
+      title: project.title || "",
+      startDate: project.startDate ? project.startDate.slice(0, 7) : "",
+      endDate: project.endDate ? project.endDate.slice(0, 7) : "",
+      description: project.description || "",
+      url: project.url || "",
+      present: !!project.present,
+      skills: project.skills || []
+    });
+    setAbilities(project.skills || []);
+    setShowForm(true);
+    setEditIndex(index);
     setTimeout(() => {
       if (formRef.current) {
         formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -141,18 +178,28 @@ const ProjectSection = ({ projects, onAdd, onDelete }) => {
         {projects && projects.map((project, index) => (
           <div key={project.id || index} className="relative">
             <ProjectItem {...project} />
-            <button
-              className="absolute top-2 right-2 text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"
-              onClick={() => handleDelete(index)}
-              title="Delete"
-              style={{ zIndex: 10 }}
-            >
-              <Trash2 className="h-5 w-5" />
-            </button>
+            <div className="absolute top-2 right-2 flex gap-2 z-10">
+              <button
+                className="text-gray-500 bg-white rounded-full p-1 shadow"
+                onClick={() => handleEdit(index)}
+                title="Edit"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
+              </button>
+              <button
+                className="text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"
+                onClick={() => handleDelete(index)}
+                title="Delete"
+                type="button"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         ))}
         {showForm && (
-          <form ref={formRef} onSubmit={handleAdd} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
+          <form ref={formRef} onSubmit={handleFormSubmit} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
             {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
             <input
               className="border rounded px-3 py-2"
@@ -220,11 +267,11 @@ const ProjectSection = ({ projects, onAdd, onDelete }) => {
               Present
             </label>
             <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" size="sm" onClick={() => setShowForm(false)}>
+              <Button type="button" variant="outline" size="sm" onClick={() => { setShowForm(false); setEditIndex(null); setForm(initialForm); setAbilities([]); }}>
                 Cancel
               </Button>
               <Button type="submit" size="sm">
-                Add
+                {editIndex !== null ? 'Save' : 'Add'}
               </Button>
             </div>
           </form>
