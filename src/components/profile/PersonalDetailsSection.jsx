@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 
 const labelClass = "text-gray-500 font-semibold text-sm mb-1 text-left";
 const valueClass = "text-black text-base text-left";
@@ -28,7 +29,7 @@ const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about,
         <div className="font-bold text-2xl text-black text-left">Personal Details</div>
         {isEditMode && !editing && (
           <Button variant="outline" className="ml-auto flex items-center gap-2" onClick={() => setEditing(true)}>
-            Edit
+            <Pencil className="h-4 w-4 text-gray-500" />
           </Button>
         )}
       </div>

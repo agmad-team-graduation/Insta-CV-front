@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import SkillsSection from "@/components/profile/SkillSection";
 import EducationSection from "@/components/profile/EducationSection";
@@ -9,12 +9,20 @@ import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import ProjectSection from "@/components/profile/ProjectSection";
 import PersonalDetailsSection from "@/components/profile/PersonalDetailsSection";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
+import { useBlocker } from "./useBlocker";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [lastTx, setLastTx] = useState(null);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -55,6 +63,7 @@ const Profile = () => {
       await apiClient.put("/api/v1/profiles/update", dataToSave);
       
       // Show success message
+      setHasUnsavedChanges(false);
       toast.success("Profile saved successfully!");
     } catch (err) {
       console.error("Error saving profile data:", err);
@@ -63,6 +72,50 @@ const Profile = () => {
       setSaving(false);
     }
   };
+
+  // Block navigation if there are unsaved changes
+  useBlocker((tx) => {
+    if (hasUnsavedChanges) {
+      setShowLeaveModal(true);
+      setLastTx(tx);
+    } else {
+      tx.retry();
+    }
+  }, hasUnsavedChanges);
+
+  // Modal actions
+  const handleSaveAndLeave = async () => {
+    await handleSaveProfile();
+    setHasUnsavedChanges(false);
+    setShowLeaveModal(false);
+    setPendingNavigation(lastTx);
+  };
+
+  const handleLeaveWithoutSaving = () => {
+    setHasUnsavedChanges(false);
+    setShowLeaveModal(false);
+    setPendingNavigation(lastTx);
+  };
+
+  // Effect to retry navigation after unsaved changes are cleared
+  useEffect(() => {
+    if (!hasUnsavedChanges && pendingNavigation) {
+      pendingNavigation.retry();
+      setPendingNavigation(null);
+    }
+  }, [hasUnsavedChanges, pendingNavigation]);
+
+  // Warn on browser/tab close
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   if (loading) {
     return <div className="container mx-auto py-6 px-4 text-center">Loading profile...</div>;
@@ -163,18 +216,21 @@ const Profile = () => {
                 location={profileData.personalDetails?.address || ""}
                 about={profileData.personalDetails?.about || ""}
                 isEditMode={true}
-                onUpdate={updated => setProfileData(prev => ({
-                  ...prev,
-                  personalDetails: {
-                    ...prev.personalDetails,
-                    fullName: updated.name,
-                    email: updated.email,
-                    phone: updated.phone,
-                    jobTitle: updated.jobTitle,
-                    address: updated.location,
-                    about: updated.about
-                  }
-                }))}
+                onUpdate={updated => {
+                  setHasUnsavedChanges(true);
+                  setProfileData(prev => ({
+                    ...prev,
+                    personalDetails: {
+                      ...prev.personalDetails,
+                      fullName: updated.name,
+                      email: updated.email,
+                      phone: updated.phone,
+                      jobTitle: updated.jobTitle,
+                      address: updated.location,
+                      about: updated.about
+                    }
+                  }));
+                }}
               />
             </CardContent>
           </Card>
@@ -186,14 +242,17 @@ const Profile = () => {
         <SkillsSection 
           data={mappedSkills}
           isEditMode={true}
-          onUpdate={updatedSkills => setProfileData(prev => ({
-            ...prev,
-            userSkills: updatedSkills.map(skill => ({
-              id: skill.id,
-              skill: skill.name,
-              level: skill.proficiency || skill.level
-            }))
-          }))}
+          onUpdate={updatedSkills => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              userSkills: updatedSkills.map(skill => ({
+                id: skill.id,
+                skill: skill.name,
+                level: skill.proficiency || skill.level
+              }))
+            }));
+          }}
         />
       </div>
       
@@ -201,21 +260,30 @@ const Profile = () => {
       <div className="mb-6">
         <ExperienceSection 
           experiences={mappedExperiences}
-          onAdd={newExp => setProfileData(prev => ({
-            ...prev,
-            experienceList: [...prev.experienceList, newExp]
-          }))}
-          onDelete={index => setProfileData(prev => ({
-            ...prev,
-            experienceList: prev.experienceList.filter((_, i) => i !== index)
-          }))}
-          onEdit={(index, updatedExp) => setProfileData(prev => ({
-            ...prev,
-            experienceList: prev.experienceList.map((exp, i) => i === index ? {
-              ...exp,
-              ...updatedExp
-            } : exp)
-          }))}
+          onAdd={newExp => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              experienceList: [...prev.experienceList, newExp]
+            }));
+          }}
+          onDelete={index => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              experienceList: prev.experienceList.filter((_, i) => i !== index)
+            }));
+          }}
+          onEdit={(index, updatedExp) => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              experienceList: prev.experienceList.map((exp, i) => i === index ? {
+                ...exp,
+                ...updatedExp
+              } : exp)
+            }));
+          }}
         />
       </div>
       
@@ -223,14 +291,27 @@ const Profile = () => {
       <div className="mb-6">
         <EducationSection
           educations={mappedEducations}
-          onAdd={newEdu => setProfileData(prev => ({
-            ...prev,
-            educationList: [...prev.educationList, newEdu]
-          }))}
-          onDelete={index => setProfileData(prev => ({
-            ...prev,
-            educationList: prev.educationList.filter((_, i) => i !== index)
-          }))}
+          onAdd={newEdu => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              educationList: [...prev.educationList, newEdu]
+            }));
+          }}
+          onDelete={index => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              educationList: prev.educationList.filter((_, i) => i !== index)
+            }));
+          }}
+          onEdit={(index, updatedEdu) => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              educationList: prev.educationList.map((edu, i) => i === index ? { ...edu, ...updatedEdu } : edu)
+            }));
+          }}
         />
       </div>
 
@@ -238,14 +319,27 @@ const Profile = () => {
       <div className="mb-6">
         <ProjectSection 
           projects={mappedProjects}
-          onAdd={newProj => setProfileData(prev => ({
-            ...prev,
-            projects: [...prev.projects, newProj]
-          }))}
-          onDelete={index => setProfileData(prev => ({
-            ...prev,
-            projects: prev.projects.filter((_, i) => i !== index)
-          }))}
+          onAdd={newProj => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              projects: [...prev.projects, newProj]
+            }));
+          }}
+          onDelete={index => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              projects: prev.projects.filter((_, i) => i !== index)
+            }));
+          }}
+          onEdit={(index, updatedProj) => {
+            setHasUnsavedChanges(true);
+            setProfileData(prev => ({
+              ...prev,
+              projects: prev.projects.map((proj, i) => i === index ? { ...proj, ...updatedProj } : proj)
+            }));
+          }}
         />
       </div>
 
@@ -259,6 +353,20 @@ const Profile = () => {
           {saving ? "Saving..." : "Save Profile"}
         </Button>
       </div>
+      <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unsaved Changes</DialogTitle>
+            <DialogDescription>
+              You have unsaved changes. What would you like to do?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleSaveAndLeave}>Save Profile</Button>
+            <Button variant="outline" onClick={handleLeaveWithoutSaving}>Leave</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
