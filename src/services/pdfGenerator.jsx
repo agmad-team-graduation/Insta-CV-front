@@ -1,4 +1,8 @@
-import html2pdf from 'html2pdf.js';
+// First, install the pro version:
+//   npm install html2canvas-pro jspdf
+
+import html2canvas from 'html2canvas-pro';
+import { jsPDF } from 'jspdf';
 
 /**
  * Generate a PDF from the resume preview element
@@ -8,53 +12,56 @@ export const generatePdf = async (resumeElement, options = {}) => {
     throw new Error('Resume element not found');
   }
 
-  const defaultOptions = {
-    filename: 'resume.pdf',
-    margin: 10,
-  };
-
-  const pdfOptions = {
-    ...defaultOptions,
-    ...options,
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    },
-    jsPDF: {
-      format: 'a4',
-      orientation: 'portrait',
-      unit: 'mm',
-    },
-  };
+  // merge defaults
+  const {
+    filename     = 'resume.pdf',
+    margin       = 10,
+    format       = 'a4',
+    orientation  = 'portrait',
+    unit         = 'mm',
+    scale        = 2,
+    background   = null,  // or a hex like '#fff'
+    logging      = false,
+    useCORS      = true,
+  } = options;
 
   try {
-    // Make a clone to avoid modifying the displayed element
-    const clonedElement = resumeElement.cloneNode(true);
-    
-    // Apply print-specific styles
-    clonedElement.classList.add('print-mode');
-    
-    // Create temporary container
-    const container = document.createElement('div');
-    container.appendChild(clonedElement);
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    document.body.appendChild(container);
-    
-    // Generate PDF
-    const pdf = await html2pdf()
-      .set(pdfOptions)
-      .from(clonedElement)
-      .save();
-    
-    // Clean up
-    document.body.removeChild(container);
-    
-    return pdf;
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw error;
+    // 1) Render the element to a high-DPI canvas
+    const canvas = await html2canvas(resumeElement, {
+      scale,
+      useCORS,
+      logging,
+      backgroundColor: background,
+    });
+
+    // 2) Turn that canvas into a PNG
+    const imgData = canvas.toDataURL('image/png');
+
+    // 3) Set up jsPDF
+    const pdf = new jsPDF({ unit, format, orientation });
+
+    // 4) Calculate dimensions to fit A4 (minus margins)
+    const pageW  = pdf.internal.pageSize.getWidth()  - margin * 2;
+    const pageH  = pdf.internal.pageSize.getHeight() - margin * 2;
+    const imgW   = canvas.width;
+    const imgH   = canvas.height;
+    const ratio  = Math.min(pageW / imgW, pageH / imgH);
+
+    // 5) Draw the image centered in the page
+    pdf.addImage(
+      imgData,
+      'PNG',
+      margin,
+      margin,
+      imgW * ratio,
+      imgH * ratio,
+    );
+
+    // 6) Save!
+    pdf.save(filename);
+  } catch (err) {
+    console.error('Error generating PDF:', err);
+    throw err;
   }
 };
 
@@ -62,7 +69,9 @@ export const generatePdf = async (resumeElement, options = {}) => {
  * Generate filename for the resume
  */
 export const generateFilename = (resume, template) => {
-  const name = resume.personalDetails.fullName.replace(/\s+/g, '_').toLowerCase();
+  const name = resume.personalDetails.fullName
+    .replace(/\s+/g, '_')
+    .toLowerCase();
   const date = new Date().toISOString().split('T')[0];
   return `${name}_resume_${template}_${date}.pdf`;
 };
