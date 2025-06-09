@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../utils/apiClient";
-import { useCookies } from 'react-cookie';
-import { AddJobForm } from "../addJobForm";
+import apiClient from "../../../../utils/apiClient";
+import { AddJobForm } from "./AddJobForm";
   
 export default function AddJobCard() {
   const navigate = useNavigate();

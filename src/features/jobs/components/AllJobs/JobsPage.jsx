@@ -1,10 +1,10 @@
 import React from 'react';
-import JobsList from "../features/jobs/components/JobsList";
+import JobsList from "./JobsList";
 import { Briefcase, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 
-const Jobs = () => {
+const JobsPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -51,4 +51,4 @@ const Jobs = () => {
   );
 };
 
-export default Jobs;
+export default JobsPage;

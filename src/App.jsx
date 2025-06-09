@@ -8,11 +8,11 @@ import Navbar from "./components/layout/Navbar";
 import LandingPage from "./pages/LandingPage"
 import Footer from './components/layout/Footer';
 import Dashboard from './pages/Dashboard';
-import JobDetails from './pages/JobDetails';
+import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage';
 import { useCookies } from 'react-cookie';
-import Jobs from './pages/Jobs';
+import JobsPage from './features/jobs/components/AllJobs/JobsPage';
 import AuthLayout from './components/layout/AuthLayout';
-import AddJobCard from './features/jobs/components/AddJobForm';
+import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './pages/Profile';
@@ -55,9 +55,9 @@ function AppContent() {
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
             <Route path='/dashboard' element={<Dashboard />} />
-            <Route path='/jobs' element={<Jobs />} />
-            <Route path='/job-details/:jobID' element={<JobDetails />} />
-            <Route path='/jobs/add' element={<AddJobCard />} />
+            <Route path='/jobs' element={<JobsPage />} />
+            <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
+            <Route path='/jobs/add' element={<AddJobPage />} />
             <Route path='/profile' element={<Profile />} />
           </Route>
         </Routes>
