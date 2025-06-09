@@ -10,7 +10,7 @@ const OAuth2Success = () => {
 
     useEffect(() => {
       Cookies.set("isLoggedIn", token,  { path: '/', maxAge: expiresIn});
-      navigate("/home");
+      navigate("/");
     }, []);
 
 };

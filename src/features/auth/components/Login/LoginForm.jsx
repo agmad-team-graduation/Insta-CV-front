@@ -1,9 +1,9 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { UseAuth } from "@/features/auth/AuthContext";
+import { Input } from "@/common/components/ui/input";
+import { Button } from "@/common/components/ui/button";
+import { UseAuth } from "@/features/auth/context/ContextLogin";
 import {
   Form,
   FormField,
@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/common/components/ui/form";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 

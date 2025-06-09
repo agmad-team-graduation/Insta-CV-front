@@ -1,8 +1,8 @@
-import Icon from "../../../../assets/images/Icon.png";
-import backgroundImage from "../../../../assets/images/background.jpg";
+import Icon from "@/common/assets/images/Icon.png";
+import backgroundImage from "@/common/assets/images/background.jpg";
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export function LoginLayout({ children }) {

@@ -1,8 +1,8 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/common/components/ui/card";
+import { Button } from "@/common/components/ui/button";
+import { Input } from "@/common/components/ui/input";
+import { Textarea } from "@/common/components/ui/textarea";
 
 export function AddJobForm({ 
   title, 

@@ -1,5 +1,5 @@
 import { Github, Settings2, RefreshCw, Clock9 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/common/components/ui/card";
 
 const IntegrationSection = () => {
   return (

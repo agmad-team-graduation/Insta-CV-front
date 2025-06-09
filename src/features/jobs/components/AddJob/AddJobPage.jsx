@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../../utils/apiClient";
+import apiClient from "@/common/utils/apiClient";
 import { AddJobForm } from "./AddJobForm";
   
 export default function AddJobCard() {

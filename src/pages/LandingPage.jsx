@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { CircleHelp } from 'lucide-react';
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/common/components/ui/card";
 import { User, Package, LineChart, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import IntegrationSection from "./components/IntegrationSection";

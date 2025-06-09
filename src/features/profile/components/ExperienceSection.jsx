@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { Edit, Plus, Briefcase, Trash2, PlusCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/common/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui/card";
 
 const ExperienceItem = ({
   companyLogo,

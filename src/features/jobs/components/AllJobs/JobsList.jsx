@@ -3,7 +3,7 @@ import { fetchJobs } from "../../services/fetchJobs";
 import { useCookies } from 'react-cookie';
 import JobCard from './jobCard';
 import { Briefcase, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/common/components/ui/button";
 
 const PAGE_SIZE = 9;
 

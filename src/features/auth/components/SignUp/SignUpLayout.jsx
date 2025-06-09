@@ -1,7 +1,7 @@
-import logo2 from "../../../../assets/images/signUp.jpg";
+// import logo2 from "../../../../assets/images/signUp.jpg";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 
 export function SignUpLayout({ children }) {
   return (

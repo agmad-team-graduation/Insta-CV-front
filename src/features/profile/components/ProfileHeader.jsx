@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/common/components/ui/avatar";
 import { Mail, Phone, MapPin, Briefcase } from "lucide-react";
 
 const ProfileHeader = ({

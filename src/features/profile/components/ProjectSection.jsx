@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui/card";
+import { Badge } from "@/common/components/ui/badge";
 import { PlusCircle, FileCode2, ExternalLink, Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 
 const ProjectItem = ({ title, duration, present, description, skills, url }) => (
   

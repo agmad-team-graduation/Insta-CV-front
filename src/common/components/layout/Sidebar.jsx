@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avatar';
+import { cn } from '@/common/lib/utils';
 import { useCookies } from 'react-cookie';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/common/components/ui/button';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },

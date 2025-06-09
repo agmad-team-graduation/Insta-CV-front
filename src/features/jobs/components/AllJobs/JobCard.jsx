@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Calendar, MapPin, Users, Info, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import JobAnalysisDialog from './JobAnalysisDialog';
-import apiClient from "../../../../utils/apiClient";
+import apiClient from "@/common/utils/apiClient";
 
 const JobCard = ({ job }) => {
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);

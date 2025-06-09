@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { Edit, Plus, GraduationCap, Trash2, PlusCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/utils/formatters";
+import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui/card";
+import { formatDate } from "@/common/utils/formatters";
+import { Badge } from "@/common/components/ui/badge";
 
 const EducationItem = (props) => {
   const { degree, school, city, country, startDate, endDate, description, present } = props;

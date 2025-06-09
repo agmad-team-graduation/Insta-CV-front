@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import { useCookies } from 'react-cookie'; 
 import { useNavigate } from 'react-router-dom';
-import apiClient from '@/utils/apiClient'; 
+import apiClient from '@/common/utils/apiClient'; 
 import { toast } from 'sonner';
 
 
@@ -24,7 +24,7 @@ export const LoginProvider = ({ children }) => {
       const {data} = await apiClient.post('/api/v1/auth/login', newUser);
 
       setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn}); 
-      navigate('/home'); 
+      navigate('/'); 
 
       setEmail('');
       setPassword('');

@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/common/components/ui/button";
+import { Card, CardContent } from "@/common/components/ui/card";
 import { PieChart, Pie, Cell } from "recharts";
 import { ArrowLeft, Star, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCookies } from 'react-cookie';
-import apiClient from "../../../../utils/apiClient";
+import apiClient from "@/common/utils/apiClient";
 
 function JobDetailsPage() {
   const [job, setJob] = useState(null);

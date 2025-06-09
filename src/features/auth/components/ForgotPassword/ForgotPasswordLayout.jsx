@@ -1,5 +1,5 @@
-import Icon from "../../../../assets/images/Icon.png";
-import backgroundImage from "../../../../assets/images/background.jpg";
+import Icon from "@/common/assets/images/Icon.png";
+import backgroundImage from "@/common/assets/images/background.jpg";
 
 export function ForgotPasswordLayout({ children }) {
   return (

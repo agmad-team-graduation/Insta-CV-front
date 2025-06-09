@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import { Pencil } from "lucide-react";
 
 const labelClass = "text-gray-500 font-semibold text-sm mb-1 text-left";

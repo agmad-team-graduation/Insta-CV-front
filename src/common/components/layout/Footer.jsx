@@ -6,8 +6,8 @@ import {
   Phone, 
   MapPin,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/common/components/ui/button";
+import { Separator } from "@/common/components/ui/separator";
 
 const Footer = () => {
   return (

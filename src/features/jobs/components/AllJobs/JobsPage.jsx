@@ -2,7 +2,7 @@ import React from 'react';
 import JobsList from "./JobsList";
 import { Briefcase, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 
 const JobsPage = () => {
   const navigate = useNavigate();

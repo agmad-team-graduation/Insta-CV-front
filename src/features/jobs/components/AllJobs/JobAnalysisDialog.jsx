@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/common/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 
 const JobAnalysisDialog = ({ open, onOpenChange }) => {

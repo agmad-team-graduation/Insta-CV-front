@@ -3,15 +3,15 @@ import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import SkillsSection from "@/features/profile/components/SkillSection";
 import EducationSection from "@/features/profile/components/EducationSection";
 import ExperienceSection from "@/features/profile/components/ExperienceSection";
-import apiClient from "../utils/apiClient";
-import { Button } from "@/components/ui/button";
+import apiClient from "@/common/utils/apiClient";
+import { Button } from "@/common/components/ui/button";
 import { toast } from "sonner";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/common/components/ui/card";
 import ProjectSection from "@/features/profile/components/ProjectSection";
 import PersonalDetailsSection from "@/features/profile/components/PersonalDetailsSection";
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/common/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
-import { useBlocker } from "../useBlocker";
+import { useBlocker } from "../../../useBlocker";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);

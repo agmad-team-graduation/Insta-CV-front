@@ -1,21 +1,21 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { SignUp } from './features/auth/components/SignUp';
 import { SignUpProvider } from './features/auth/context/ContextSignUp';
-import { LoginProvider } from './features/auth/AuthContext';
+import { LoginProvider } from './features/auth/context/ContextLogin';
 import { Login } from './features/auth/components/Login';
-import './styles/App.css'
-import Navbar from "./components/layout/Navbar";
+import "@/common/styles/App.css";
+import Navbar from "@/common/components/layout/Navbar";
 import LandingPage from "./pages/LandingPage"
-import Footer from './components/layout/Footer';
+import Footer from '@/common/components/layout/Footer';
 import Dashboard from './pages/Dashboard';
 import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage';
 import { useCookies } from 'react-cookie';
 import JobsPage from './features/jobs/components/AllJobs/JobsPage';
-import AuthLayout from './components/layout/AuthLayout';
+import AuthLayout from '@/common/components/layout/AuthLayout';
 import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
-import Profile from './pages/Profile';
+import Profile from './features/profile/pages/Profile';
 import { ForgotPassword } from './features/auth/components/ForgotPassword';
 import { SetPassword } from './features/auth/components/SetPasswordForm';
 

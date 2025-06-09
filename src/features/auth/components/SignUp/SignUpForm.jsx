@@ -1,9 +1,9 @@
 "use client"
 
 import { useForm } from "react-hook-form"
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/common/components/ui/form"
+import { Input } from "@/common/components/ui/input"
+import { Button } from "@/common/components/ui/button"
 import { UseAuth } from '../../context/ContextSignUp';
 
 export function SignUpForm() {
