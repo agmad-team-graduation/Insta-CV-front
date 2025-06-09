@@ -42,32 +42,31 @@ const Profile = () => {
     fetchProfileData();
   }, []);
 
-  const handleSaveProfile = async () => {
+  const handleSaveProfile = async (updatedData) => {
     try {
       setSaving(true);
       // Prepare the data to be sent to the backend
       const dataToSave = {
-        profileId: profileData.profileId,
-        personalDetails: profileData.personalDetails,
-        educationList: profileData.educationList,
-        experienceList: profileData.experienceList,
-        userSkills: profileData.userSkills.map(skill => ({
+        profileId: updatedData.profileId,
+        personalDetails: updatedData.personalDetails,
+        educationList: updatedData.educationList,
+        experienceList: updatedData.experienceList,
+        userSkills: updatedData.userSkills.map(skill => ({
           ...skill,
           level: skill.level ? skill.level.toUpperCase() : skill.level
         })),
-        projects: profileData.projects
+        projects: updatedData.projects
       };
-      
       
       // Send the PUT request
       await apiClient.put("/api/v1/profiles/update", dataToSave);
       
       // Show success message
       setHasUnsavedChanges(false);
-      toast.success("Profile saved successfully!");
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Error saving profile data:", err);
-      toast.error("Failed to save profile. Please try again.");
+      toast.error("Failed to save changes. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -85,7 +84,7 @@ const Profile = () => {
 
   // Modal actions
   const handleSaveAndLeave = async () => {
-    await handleSaveProfile();
+    await handleSaveProfile(profileData);
     setHasUnsavedChanges(false);
     setShowLeaveModal(false);
     setPendingNavigation(lastTx);
@@ -178,18 +177,7 @@ const Profile = () => {
   })) || [];
 
   return (
-    <div className="container mx-auto py-6 px-4 max-w-5xl ">
-      {/* Save Button - Positioned at the top right for visibility */}
-      <div className="flex justify-end mb-4">
-        <Button 
-          onClick={handleSaveProfile} 
-          disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md shadow-md transition-all"
-        >
-          {saving ? "Saving..." : "Save Profile"}
-        </Button>
-      </div>
-
+    <div className="container mx-auto py-6 px-4 max-w-5xl mt-8">
       {profileData && (
         <>
           <Card className="mb-6">
@@ -216,12 +204,11 @@ const Profile = () => {
                 location={profileData.personalDetails?.address || ""}
                 about={profileData.personalDetails?.about || ""}
                 isEditMode={true}
-                onUpdate={updated => {
-                  setHasUnsavedChanges(true);
-                  setProfileData(prev => ({
-                    ...prev,
+                onUpdate={async updated => {
+                  const newData = {
+                    ...profileData,
                     personalDetails: {
-                      ...prev.personalDetails,
+                      ...profileData.personalDetails,
                       fullName: updated.name,
                       email: updated.email,
                       phone: updated.phone,
@@ -229,7 +216,9 @@ const Profile = () => {
                       address: updated.location,
                       about: updated.about
                     }
-                  }));
+                  };
+                  setProfileData(newData);
+                  await handleSaveProfile(newData);
                 }}
               />
             </CardContent>
@@ -242,16 +231,17 @@ const Profile = () => {
         <SkillsSection 
           data={mappedSkills}
           isEditMode={true}
-          onUpdate={updatedSkills => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
+          onUpdate={async updatedSkills => {
+            const newData = {
+              ...profileData,
               userSkills: updatedSkills.map(skill => ({
                 id: skill.id,
                 skill: skill.name,
                 level: skill.proficiency || skill.level
               }))
-            }));
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
         />
       </div>
@@ -260,29 +250,31 @@ const Profile = () => {
       <div className="mb-6">
         <ExperienceSection 
           experiences={mappedExperiences}
-          onAdd={newExp => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              experienceList: [...prev.experienceList, newExp]
-            }));
+          onAdd={async newExp => {
+            const newData = {
+              ...profileData,
+              experienceList: [...profileData.experienceList, newExp]
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onDelete={index => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              experienceList: prev.experienceList.filter((_, i) => i !== index)
-            }));
+          onDelete={async index => {
+            const newData = {
+              ...profileData,
+              experienceList: profileData.experienceList.filter((_, i) => i !== index)
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onEdit={(index, updatedExp) => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              experienceList: prev.experienceList.map((exp, i) => i === index ? {
-                ...exp,
-                ...updatedExp
-              } : exp)
-            }));
+          onEdit={async (index, updatedExp) => {
+            const newData = {
+              ...profileData,
+              experienceList: profileData.experienceList.map((exp, i) => 
+                i === index ? { ...exp, ...updatedExp } : exp
+              )
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
         />
       </div>
@@ -291,26 +283,31 @@ const Profile = () => {
       <div className="mb-6">
         <EducationSection
           educations={mappedEducations}
-          onAdd={newEdu => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              educationList: [...prev.educationList, newEdu]
-            }));
+          onAdd={async newEdu => {
+            const newData = {
+              ...profileData,
+              educationList: [...profileData.educationList, newEdu]
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onDelete={index => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              educationList: prev.educationList.filter((_, i) => i !== index)
-            }));
+          onDelete={async index => {
+            const newData = {
+              ...profileData,
+              educationList: profileData.educationList.filter((_, i) => i !== index)
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onEdit={(index, updatedEdu) => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              educationList: prev.educationList.map((edu, i) => i === index ? { ...edu, ...updatedEdu } : edu)
-            }));
+          onEdit={async (index, updatedEdu) => {
+            const newData = {
+              ...profileData,
+              educationList: profileData.educationList.map((edu, i) => 
+                i === index ? { ...edu, ...updatedEdu } : edu
+              )
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
         />
       </div>
@@ -319,40 +316,35 @@ const Profile = () => {
       <div className="mb-6">
         <ProjectSection 
           projects={mappedProjects}
-          onAdd={newProj => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              projects: [...prev.projects, newProj]
-            }));
+          onAdd={async newProj => {
+            const newData = {
+              ...profileData,
+              projects: [...profileData.projects, newProj]
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onDelete={index => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              projects: prev.projects.filter((_, i) => i !== index)
-            }));
+          onDelete={async index => {
+            const newData = {
+              ...profileData,
+              projects: profileData.projects.filter((_, i) => i !== index)
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
-          onEdit={(index, updatedProj) => {
-            setHasUnsavedChanges(true);
-            setProfileData(prev => ({
-              ...prev,
-              projects: prev.projects.map((proj, i) => i === index ? { ...proj, ...updatedProj } : proj)
-            }));
+          onEdit={async (index, updatedProj) => {
+            const newData = {
+              ...profileData,
+              projects: profileData.projects.map((proj, i) => 
+                i === index ? { ...proj, ...updatedProj } : proj
+              )
+            };
+            setProfileData(newData);
+            await handleSaveProfile(newData);
           }}
         />
       </div>
 
-      {/* Save Button - Also at the bottom for convenience */}
-      <div className="flex justify-center mt-8">
-        <Button 
-          onClick={handleSaveProfile} 
-          disabled={saving}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md shadow-md transition-all"
-        >
-          {saving ? "Saving..." : "Save Profile"}
-        </Button>
-      </div>
       <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
         <DialogContent>
           <DialogHeader>
