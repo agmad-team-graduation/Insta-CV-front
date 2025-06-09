@@ -1,24 +1,23 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import SignUp from './SignUp';
-import { SignUpProvider } from './Context/ContextSignUp';
-import { LoginProvider } from './Context/ContextLogin';
-import Login from './Login';
-import './App.css'
-import Navbar from "./components/navbar";
-import LandingPage from "./landingPage"
-import Footer from './components/footer';
-import Home from './home';
-import JobDetails from './jobDetails';
+import { SignUp } from './features/auth/components/SignUp';
+import { SignUpProvider } from './features/auth/context/ContextSignUp';
+import { LoginProvider } from './features/auth/context/ContextLogin';
+import { Login } from './features/auth/components/Login';
+import "@/common/styles/App.css";
+import Navbar from "@/common/components/layout/Navbar";
+import LandingPage from "./pages/LandingPage"
+import Footer from '@/common/components/layout/Footer';
+import Dashboard from './pages/Dashboard';
+import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage';
 import { useCookies } from 'react-cookie';
-import Jobs from './jobs';
-import AuthLayout from './components/AuthLayout';
-import SetEmail from './emailForgetPassword';
-import SetPassword from './SetPassword';
-import AddJobCard from './addJob';
+import JobsPage from './features/jobs/components/AllJobs/JobsPage';
+import AuthLayout from '@/common/components/layout/AuthLayout';
+import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
-import OAuth2Success from './oauth2-success';
-import VerifyPassword from './VerifyPassword';
-import Profile from './profile';
+import OAuth2Success from './features/auth/components/OAuth2Success';
+import Profile from './features/profile/pages/Profile';
+import { ForgotPassword } from './features/auth/components/ForgotPassword';
+import { SetPassword } from './features/auth/components/SetPasswordForm';
 
 
 // Array of paths where we want to show navbar and footer
@@ -37,7 +36,7 @@ function AppContent() {
       {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
-          <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/home" /> : <LandingPage />} />
+          <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path='/signup' element={
             <SignUpProvider>
               <SignUp/>
@@ -48,20 +47,17 @@ function AppContent() {
               <Login/>
             </LoginProvider>
           }/>
-          <Route path='/SetEmail' element={
-              <SetEmail/>
-            
-          }/>
-          <Route path='/SetPassword' element={<SetPassword />} />
-          <Route path='/email-verification' element={<VerifyPassword />}/>
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/set-password' element={<SetPassword />} />
+          <Route path='/email-verification' element={<SetPassword />} />
           <Route path='/oauth2-success' element={<OAuth2Success />} />
           
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
-            <Route path='/home' element={<Home />} />
-            <Route path='/jobs' element={<Jobs />} />
-            <Route path='/job-details/:jobID' element={<JobDetails />} />
-            <Route path='/jobs/add' element={<AddJobCard />} />
+            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/jobs' element={<JobsPage />} />
+            <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
+            <Route path='/jobs/add' element={<AddJobPage />} />
             <Route path='/profile' element={<Profile />} />
           </Route>
         </Routes>
