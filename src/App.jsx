@@ -12,13 +12,13 @@ import JobDetails from './pages/JobDetails';
 import { useCookies } from 'react-cookie';
 import Jobs from './pages/Jobs';
 import AuthLayout from './components/layout/AuthLayout';
-import SetEmail from './features/auth/components/EmailForgetPasswordForm';
 import SetPassword from './features/auth/components/SetPasswordForm';
 import AddJobCard from './features/jobs/components/AddJobForm';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import VerifyPassword from './features/auth/components/VerifyPasswordForm';
 import Profile from './pages/Profile';
+import { ForgotPassword } from './features/auth/components/ForgotPassword';
 
 
 // Array of paths where we want to show navbar and footer
@@ -48,11 +48,8 @@ function AppContent() {
               <Login/>
             </LoginProvider>
           }/>
-          <Route path='/SetEmail' element={
-              <SetEmail/>
-            
-          }/>
-          <Route path='/SetPassword' element={<SetPassword />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/set-password' element={<SetPassword />} />
           <Route path='/email-verification' element={<VerifyPassword />}/>
           <Route path='/oauth2-success' element={<OAuth2Success />} />
           

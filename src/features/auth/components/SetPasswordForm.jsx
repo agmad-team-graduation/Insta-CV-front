@@ -36,8 +36,8 @@ function SetPassword() {
       }
 
       const data = await response.json();
-      toast.sucess(data.message);
-      navigate('/Login'); 
+      toast.success(data.message);
+      navigate('/login'); 
 
     } catch (error) {
       console.error('Error:', error);

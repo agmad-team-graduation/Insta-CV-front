@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function LoginForm() {
   const {
@@ -93,9 +94,9 @@ export function LoginForm() {
           />
 
           <div className="text-right text-sm">
-            <a href="/SetEmail" className="text-gray-600 underline">
+            <Link to="/forgot-password" className="text-gray-600 underline">
               Forget your password
-            </a>
+            </Link>
           </div>
 
           <Button
