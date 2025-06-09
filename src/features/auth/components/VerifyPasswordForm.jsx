@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import Icon from './images/Icon.png';
-import backgroundImage from './images/background.jpg';
+import Icon from "../../../assets/images/Icon.png";
+import backgroundImage from "../../../assets/images/background.jpg";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 

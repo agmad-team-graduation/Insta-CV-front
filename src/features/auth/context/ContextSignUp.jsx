@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useState, useContext } from 'react';
-import apiClient from '../utils/apiClient';
+import apiClient from "../../../utils/apiClient";
 import { toast } from 'sonner';
 
 const AuthContext = createContext();

@@ -1,5 +1,5 @@
 import React from 'react';
-import JobsList from './components/jobsList';
+import JobsList from "../features/jobs/components/JobsList";
 import { Briefcase, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";

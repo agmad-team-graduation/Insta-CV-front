@@ -1,7 +1,7 @@
 import React from 'react';
-import { LoginForm } from './components/forms/LoginForm';
-import Icon from './images/Icon.png';
-import backgroundImage from './images/background.jpg';
+import { LoginForm } from '../LoginForm';
+import Icon from '../../../assets/images/Icon.png';
+import backgroundImage from '../../../assets/images/background.jpg';
 import { FcGoogle } from "react-icons/fc"; // use Google's official look
 import { Button } from "@/components/ui/button";
 import { MdEmail } from "react-icons/md"; // email icon
@@ -62,7 +62,7 @@ function Login() {
                 <a href="#" className="underline">Terms of Service</a>
               </p>
               <p className="text-xs text-gray-500 text-center">
-                and acknowledge you’ve read our{' '}
+                and acknowledge you've read our{' '}
                 <a href="#" className="underline">Privacy Policy</a>.
               </p>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchJobs } from '../Context/fetchJobs';
+import { fetchJobs } from "../services/fetchJobs";
 import { useCookies } from 'react-cookie';
 import JobCard from './jobCard';
 import { Briefcase, Loader, ChevronLeft, ChevronRight } from 'lucide-react';

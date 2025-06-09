@@ -1,47 +1,35 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Icon from './images/Icon.png';
-import backgroundImage from './images/background.jpg';
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';  // Also missing import useState
+import Icon from "../../../assets/images/Icon.png";
+import backgroundImage from "../../../assets/images/background.jpg";
 import { toast } from 'sonner';
 
-function SetPassword() {
-  const navigate = useNavigate();
-  
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  console.log(queryParams);
-  const token = queryParams.get('token');
-  
 
-  const [password, setPassword] = useState('');
+function SetEmail() {
+    
+  const [email, setEmail] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
+    e.preventDefault(); 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/reset-password', {
+      const response = await fetch('http://localhost:8080/api/v1/auth/forget-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          token: token,
-          newPassword: password,
-        }),
+        body: JSON.stringify({ email: email }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send request');
+        throw new Error('Failed to send request'); 
       }
-
+      
       const data = await response.json();
-      toast.sucess(data.message);
-      navigate('/Login'); 
-
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error("An error occurred. Please try again.");
+      toast.success(data.message,{
+        bodyClassName:"mt-4 text-center text-green-600 text-sm",
+      });
+    } catch (err) {
+      console.error('Error:', err);
+      toast.error("Something Wrong");
     }
   };
 
@@ -67,16 +55,17 @@ function SetPassword() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="flex flex-col items-start mt-4 w-full max-w-sm">
               <label
-                htmlFor="password"
+                htmlFor="email"
                 className="text-sm font-medium text-gray-600 mb-1"
               >
-                Enter a password
+                Enter an email
               </label>
               <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
                 className="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
                 required
               />
@@ -87,9 +76,8 @@ function SetPassword() {
                 Submit
               </button>
             </form>
-            {/* End Form */}
 
-            {/* Message */}
+            {/* Display server message if available */}
             
           </div>      
         </div>
@@ -98,4 +86,4 @@ function SetPassword() {
   );
 }
 
-export default SetPassword;
+export default SetEmail;

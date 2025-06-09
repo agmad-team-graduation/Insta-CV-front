@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
-import ProfileHeader from "@/components/profile/ProfileHeader";
-import SkillsSection from "@/components/profile/SkillSection";
-import EducationSection from "@/components/profile/EducationSection";
-import ExperienceSection from "@/components/profile/ExperienceSection";
-import apiClient from "./utils/apiClient";
+import ProfileHeader from "@/features/profile/components/ProfileHeader";
+import SkillsSection from "@/features/profile/components/SkillSection";
+import EducationSection from "@/features/profile/components/EducationSection";
+import ExperienceSection from "@/features/profile/components/ExperienceSection";
+import apiClient from "../utils/apiClient";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import ProjectSection from "@/components/profile/ProjectSection";
-import PersonalDetailsSection from "@/components/profile/PersonalDetailsSection";
+import ProjectSection from "@/features/profile/components/ProjectSection";
+import PersonalDetailsSection from "@/features/profile/components/PersonalDetailsSection";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
-import { useBlocker } from "./useBlocker";
+import { useBlocker } from "../useBlocker";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);

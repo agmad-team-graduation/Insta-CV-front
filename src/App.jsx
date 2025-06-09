@@ -1,24 +1,24 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import SignUp from './SignUp';
-import { SignUpProvider } from './Context/ContextSignUp';
-import { LoginProvider } from './Context/ContextLogin';
-import Login from './Login';
-import './App.css'
-import Navbar from "./components/navbar";
-import LandingPage from "./landingPage"
-import Footer from './components/footer';
-import Home from './home';
-import JobDetails from './jobDetails';
+import SignUp from './features/auth/components/SignUpForm';
+import { SignUpProvider } from './features/auth/context/ContextSignUp';
+import { LoginProvider } from './features/auth/AuthContext';
+import Login from './features/auth/components/LoginForm';
+import './styles/App.css'
+import Navbar from "./components/layout/Navbar";
+import LandingPage from "./pages/Home"
+import Footer from './components/layout/Footer';
+import Home from './pages/Home';
+import JobDetails from './pages/JobDetails';
 import { useCookies } from 'react-cookie';
-import Jobs from './jobs';
-import AuthLayout from './components/AuthLayout';
-import SetEmail from './emailForgetPassword';
-import SetPassword from './SetPassword';
-import AddJobCard from './addJob';
+import Jobs from './pages/Jobs';
+import AuthLayout from './components/layout/AuthLayout';
+import SetEmail from './features/auth/components/EmailForgetPasswordForm';
+import SetPassword from './features/auth/components/SetPasswordForm';
+import AddJobCard from './features/jobs/components/AddJobForm';
 import { Toaster } from 'sonner';
-import OAuth2Success from './oauth2-success';
-import VerifyPassword from './VerifyPassword';
-import Profile from './profile';
+import OAuth2Success from './features/auth/components/OAuth2Success';
+import VerifyPassword from './features/auth/components/VerifyPasswordForm';
+import Profile from './pages/Profile';
 
 
 // Array of paths where we want to show navbar and footer

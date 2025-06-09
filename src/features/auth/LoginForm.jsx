@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UseAuth } from '../../Context/'
+import { UseAuth } from "@/features/auth/AuthContext";
 import {
   Form,
   FormField,
