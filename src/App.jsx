@@ -2,7 +2,7 @@ import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { SignUp } from './features/auth/components/SignUp';
 import { SignUpProvider } from './features/auth/context/ContextSignUp';
 import { LoginProvider } from './features/auth/AuthContext';
-import Login from './features/auth/components/LoginForm';
+import { Login } from './features/auth/components/Login';
 import './styles/App.css'
 import Navbar from "./components/layout/Navbar";
 import LandingPage from "./pages/LandingPage"

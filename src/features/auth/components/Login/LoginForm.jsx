@@ -106,7 +106,6 @@ export function LoginForm() {
           </Button>
         </form>
       </Form>
-
     </div>
   );
-}
+} 

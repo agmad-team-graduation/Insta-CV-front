@@ -24,7 +24,7 @@ export const LoginProvider = ({ children }) => {
       const {data} = await apiClient.post('/api/v1/auth/login', newUser);
 
       setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn}); 
-      navigate('/home'); 
+      navigate('/dashboard'); 
 
       setEmail('');
       setPassword('');
