@@ -5,9 +5,9 @@ import { LoginProvider } from './features/auth/AuthContext';
 import Login from './features/auth/components/LoginForm';
 import './styles/App.css'
 import Navbar from "./components/layout/Navbar";
-import LandingPage from "./pages/Home"
+import LandingPage from "./pages/LandingPage"
 import Footer from './components/layout/Footer';
-import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 import JobDetails from './pages/JobDetails';
 import { useCookies } from 'react-cookie';
 import Jobs from './pages/Jobs';
@@ -37,7 +37,7 @@ function AppContent() {
       {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
-          <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/home" /> : <LandingPage />} />
+          <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path='/signup' element={
             <SignUpProvider>
               <SignUp/>
@@ -58,7 +58,7 @@ function AppContent() {
           
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
-            <Route path='/home' element={<Home />} />
+            <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/jobs' element={<Jobs />} />
             <Route path='/job-details/:jobID' element={<JobDetails />} />
             <Route path='/jobs/add' element={<AddJobCard />} />

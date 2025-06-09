@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../../utils/apiClient";
 import { useCookies } from 'react-cookie';
+import { AddJobForm } from "../addJobForm";
   
 export default function AddJobCard() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function AddJobCard() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
-      {/* <AddJobForm
+      <AddJobForm
         title={title}
         setTitle={setTitle}
         company={company}
@@ -56,7 +57,7 @@ export default function AddJobCard() {
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         error={error}
-      /> */}
+      />
     </div>
   );
 }
