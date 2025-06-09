@@ -1,21 +1,19 @@
-// components/SignUpForm.jsx
 "use client"
 
 import { useForm } from "react-hook-form"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { UseAuth } from '../Context/ContextSignUp';
-
+import { UseAuth } from '../../context/ContextSignUp';
 
 export function SignUpForm() {
   const {
-      email,
-      setEmail,
-      name,
-      setName,
-      handleSubmit,
-    } = UseAuth();
+    email,
+    setEmail,
+    name,
+    setName,
+    handleSubmit,
+  } = UseAuth();
   
   const form = useForm({
     defaultValues: {
@@ -26,12 +24,11 @@ export function SignUpForm() {
 
   const onSubmit = (data) => {
     console.log("Form Data:", data)
-    handleSubmit() ;
+    handleSubmit();
   }
 
   return (
-    <div className="flex  justify-center ">
-      {/* Increased width of the form */}
+    <div className="flex justify-center">
       <div className="w-full max-w-7xl p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -40,11 +37,13 @@ export function SignUpForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm">Name</FormLabel> {/* Smaller label */}
+                  <FormLabel className="text-sm">Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} 
-                       value={name}
-                       onChange={(e) => setName(e.target.value)}
+                    <Input 
+                      placeholder="" 
+                      {...field} 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -56,19 +55,20 @@ export function SignUpForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm">Email</FormLabel> {/* Smaller label */}
+                  <FormLabel className="text-sm">Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="" {...field} 
-                       value={email}
-                       onChange={(e) => setEmail(e.target.value)}
-                    
+                    <Input 
+                      type="email" 
+                      placeholder="" 
+                      {...field} 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Make the submit button wider */}
             <Button 
               type="submit" 
               className="w-full py-3 text-lg text-white hover:bg-[#4750a0]"
@@ -78,8 +78,7 @@ export function SignUpForm() {
             </Button>
           </form>
         </Form>
-
       </div>
     </div>
   )
-}
+} 
