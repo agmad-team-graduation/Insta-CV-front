@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import JobAnalysisDialog from './JobAnalysisDialog';
 import apiClient from "@/common/utils/apiClient";
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, isRecommended = false }) => {
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [currentJob, setCurrentJob] = useState(null);
   const [pollingInterval, setPollingInterval] = useState(null);
@@ -31,7 +31,8 @@ const JobCard = ({ job }) => {
 
   const checkJobStatus = useCallback(async (jobId) => {
     try {
-      const response = await apiClient.get(`/api/v1/jobs/${jobId}`);
+      const endpoint = isRecommended ? `/api/v1/jobs/scrape/${job.id}` : `/api/v1/jobs/${job.id}`;
+      const response = await apiClient.get(endpoint);
       
       if (response.data.analyzed && response.data.skillMatchingAnalyzed) {
         // Job is analyzed, clear interval and navigate
@@ -58,13 +59,16 @@ const JobCard = ({ job }) => {
     
     try {
       setIsAnalysisDialogOpen(true);
-      const response = await apiClient.get(`/api/v1/jobs/${job.id}`);
+      const endpoint = isRecommended ? `/api/v1/jobs/scrape/${job.id}` : `/api/v1/jobs/${job.id}`;
+      const response = await apiClient.get(endpoint);
       
-      if (response.data.analyzed && response.data.skillMatchingAnalyzed) {
+      if ((response.data.analyzed && response.data.skillMatchingAnalyzed) || !!isRecommended) {
         // If already analyzed, go directly to job details
-        navigate(`/job-details/${job.id}`);
+        const detailsRoute = isRecommended ? `/recommended-job-details/${job.id}` : `/job-details/${job.id}`;
+        navigate(detailsRoute);
       } else {
         // Start polling for job analysis status
+        console.log(job);
         setCurrentJob(job);
         setIsAnalysisDialogOpen(true);
         
@@ -78,7 +82,8 @@ const JobCard = ({ job }) => {
     } catch (error) {
       console.error("Error checking job analysis status:", error);
       // On error, navigate to details page anyway
-      navigate(`/job-details/${job.id}`);
+      const detailsRoute = isRecommended ? `/recommended-job-details/${job.id}` : `/job-details/${job.id}`;
+      navigate(detailsRoute);
     }
   };
 

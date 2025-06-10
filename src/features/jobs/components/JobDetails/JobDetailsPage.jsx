@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/common/components/ui/card";
 import { PieChart, Pie, Cell } from "recharts";
 import { ArrowLeft, Star, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import apiClient from "@/common/utils/apiClient";
 
@@ -12,14 +12,20 @@ function JobDetailsPage() {
   const [loading, setLoading] = useState(true);
   const { jobID } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
+  console.log(location.pathname);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
+      console.log(location.pathname);
       try {
-        const response = await apiClient.get(`/api/v1/jobs/${jobID}`);
-        
+        // Use scrape endpoint if on recommended-job-details route
+        const isRecommended = location.pathname.startsWith('/recommended-job-details/');
+        const endpoint = isRecommended ? `/api/v1/jobs/scrape/${jobID}` : `/api/v1/jobs/${jobID}`;
+        console.log(endpoint);
+        const response = await apiClient.get(endpoint);
         setJob(response.data);
       } catch (error) {
         console.error("Error fetching job details:", error);
@@ -27,9 +33,8 @@ function JobDetailsPage() {
         setLoading(false);
       }
     };
-
     fetchJobDetails();
-  }, [jobID]);
+  }, [jobID, location.pathname]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -38,8 +43,6 @@ function JobDetailsPage() {
   if (!job) {
     return <div className="min-h-screen flex items-center justify-center">Job not found</div>;
   }
-
-
 
   // Calculate pie chart data and percentages
   const matchedSkillsCount = job.skillMatchingAnalysis.matchedSkills?.length || 0;
@@ -125,6 +128,9 @@ function JobDetailsPage() {
               {/* Resume generation and save buttons pinned at bottom */}
               <div className="pt-6 space-y-3">
                 <Button className="w-full text-lg py-6">Generate Resume for this Job</Button>
+                <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
+                  Show Interview Questions
+                </Button>
               </div>
             </CardContent>
           </Card>

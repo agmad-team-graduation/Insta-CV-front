@@ -17,13 +17,6 @@ const JobsPage = () => {
               Active Jobs
             </h1>
             <div className="flex space-x-4 items-center">
-              <button className="text-blue-600 hover:text-blue-800 font-medium text-sm hidden md:flex items-center">
-                <Filter className="mr-1 h-4 w-4" />
-                Filter Results
-              </button>
-              <a href="/applied-jobs" className="text-blue-600 hover:underline text-sm">
-                Applied jobs <span className="text-xs">→</span>
-              </a>
               <Button 
                 className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => navigate("/jobs/add")}

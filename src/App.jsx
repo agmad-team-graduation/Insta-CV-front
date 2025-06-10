@@ -17,7 +17,9 @@ import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './features/profile/pages/Profile';
 import { ForgotPassword } from './features/auth/components/ForgotPassword';
+import RecommendedJobs from './features/jobs/components/RecommendedJobs/recommendedJobs';
 import { SetPassword } from './features/auth/components/SetPasswordForm';
+import InterviewQuestionsPage from './features/jobs/components/InterviewQuestions/interviewQuestionsPage';
 
 
 // Array of paths where we want to show navbar and footer
@@ -59,6 +61,9 @@ function AppContent() {
             <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/jobs/add' element={<AddJobPage />} />
             <Route path='/profile' element={<Profile />} />
+            <Route path='/recommended-jobs' element={<RecommendedJobs />} />
+            <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
+            <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
           </Route>
         </Routes>
       </div>
