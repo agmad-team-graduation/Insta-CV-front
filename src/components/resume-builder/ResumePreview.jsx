@@ -49,9 +49,9 @@ const ResumePreview = ({ resume }) => {
     return (
       <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
         {/* Header with personal details */}
-        <div className="p-8 bg-blue-700 text-white">
+        <div className="p-8 bg-blue-700 text-white text-left">
           <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
-          <p className="text-xl text-blue-100 mt-1">{resume.personalDetails.address}</p>
+          <p className="text-xl text-blue-100 mt-1 ">{resume.personalDetails.address}</p>
           
           <div className="mt-4 flex flex-wrap gap-4">
             <div className="flex items-center">
@@ -67,9 +67,9 @@ const ResumePreview = ({ resume }) => {
         
         {/* Summary */}
         {resume.summary && (
-          <div className="p-6 bg-gray-50 border-b">
+          <div className="p-6 bg-gray-50 border-b text-left">
             <h2 className="text-xl font-bold mb-3 text-gray-700">Summary</h2>
-            <p className="text-gray-700">{resume.summary}</p>
+            <p className="text-gray-700 ">{resume.summary}</p>
           </div>
         )}
         
@@ -99,7 +99,7 @@ const ResumePreview = ({ resume }) => {
             }
             
             return (
-              <div key={key} className="mb-8">
+              <div key={key} className="mb-8 text-left">
                 <div className="flex items-center mb-4">
                   {icon}
                   <h2 className="text-xl font-bold ml-2 text-gray-800">{section.sectionTitle}</h2>
@@ -180,11 +180,11 @@ const ResumePreview = ({ resume }) => {
 
   const renderClassicTemplate = () => {
     return (
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
-        <div className="p-8 bg-gray-800 text-white text-center">
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto text-left" ref={previewRef}>
+        <div className="p-8 bg-gray-800 text-white text-left">
           <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
           
-          <div className="mt-4 flex justify-center flex-wrap gap-6">
+          <div className="mt-4 flex  flex-wrap gap-6 text-left">
             <div className="flex items-center">
               <MailIcon size={16} className="mr-2" />
               <span>{resume.personalDetails.email}</span>
@@ -201,8 +201,9 @@ const ResumePreview = ({ resume }) => {
         </div>
         
         {resume.summary && (
-          <div className="p-6 bg-gray-100 border-b">
-            <p className="text-gray-700 text-center italic">{resume.summary}</p>
+          <div className="p-6 bg-gray-100 border-b text-left">
+            <h2 className="text-xl font-bold mb-3 text-gray-700">Summary</h2>
+            <p className="text-gray-700  italic">{resume.summary}</p>
           </div>
         )}
         
@@ -291,7 +292,7 @@ const ResumePreview = ({ resume }) => {
 
   const renderMinimalTemplate = () => {
     return (
-      <div className="bg-white shadow-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
+      <div className="bg-white shadow-lg overflow-hidden max-w-4xl mx-auto text-left" ref={previewRef}>
         <div className="p-8 border-b">
           <h1 className="text-3xl font-bold text-gray-900">{resume.personalDetails.fullName}</h1>
           
@@ -401,7 +402,7 @@ const ResumePreview = ({ resume }) => {
 
   const renderTechnicalTemplate = () => {
     return (
-      <div className="bg-white shadow-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
+      <div className="bg-white shadow-lg overflow-hidden max-w-4xl mx-auto text-left" ref={previewRef}>
         <div className="flex flex-col md:flex-row">
           <div className="bg-gray-800 text-white p-6 md:w-1/3">
             <div className="mb-8 text-center">
