@@ -215,28 +215,25 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
                   "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm",
                   getProficiencyClass(skill.level),
                   unsavedSkillIds.includes(skill.id) && "bg-yellow-100 border border-yellow-400",
-                  editingId === skill.id && "ring-2 ring-primary"
+                  editingId === skill.id && "ring-2 ring-primary",
+                  isEditMode && "hover:opacity-80 transition-opacity cursor-default"
                 )}
+                onClick={() => isEditMode && handleEdit(skill)}
               >
                 <Code className="h-3.5 w-3.5" />
                 <span>{skill.name}</span>
                 {isEditMode && (
-                  <div className="flex items-center ml-1">
+                  <div className="flex items-center ml-1.5">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
-                      className="h-5 w-5 border-none"
-                      onClick={() => handleEdit(skill)}
+                      className="h-4 w-4 hover:bg-transparent cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering the parent's onClick
+                        handleDelete(skill.id);
+                      }}
                     >
-                      <Pencil className="h-3 w-3 text-muted-foreground hover:text-primary" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-5 w-5 border-none"
-                      onClick={() => handleDelete(skill.id)}
-                    >
-                      <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+                      <Trash2 className="h-2.5 w-2.5 text-muted-foreground hover:text-destructive transition-colors" />
                     </Button>
                   </div>
                 )}
