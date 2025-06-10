@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { fetchDemoResume, updateResume } from '../services/api';
+import { fetchResume, updateResume } from '../services/api';
 
 const useResumeStore = create((set, get) => ({
   resume: null, // The resume object itself
@@ -13,7 +13,7 @@ const useResumeStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       // Simulating the API call to fetch demo data
-      const resumeData = await fetchDemoResume();
+      const resumeData = await fetchResume(resumeId);
       set({ resume: resumeData, isLoading: false });
     } catch (error) {
       set({ 
