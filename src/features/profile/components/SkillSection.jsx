@@ -20,7 +20,7 @@ const proficiencyLevels = [
 const skillSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, "Skill name is required"),
-  proficiency: z.string().min(1, "Proficiency level is required"),
+  level: z.string().min(1, "Level is required"),
 });
 
 function SkillsSection({ data, isEditMode, onUpdate }) {
@@ -33,7 +33,7 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
     resolver: zodResolver(skillSchema),
     defaultValues: {
       name: "",
-      proficiency: "",
+      level: "",
     },
   });
 
@@ -44,14 +44,17 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
   }, [data]);
 
   const handleEdit = (skill) => {
-    form.reset(skill);
+    form.reset({
+      name: skill.name,
+      level: skill.level || ''
+    });
     setEditingId(skill.id);
   };
 
   const handleAdd = () => {
     form.reset({
       name: "",
-      proficiency: "",
+      level: "",
     });
     setIsAdding(true);
   };
@@ -71,7 +74,6 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
     if (isAdding) {
       const newSkill = {
         ...values,
-        proficiency: values.proficiency,
         id: Date.now().toString(),
       };
       const updatedSkills = [...skills, newSkill];
@@ -108,10 +110,10 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
           />
           <FormField
             control={form.control}
-            name="proficiency"
+            name="level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Proficiency Level</FormLabel>
+                <FormLabel>Level</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -208,7 +210,7 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
           <div className="flex flex-wrap gap-2 mb-4">
             {skills.map((skill) => (
               <div
-                key={skill.id || `${skill.name}-${skill.proficiency}`}
+                key={skill.id || `${skill.name}-${skill.level}`}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm",
                   getProficiencyClass(skill.level),
