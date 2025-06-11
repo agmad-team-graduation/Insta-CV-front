@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchJobs } from "../../services/fetchJobs";
 import { useCookies } from 'react-cookie';
-import JobCard from './jobCard';
+import JobCard from './JobCard';
 import { Briefcase, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/common/components/ui/button";
 
