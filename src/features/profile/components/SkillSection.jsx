@@ -20,7 +20,7 @@ const proficiencyLevels = [
 const skillSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, "Skill name is required"),
-  proficiency: z.string().min(1, "Proficiency level is required"),
+  level: z.string().min(1, "Level is required"),
 });
 
 function SkillsSection({ data, isEditMode, onUpdate }) {
@@ -33,7 +33,7 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
     resolver: zodResolver(skillSchema),
     defaultValues: {
       name: "",
-      proficiency: "",
+      level: "",
     },
   });
 
@@ -44,14 +44,17 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
   }, [data]);
 
   const handleEdit = (skill) => {
-    form.reset(skill);
+    form.reset({
+      name: skill.name,
+      level: skill.level || ''
+    });
     setEditingId(skill.id);
   };
 
   const handleAdd = () => {
     form.reset({
       name: "",
-      proficiency: "",
+      level: "",
     });
     setIsAdding(true);
   };
@@ -71,7 +74,6 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
     if (isAdding) {
       const newSkill = {
         ...values,
-        proficiency: values.proficiency,
         id: Date.now().toString(),
       };
       const updatedSkills = [...skills, newSkill];
@@ -108,10 +110,10 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
           />
           <FormField
             control={form.control}
-            name="proficiency"
+            name="level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Proficiency Level</FormLabel>
+                <FormLabel>Level</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -208,33 +210,30 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
           <div className="flex flex-wrap gap-2 mb-4">
             {skills.map((skill) => (
               <div
-                key={skill.id || `${skill.name}-${skill.proficiency}`}
+                key={skill.id || `${skill.name}-${skill.level}`}
                 className={cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm",
                   getProficiencyClass(skill.level),
                   unsavedSkillIds.includes(skill.id) && "bg-yellow-100 border border-yellow-400",
-                  editingId === skill.id && "ring-2 ring-primary"
+                  editingId === skill.id && "ring-2 ring-primary",
+                  isEditMode && "hover:opacity-80 transition-opacity cursor-default"
                 )}
+                onClick={() => isEditMode && handleEdit(skill)}
               >
                 <Code className="h-3.5 w-3.5" />
                 <span>{skill.name}</span>
                 {isEditMode && (
-                  <div className="flex items-center ml-1">
+                  <div className="flex items-center ml-1.5">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
-                      className="h-5 w-5 border-none"
-                      onClick={() => handleEdit(skill)}
+                      className="h-4 w-4 hover:bg-transparent cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering the parent's onClick
+                        handleDelete(skill.id);
+                      }}
                     >
-                      <Pencil className="h-3 w-3 text-muted-foreground hover:text-primary" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-5 w-5 border-none"
-                      onClick={() => handleDelete(skill.id)}
-                    >
-                      <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+                      <Trash2 className="h-2.5 w-2.5 text-muted-foreground hover:text-destructive transition-colors" />
                     </Button>
                   </div>
                 )}
