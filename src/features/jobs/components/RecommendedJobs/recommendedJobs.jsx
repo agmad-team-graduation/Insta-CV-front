@@ -56,7 +56,7 @@ const RecommendedJobs = () => {
   const handleForceSearch = async () => {
     setForceLoading(true);
     try {
-      const response = await apiClient.get('http://localhost:8080/api/v1/jobs/scrape/analyze-recommendations');
+      const response = await apiClient.get('/api/v1/jobs/scrape/analyze-recommendations');
       if (response.data && Array.isArray(response.data)) {
         setJobs(response.data);
       } else if (response.data && response.data.content) {

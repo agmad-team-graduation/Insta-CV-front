@@ -22,7 +22,7 @@ export function ForgotPasswordForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/forget-password', {
+      const response = await fetch('https://instacv-backend-production.up.railway.app/api/v1/auth/forget-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
