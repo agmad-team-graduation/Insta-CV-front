@@ -188,23 +188,22 @@
 
 
 
-
-import axios from 'axios';
-
+import apiClient from '../utils/apiClient';
 // Create axios instance with base URL
-const api = axios.create({
-  baseURL: 'http://localhost:8080/api//v1/cv', // Adjust this if your backend URL is different
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// const api = axios.create({
+//   baseURL: 'http://localhost:8080/api/v1/cv', // Adjust this if your backend URL is different
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+// });
 
 /**
  * Fetch resume data by ID from the backend
  */
-export const fetchResume = async (resumeId) => {
+export const fetchResume = async (jobId) => {
   try {
-    const response = await api.post(`/generate`,resumeId);
+    const body = {'jobId': 38};
+    const response = await apiClient.post(`/api/v1/cv/generate`, body);
     // Assuming the backend responds like { data: { ...resumeData } }
     return response.data; 
   } catch (error) {
@@ -218,7 +217,7 @@ export const fetchResume = async (resumeId) => {
  */
 export const updateResume = async (resumeId, resumeData) => {
   try {
-    const response = await api.put(`/${resumeId}`, resumeData);
+    const response = await apiClient.put(`/api/v1/cv/${resumeId}`, resumeData);
     return response.data;
   } catch (error) {
     console.error('Error updating resume:', error);
@@ -229,5 +228,5 @@ export const updateResume = async (resumeId, resumeData) => {
 // No longer needed, so you can delete this or keep for testing
 // export const fetchDemoResume = async () => { ... }
 
-export default api;
+// export default api;
 
