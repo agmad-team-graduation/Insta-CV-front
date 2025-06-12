@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base URL
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1', // Updated to localhost for development
+  baseURL: 'https://instacv-backend-production.up.railway.app/api/v1', // Updated to localhost for development
   headers: {
     'Content-Type': 'application/json',
   },

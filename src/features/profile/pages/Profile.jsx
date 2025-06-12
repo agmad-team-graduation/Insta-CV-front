@@ -125,9 +125,8 @@ const Profile = () => {
   }
 
   // Map skills to the format expected by OtherSkills component
-  // Map skills to the format expected by OtherSkills component
   const mappedSkills = profileData?.userSkills?.map(skill => ({
-    id: skill.id || `skill-${skill.skill.replace(/\s+/g, '-').toLowerCase()}`,  // Use existing ID or generate one
+    id: skill.id || `skill-${skill.skill.replace(/\s+/g, '-').toLowerCase()}`,
     name: skill.skill,
     level: skill.level?.toLowerCase() ?? ''
   })) || [];
@@ -237,7 +236,7 @@ const Profile = () => {
               userSkills: updatedSkills.map(skill => ({
                 id: skill.id,
                 skill: skill.name,
-                level: skill.proficiency || skill.level
+                level: skill.level?.toUpperCase()
               }))
             };
             setProfileData(newData);
@@ -380,31 +379,5 @@ const calculateMonths = (startDate, endDate, present) => {
   return (end.getFullYear() - start.getFullYear()) * 12 + 
          (end.getMonth() - start.getMonth());
 };
-
-// Icon components
-const LightBulbIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9.66347 17H14.3365M12 3V4M18.5 6.5L17.5 7.5M21 12H20M4 12H3M6.5 6.5L7.5 7.5M12 18C9.23858 18 7 15.7614 7 13C7 10.2386 9.23858 8 12 8C14.7614 8 17 10.2386 17 13C17 15.7614 14.7614 18 12 18Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const BugIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M19 7L18.133 7.867M19 17L18.133 16.133M5 7L5.867 7.867M5 17L5.867 16.133M12 3V5M12 19V21M8.5 20.001H15.5M7 10.5H17M7 13.5H17M8 7.5C8 6.119 9.119 5 10.5 5H13.5C14.881 5 16 6.119 16 7.5V18C16 19.105 15.105 20 14 20H10C8.895 20 8 19.105 8 18V7.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const HeadIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M15.5 9.5C15.5 11.433 13.933 13 12 13C10.067 13 8.5 11.433 8.5 9.5C8.5 7.567 10.067 6 12 6C13.933 6 15.5 7.567 15.5 9.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M6.99976 21C6.99976 16.583 9.16671 14 11.9998 14C14.8329 14 16.9998 16.583 16.9998 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const CodeIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7 8L3 12L7 16M17 8L21 12L17 16M14 4L10 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
 
 export default Profile;

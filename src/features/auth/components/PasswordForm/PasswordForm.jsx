@@ -55,7 +55,7 @@ export function PasswordForm() {
         };
       }
 
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
+      const response = await fetch(`https://instacv-backend-production.up.railway.app${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
