@@ -3,6 +3,7 @@ import apiClient from '@/common/utils/apiClient';
 import JobsList from '../AllJobs/JobsList';
 import { Briefcase } from 'lucide-react';
 import { Button } from "@/common/components/ui/button";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const MOCK_JOBS = [
   {
@@ -30,11 +31,13 @@ const RecommendedJobs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [forceLoading, setForceLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchRecommendedJobs = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get('/api/v1/jobs/scrape/all?page=0&size=1');
+      const response = await apiClient.get('/api/v1/jobs/scrape/get-recommendations');
       if (response.data.content) {
         setJobs(response.data.content);
       } else {
@@ -56,7 +59,7 @@ const RecommendedJobs = () => {
   const handleForceSearch = async () => {
     setForceLoading(true);
     try {
-      const response = await apiClient.get('http://localhost:8080/api/v1/jobs/scrape/analyze-recommendations');
+      const response = await apiClient.post('/api/v1/jobs/scrape/analyze-recommendations');
       if (response.data && Array.isArray(response.data)) {
         setJobs(response.data);
       } else if (response.data && response.data.content) {
@@ -94,6 +97,24 @@ const RecommendedJobs = () => {
           </div>
         </div>
       </header>
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-8">
+            <button
+              className={`py-4 px-1 border-b-2 text-lg font-medium focus:outline-none transition-colors duration-200 ${location.pathname === '/jobs' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              onClick={() => navigate('/jobs')}
+            >
+              My Jobs
+            </button>
+            <button
+              className={`py-4 px-1 border-b-2 text-lg font-medium focus:outline-none transition-colors duration-200 ${location.pathname === '/recommended-jobs' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+              onClick={() => navigate('/recommended-jobs')}
+            >
+              Recommended Jobs
+            </button>
+          </div>
+        </div>
+      </div>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <JobsList jobs={jobs} loading={loading || forceLoading} error={error} />
       </main>

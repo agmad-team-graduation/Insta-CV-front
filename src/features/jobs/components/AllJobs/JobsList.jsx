@@ -72,38 +72,7 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
 
   return (
     <div>
-      {!externalJobs && (
-        <div className="flex border-b border-gray-200 mb-6">
-          <button
-            className={`px-4 py-2 font-medium text-sm ${
-              activeTab === 'matched'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-            onClick={() => {
-              setActiveTab('matched');
-              setCurrentPage(1);
-            }}
-          >
-            Jobs matches your profile 
-          </button>
-          <button
-            className={`px-4 py-2 font-medium text-sm ${
-              activeTab === 'all'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
-            onClick={() => {
-              setActiveTab('all');
-              setCurrentPage(1);
-            }}
-          >
-            All active jobs
-          </button>
-        </div>
-      )}
-      
-      {displayJobs.length === 0 && (!externalJobs || activeTab === 'all') && !loading && (
+      {displayJobs.length === 0 && !loading && (
         <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg border border-gray-200">
           <Briefcase className="w-12 h-12 text-gray-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-700 mb-1">No jobs found</h3>
@@ -111,11 +80,7 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
         </div>
       )}
 
-      {!externalJobs && activeTab === 'matched' && (
-         <div className="text-center text-gray-500 py-10">Matched jobs functionality with pagination not fully implemented.</div>
-      )}
-
-      {(externalJobs || activeTab === 'all') && displayJobs.length > 0 && (
+      {displayJobs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayJobs.map((job) => (
             <JobCard key={job.id} job={job} isRecommended={!!externalJobs} />
@@ -123,7 +88,7 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
         </div>
       )}
 
-      {!externalJobs && totalPages > 1 && activeTab === 'all' && (
+      {!externalJobs && totalPages > 1 && (
         <div className="flex justify-center items-center space-x-4 mt-8">
           <Button onClick={handlePrevPage} disabled={currentPage === 1} variant="outline" size="icon">
             <ChevronLeft className="h-5 w-5" />

@@ -14,11 +14,17 @@ const JobCard = ({ job, isRecommended = false }) => {
     ? `${job.description.substring(0, 100)}...` 
     : job.description;
 
-  const formattedDate = new Date(job.postedDate).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  // Use the 'date' property if available, otherwise fallback to 'postedDate'
+  let displayDate = '';
+  if (job.date) {
+    const d = new Date(job.date);
+    displayDate = isNaN(d) ? job.date : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } else if (job.postedDate) {
+    const d = new Date(job.postedDate);
+    displayDate = isNaN(d) ? job.postedDate : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } else {
+    displayDate = 'Invalid date';
+  }
 
   useEffect(() => {
     // Clean up polling interval when component unmounts
@@ -126,7 +132,7 @@ const JobCard = ({ job, isRecommended = false }) => {
         
         <div className="flex items-center text-gray-500 text-sm mb-3">
           <Calendar size={14} className="mr-1" />
-          <span>{formattedDate}</span>
+          <span>{displayDate}</span>
           
           {job.location && (
             <>

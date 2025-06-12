@@ -10,21 +10,19 @@ import apiClient from "@/common/utils/apiClient";
 function JobDetailsPage() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState([]);
   const { jobID } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
-  console.log(location.pathname);
+  const isRecommended = location.pathname.startsWith('/recommended-job-details/');
 
   useEffect(() => {
     const fetchJobDetails = async () => {
-      console.log(location.pathname);
       try {
         // Use scrape endpoint if on recommended-job-details route
-        const isRecommended = location.pathname.startsWith('/recommended-job-details/');
         const endpoint = isRecommended ? `/api/v1/jobs/scrape/${jobID}` : `/api/v1/jobs/${jobID}`;
-        console.log(endpoint);
         const response = await apiClient.get(endpoint);
         setJob(response.data);
       } catch (error) {
@@ -33,7 +31,24 @@ function JobDetailsPage() {
         setLoading(false);
       }
     };
+    
+    const fetchRecommendations = async () => {
+      try {
+        const recResponse = await apiClient.get('/api/v1/jobs/scrape/get-recommendations');
+        if (Array.isArray(recResponse.data)) {
+          setRecommendations(recResponse.data);
+        } else if (recResponse.data && Array.isArray(recResponse.data.content)) {
+          setRecommendations(recResponse.data.content);
+        } else {
+          setRecommendations([]);
+        }
+      } catch (error) {
+        setRecommendations([]);
+      }
+    };
+
     fetchJobDetails();
+    fetchRecommendations();
   }, [jobID, location.pathname]);
 
   if (loading) {
@@ -131,6 +146,15 @@ function JobDetailsPage() {
                 <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
                   Show Interview Questions
                 </Button>
+                {isRecommended && job.applyUrl && (
+                  <Button
+                    className="w-full text-lg py-6 mt-2"
+                    variant="outline"
+                    onClick={() => window.open(job.applyUrl, '_blank')}
+                  >
+                    Apply
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -230,23 +254,28 @@ function JobDetailsPage() {
             Similar Jobs You May Like
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Job suggestion card 1 */}
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6 space-y-3">
-                <h4 className="text-xl font-medium text-primary">Jobarople</h4>
-                <p className="text-md text-muted-foreground">Lorem ipsum dolor sit amet.</p>
-                <Button variant="outline" className="w-full mt-2">View Details</Button>
-              </CardContent>
-            </Card>
-
-            {/* Job suggestion card 2 */}
-            <Card className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6 space-y-3">
-                <h4 className="text-xl font-medium text-primary">Company</h4>
-                <p className="text-md text-muted-foreground">Consectetur adipiscing elit.</p>
-                <Button variant="outline" className="w-full mt-2">View Details</Button>
-              </CardContent>
-            </Card>
+            {recommendations && recommendations.length > 0 ? (
+              recommendations.slice(0, 2).map((recJob, idx) => (
+                <Card key={recJob.id || idx} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6 space-y-3">
+                    <h4 className="text-xl font-medium text-primary">{recJob.title || 'No Title'}</h4>
+                    <p className="text-md text-muted-foreground">@ {recJob.company || 'Unknown Company'}</p>
+                    <p className="text-md text-muted-foreground">{recJob.description ? recJob.description.slice(0, 100) + (recJob.description.length > 100 ? '...' : '') : 'No description.'}</p>
+                    <Button variant="outline" className="w-full mt-2" onClick={() => navigate(`/recommended-job-details/${recJob.id}`)}>
+                      View Details
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-2 flex flex-col items-center justify-center py-10 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 018 0v2m-4-4a4 4 0 100-8 4 4 0 000 8z" />
+                </svg>
+                <h4 className="text-lg font-semibold text-gray-700 mb-2">No similar jobs found</h4>
+                <p className="text-gray-500 text-center max-w-xs">We couldn't find any similar jobs for you at the moment. Please check back later for new opportunities!</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
