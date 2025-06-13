@@ -31,6 +31,7 @@ export interface Section<T> {
 export interface BaseItem {
   id: number;
   orderIndex: number;
+  hidden?: boolean;
 }
 
 export interface EducationItem extends BaseItem {

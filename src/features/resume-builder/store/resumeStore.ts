@@ -33,6 +33,10 @@ interface ResumeState {
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
     itemId: number
   ) => void;
+  toggleItemVisibility: (
+    sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
+    itemId: number
+  ) => void;
   setSelectedTemplate: (template: TemplateName) => void;
   saveResume: () => Promise<void>;
 }
@@ -217,6 +221,27 @@ const useResumeStore = create<ResumeState>((set, get) => ({
           [sectionKey]: {
             ...section,
             items: reorderedItems
+          }
+        }
+      };
+    });
+  },
+
+  toggleItemVisibility: (sectionKey, itemId) => {
+    set((state) => {
+      if (!state.resume) return state;
+      
+      const section = state.resume[sectionKey];
+      const updatedItems = section.items.map(item => 
+        item.id === itemId ? { ...item, hidden: !item.hidden } : item
+      );
+      
+      return {
+        resume: {
+          ...state.resume,
+          [sectionKey]: {
+            ...section,
+            items: updatedItems
           }
         }
       };

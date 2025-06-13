@@ -92,20 +92,23 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   </div>
                 ))}
                 
-                {key === 'experience' && sortedItems.map((experience: any) => (
-                  <div key={experience.id} className="border-l-4 border-blue-600 pl-4 py-2">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold">{experience.jobTitle}</h3>
-                      <span className="text-sm text-gray-600">
-                        {formatDateRange(experience.startDate, experience.endDate, experience.present)}
-                      </span>
+                {key === 'experience' && sortedItems.map((experience: any) => {
+                  if (experience.hidden) return null;
+                  return (
+                    <div key={experience.id} className="border-l-4 border-blue-600 pl-4 py-2">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg font-semibold">{experience.jobTitle}</h3>
+                        <span className="text-sm text-gray-600">
+                          {formatDateRange(experience.startDate, experience.endDate, experience.present)}
+                        </span>
+                      </div>
+                      <p className="text-gray-700">{experience.company}, {experience.city}, {experience.country}</p>
+                      {experience.description && (
+                        <p className="text-gray-600 mt-2">{experience.description}</p>
+                      )}
                     </div>
-                    <p className="text-gray-700">{experience.company}, {experience.city}, {experience.country}</p>
-                    {experience.description && (
-                      <p className="text-gray-600 mt-2">{experience.description}</p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {key === 'project' && sortedItems.map((project: any) => (
                   <div key={project.id} className="border-l-4 border-blue-600 pl-4 py-2">

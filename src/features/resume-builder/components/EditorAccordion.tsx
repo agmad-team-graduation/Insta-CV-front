@@ -19,20 +19,22 @@ const EditorAccordion: React.FC<EditorAccordionProps> = ({
   isCustomTitle = false,
 }) => {
   return (
-    <div className="border rounded-md overflow-hidden bg-white">
+    <div className="overflow-hidden">
       <button
-        className="w-full p-3 font-medium text-left bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors"
+        className="w-full py-2 font-semibold text-left flex items-center justify-between hover:opacity-80 transition-all duration-200"
         onClick={onToggle}
       >
         {isCustomTitle ? (
           title
         ) : (
-          <div className="flex items-center gap-2">
-            {icon}
-            <span>{title}</span>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-white bg-opacity-50">
+              {icon}
+            </div>
+            <span className="text-gray-800">{title}</span>
           </div>
         )}
-        <div>
+        <div className="p-1 rounded-full bg-white bg-opacity-50 hover:bg-opacity-70 transition-all duration-200">
           {isExpanded ? (
             <ChevronUpIcon size={18} className="text-gray-600" />
           ) : (
@@ -42,11 +44,11 @@ const EditorAccordion: React.FC<EditorAccordionProps> = ({
       </button>
       
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="p-3 bg-white">{children}</div>
+        <div className="pb-2">{children}</div>
       </div>
     </div>
   );
