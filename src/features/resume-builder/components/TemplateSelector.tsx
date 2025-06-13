@@ -35,6 +35,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       name: 'Technical',
       description: 'Designed for technical roles with skills visualization and timeline features.',
       thumbnail: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    },
+    {
+      id: 'harvard',
+      name: 'Harvard Resume',
+      description: 'Classic Sans Serif template following Harvard Career Services guidelines.',
+      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     }
   ];
 
