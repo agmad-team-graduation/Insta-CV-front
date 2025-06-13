@@ -8,7 +8,6 @@ import HarvardTemplate from './HarvardTemplate';
 
 export interface TemplateProps {
   resume: Resume;
-  previewRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export type TemplateComponent = React.FC<TemplateProps>;

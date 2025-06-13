@@ -42,7 +42,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
   
   return (
     <div id="resume-preview-container" ref={previewRef}>
-      <TemplateComponent resume={resume} previewRef={previewRef} />
+      <TemplateComponent resume={resume} />
     </div>
   );
 };

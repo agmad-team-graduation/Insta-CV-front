@@ -3,7 +3,7 @@ import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon } from 'lucide-react';
 
-const ModernTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
+const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     education: resume.educationSection,
@@ -17,7 +17,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
   });
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
       {/* Header with personal details */}
       <div className="p-8 bg-blue-700 text-white">
         <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
