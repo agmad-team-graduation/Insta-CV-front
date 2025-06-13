@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
@@ -117,7 +117,6 @@ const ResumeBuilder: React.FC = () => {
               <FileTextIcon className="h-6 w-6 text-blue-600" />
               <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
             </div>
-            
             <div className="flex items-center space-x-3">
               {isSaving && (
                 <div className="flex items-center text-gray-500">
@@ -125,18 +124,14 @@ const ResumeBuilder: React.FC = () => {
                   <span className="text-sm">Saving...</span>
                 </div>
               )}
-              
               {showSaveSuccess && (
                 <div className="text-green-600 text-sm flex items-center">
                   <span>✓ Saved</span>
                 </div>
               )}
-              
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`btn ${
-                  previewMode ? 'btn-primary' : 'btn-secondary'
-                }`}
+                className={`btn ${previewMode ? 'btn-primary' : 'btn-secondary'}`}
                 title={previewMode ? 'Exit Preview' : 'Preview Mode'}
               >
                 <EyeIcon size={18} />
@@ -144,7 +139,6 @@ const ResumeBuilder: React.FC = () => {
                   {previewMode ? 'Exit Preview' : 'Preview'}
                 </span>
               </button>
-              
               <button
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
@@ -161,59 +155,16 @@ const ResumeBuilder: React.FC = () => {
             </div>
           </div>
         </header>
-
-        {/* Main content area */}
-        <main className="flex-1 flex flex-col lg:flex-row">
-          {/* Sidebar (hidden in preview mode on mobile) */}
-          {(!previewMode || window.innerWidth >= 1024) && (
-            <div className="w-full lg:w-80 xl:w-96 bg-white border-r border-gray-200 flex flex-col">
-              {/* Tabs */}
-              <div className="flex border-b border-gray-200">
-                <button
-                  className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                    activeTab === 'content'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setActiveTab('content')}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <FileEditIcon size={18} />
-                    Content
-                  </span>
-                </button>
-                <button
-                  className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                    activeTab === 'templates'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                  }`}
-                  onClick={() => setActiveTab('templates')}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <LayoutIcon size={18} />
-                    Templates
-                  </span>
-                </button>
-              </div>
-
-              {/* Tab content */}
-              <div className="flex-1 overflow-auto">
-                {activeTab === 'content' ? (
-                  <EditorSidebar resume={resume} />
-                ) : (
-                  <TemplateSelector
-                    selectedTemplate={selectedTemplate}
-                  />
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Preview area */}
-          <div className={`flex-1 p-4 md:p-8 overflow-auto bg-gray-100 ${previewMode ? 'flex justify-center' : ''}`}>
-            <ResumePreview resume={resume} />
+        {/* Main content area: always side-by-side */}
+        <main className="flex-1 flex flex-row gap-0 lg:gap-8 max-w-7xl mx-auto w-full">
+          {/* Cards area: visually distinct, wider */}
+          <div className="w-full max-w-[520px] min-w-[340px] pr-4">
+            <EditorSidebar resume={resume} />
           </div>
+          {/* Preview area: visually separated */}
+          <section className="flex-1 p-2 md:p-8 overflow-auto bg-gray-100 flex justify-center items-start border-l border-gray-200">
+            <ResumePreview resume={resume} />
+          </section>
         </main>
       </div>
     </DndContext>
