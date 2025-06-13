@@ -12,6 +12,7 @@ const navItems = [
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },
+  { icon: FileText, label: 'Resume Builder', href: '/resume-builder' },
 ];
 
 const Sidebar = () => {

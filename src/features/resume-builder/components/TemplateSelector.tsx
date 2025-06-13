@@ -1,12 +1,17 @@
 import React from 'react';
-import useResumeStore from '../../store/resumeStore';
+import { Template, TemplateName } from '../types';
+import useResumeStore from '../store/resumeStore';
 import { CheckIcon } from 'lucide-react';
 
-const TemplateSelector = ({ selectedTemplate }) => {
+interface TemplateSelectorProps {
+  selectedTemplate: TemplateName;
+}
+
+const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate }) => {
   const { setSelectedTemplate } = useResumeStore();
 
   // Template options
-  const templates = [
+  const templates: Template[] = [
     {
       id: 'modern',
       name: 'Modern',
@@ -77,4 +82,4 @@ const TemplateSelector = ({ selectedTemplate }) => {
   );
 };
 
-export default TemplateSelector;
+export default TemplateSelector; 

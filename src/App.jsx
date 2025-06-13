@@ -20,6 +20,8 @@ import { ForgotPassword } from './features/auth/components/ForgotPassword';
 import RecommendedJobs from './features/jobs/components/RecommendedJobs/recommendedJobs';
 import { SetPassword } from './features/auth/components/SetPasswordForm';
 import InterviewQuestionsPage from './features/jobs/components/InterviewQuestions/interviewQuestionsPage';
+import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
+import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
 
 
 // Array of paths where we want to show navbar and footer
@@ -53,7 +55,6 @@ function AppContent() {
           <Route path='/set-password' element={<SetPassword />} />
           <Route path='/email-verification' element={<SetPassword />} />
           <Route path='/oauth2-success' element={<OAuth2Success />} />
-          
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
             <Route path='/dashboard' element={<Dashboard />} />
@@ -64,6 +65,9 @@ function AppContent() {
             <Route path='/recommended-jobs' element={<RecommendedJobs />} />
             <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
+          </Route>
+          <Route path='/resume-builder' element={<ResumeBuilderLayout />}>
+            <Route path='/resume-builder' element={<ResumeBuilder />} />
           </Route>
         </Routes>
       </div>

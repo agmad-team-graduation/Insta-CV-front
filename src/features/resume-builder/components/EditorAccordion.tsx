@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 
-function EditorAccordion({
+interface EditorAccordionProps {
+  title: ReactNode;
+  icon?: ReactNode;
+  children: ReactNode;
+  isExpanded: boolean;
+  onToggle: () => void;
+  isCustomTitle?: boolean;
+}
+
+const EditorAccordion: React.FC<EditorAccordionProps> = ({
   title,
   icon,
   children,
   isExpanded,
   onToggle,
   isCustomTitle = false,
-}) {
+}) => {
   return (
     <div className="border rounded-md overflow-hidden bg-white">
       <button
@@ -41,6 +50,6 @@ function EditorAccordion({
       </div>
     </div>
   );
-}
+};
 
-export default EditorAccordion;
+export default EditorAccordion; 

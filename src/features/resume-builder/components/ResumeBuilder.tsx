@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon } from 'lucide-react';
-import useResumeStore from '../../store/resumeStore';
+import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
 
-function ResumeBuilder() {
+const ResumeBuilder: React.FC = () => {
   const { 
     resume, 
     isLoading, 
@@ -18,11 +18,12 @@ function ResumeBuilder() {
     saveResume
   } = useResumeStore();
   
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
+  // DnD sensors configuration
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -35,9 +36,11 @@ function ResumeBuilder() {
   );
 
   useEffect(() => {
+    // Fetch resume data on component mount
     fetchResume();
   }, [fetchResume]);
   
+  // Auto-save every 5 seconds when changes are made
   useEffect(() => {
     if (resume && !isSaving) {
       const timeoutId = setTimeout(() => {
@@ -58,6 +61,7 @@ function ResumeBuilder() {
     setIsGeneratingPdf(true);
     
     try {
+      // This is handled in the ResumePreview component
       const previewElement = document.getElementById('resume-preview-container');
       if (previewElement) {
         const event = new CustomEvent('generate-pdf');
@@ -214,6 +218,6 @@ function ResumeBuilder() {
       </div>
     </DndContext>
   );
-}
+};
 
-export default ResumeBuilder;
+export default ResumeBuilder; 

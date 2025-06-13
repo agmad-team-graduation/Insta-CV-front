@@ -6,19 +6,25 @@ import {
   CodeIcon, 
   WrenchIcon, 
   PlusIcon,
+  MinusIcon,
   EyeOffIcon,
   EyeIcon,
   ArrowUpDownIcon,
   AlertCircleIcon
 } from 'lucide-react';
-import useResumeStore from '../../store/resumeStore';
-import EditableField from '../ui/EditableField';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import DraggableItem from '../ui/DraggableItem';
+import { Resume } from '../types';
+import useResumeStore from '../store/resumeStore';
+import EditableField from './ui/EditableField';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import DraggableItem from './ui/DraggableItem';
 import EditorAccordion from './EditorAccordion';
 import SectionItemEditor from './SectionItemEditor';
 
-function EditorSidebar({ resume }) {
+interface EditorSidebarProps {
+  resume: Resume;
+}
+
+const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
   const {
     updatePersonalDetails,
     updateSummary,
@@ -28,9 +34,9 @@ function EditorSidebar({ resume }) {
     reorderItems
   } = useResumeStore();
 
-  const [expandedSections, setExpandedSections] = useState(['personalDetails', 'summary']);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['personalDetails', 'summary']);
 
-  const toggleSection = (sectionId) => {
+  const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
@@ -39,7 +45,7 @@ function EditorSidebar({ resume }) {
   };
 
   const handleAddEducation = () => {
-    addItem('educationSection', {
+    addItem<any>('educationSection', {
       degree: 'New Degree',
       school: 'University Name',
       city: 'City',
@@ -52,7 +58,7 @@ function EditorSidebar({ resume }) {
   };
 
   const handleAddExperience = () => {
-    addItem('experienceSection', {
+    addItem<any>('experienceSection', {
       jobTitle: 'New Position',
       company: 'Company Name',
       city: 'City',
@@ -65,7 +71,7 @@ function EditorSidebar({ resume }) {
   };
 
   const handleAddProject = () => {
-    addItem('projectSection', {
+    addItem<any>('projectSection', {
       title: 'New Project',
       startDate: new Date().toISOString().split('T')[0],
       endDate: new Date().toISOString().split('T')[0],
@@ -76,13 +82,13 @@ function EditorSidebar({ resume }) {
   };
 
   const handleAddSkill = () => {
-    addItem('skillSection', {
+    addItem<any>('skillSection', {
       skill: 'New Skill',
       level: 'INTERMEDIATE'
     });
   };
 
-  const getSectionItemsById = (sectionKey) => {
+  const getSectionItemsById = (sectionKey: string) => {
     switch (sectionKey) {
       case 'educationSection':
         return resume.educationSection.items.map(item => ({ ...item, id: String(item.id) }));
@@ -97,7 +103,7 @@ function EditorSidebar({ resume }) {
     }
   };
 
-  const handleDragEnd = (sectionKey, result) => {
+  const handleDragEnd = (sectionKey: string, result: any) => {
     if (!result.active || !result.over) return;
     
     const activeId = parseInt(result.active.id);
@@ -126,8 +132,8 @@ function EditorSidebar({ resume }) {
     const oldIndex = items.findIndex(item => item.id === activeId);
     const newIndex = items.findIndex(item => item.id === overId);
     
-    const newItems = arrayMove(items, oldIndex, newIndex);
-    reorderItems(sectionKey, newItems);
+    const newItems = arrayMove(items as any, oldIndex, newIndex);
+    reorderItems(sectionKey as any, newItems);
   };
 
   return (
@@ -304,68 +310,6 @@ function EditorSidebar({ resume }) {
         </button>
       </EditorAccordion>
       
-      {/* Projects Section */}
-      <EditorAccordion 
-        title={
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <CodeIcon size={18} />
-              <EditableField
-                value={resume.projectSection.sectionTitle}
-                onChange={(value) => updateSectionTitle('projectSection', value)}
-                className="!p-0 hover:bg-transparent"
-              />
-            </div>
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSectionVisibility('projectSection');
-                }}
-                className="p-1 rounded hover:bg-gray-100"
-                title={resume.projectSection.hidden ? 'Show section' : 'Hide section'}
-              >
-                {resume.projectSection.hidden ? (
-                  <EyeOffIcon size={16} className="text-gray-500" />
-                ) : (
-                  <EyeIcon size={16} className="text-blue-600" />
-                )}
-              </button>
-              <button
-                className="p-1 rounded hover:bg-gray-100"
-                title="Drag to reorder section"
-              >
-                <ArrowUpDownIcon size={16} className="text-gray-500" />
-              </button>
-            </div>
-          </div>
-        }
-        isExpanded={expandedSections.includes('projectSection')}
-        onToggle={() => toggleSection('projectSection')}
-        isCustomTitle
-      >
-        <SortableContext items={getSectionItemsById('projectSection')} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3">
-            {resume.projectSection.items.map((project) => (
-              <DraggableItem key={project.id} id={String(project.id)} className="border rounded-md p-3 bg-white">
-                <SectionItemEditor 
-                  sectionKey="projectSection"
-                  item={project}
-                />
-              </DraggableItem>
-            ))}
-          </div>
-        </SortableContext>
-        
-        <button
-          onClick={handleAddProject}
-          className="mt-4 w-full btn btn-secondary"
-        >
-          <PlusIcon size={16} />
-          Add Project
-        </button>
-      </EditorAccordion>
-      
       {/* Skills Section */}
       <EditorAccordion 
         title={
@@ -427,8 +371,70 @@ function EditorSidebar({ resume }) {
           Add Skill
         </button>
       </EditorAccordion>
+      
+      {/* Projects Section */}
+      <EditorAccordion 
+        title={
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <CodeIcon size={18} />
+              <EditableField
+                value={resume.projectSection.sectionTitle}
+                onChange={(value) => updateSectionTitle('projectSection', value)}
+                className="!p-0 hover:bg-transparent"
+              />
+            </div>
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSectionVisibility('projectSection');
+                }}
+                className="p-1 rounded hover:bg-gray-100"
+                title={resume.projectSection.hidden ? 'Show section' : 'Hide section'}
+              >
+                {resume.projectSection.hidden ? (
+                  <EyeOffIcon size={16} className="text-gray-500" />
+                ) : (
+                  <EyeIcon size={16} className="text-blue-600" />
+                )}
+              </button>
+              <button
+                className="p-1 rounded hover:bg-gray-100"
+                title="Drag to reorder section"
+              >
+                <ArrowUpDownIcon size={16} className="text-gray-500" />
+              </button>
+            </div>
+          </div>
+        }
+        isExpanded={expandedSections.includes('projectSection')}
+        onToggle={() => toggleSection('projectSection')}
+        isCustomTitle
+      >
+        <SortableContext items={getSectionItemsById('projectSection')} strategy={verticalListSortingStrategy}>
+          <div className="space-y-3">
+            {resume.projectSection.items.map((project) => (
+              <DraggableItem key={project.id} id={String(project.id)} className="border rounded-md p-3 bg-white">
+                <SectionItemEditor 
+                  sectionKey="projectSection"
+                  item={project}
+                />
+              </DraggableItem>
+            ))}
+          </div>
+        </SortableContext>
+        
+        <button
+          onClick={handleAddProject}
+          className="mt-4 w-full btn btn-secondary"
+        >
+          <PlusIcon size={16} />
+          Add Project
+        </button>
+      </EditorAccordion>
     </div>
   );
-}
+};
 
-export default EditorSidebar;
+export default EditorSidebar; 
