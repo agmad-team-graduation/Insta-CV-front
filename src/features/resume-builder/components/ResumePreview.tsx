@@ -40,7 +40,11 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
   // Get the selected template component and render it
   const TemplateComponent = getTemplate(selectedTemplate);
   
-  return <TemplateComponent resume={resume} previewRef={previewRef} />;
+  return (
+    <div id="resume-preview-container" ref={previewRef}>
+      <TemplateComponent resume={resume} previewRef={previewRef} />
+    </div>
+  );
 };
 
 export default ResumePreview; 

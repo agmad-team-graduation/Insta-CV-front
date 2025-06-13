@@ -156,19 +156,53 @@ const ResumeBuilder: React.FC = () => {
           </div>
         </header>
         {/* Main content area: left (cards), center (preview), right (template selector) */}
-        <main className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-8 max-w-7xl mx-auto w-full">
-          {/* Cards area */}
-          <div className="w-full max-w-[520px] min-w-[340px] pr-4">
-            <EditorSidebar resume={resume} />
-          </div>
-          {/* Preview area */}
-          <section className="flex-1 p-2 md:p-8 overflow-auto bg-gray-100 flex justify-center items-start border-l border-gray-200">
+        <main className="flex-1 flex flex-col lg:flex-row">
+          {/* Left part for editing */}
+          <aside className="w-full lg:w-2/5 xl:w-1/3 bg-white border-r border-gray-200 flex flex-col">
+            {/* Top nav bar for left part */}
+            <div className="flex border-b border-gray-200">
+              <button
+                className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+                  activeTab === 'content'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+                onClick={() => setActiveTab('content')}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <FileEditIcon size={18} />
+                  Content
+                </span>
+              </button>
+              <button
+                className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
+                  activeTab === 'templates'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+                onClick={() => setActiveTab('templates')}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <LayoutIcon size={18} />
+                  Templates
+                </span>
+              </button>
+            </div>
+
+            {/* Tab content */}
+            <div className="flex-1 overflow-auto p-4 md:p-6">
+              {activeTab === 'content' ? (
+                <EditorSidebar resume={resume} />
+              ) : (
+                <TemplateSelector selectedTemplate={selectedTemplate} />
+              )}
+            </div>
+          </aside>
+
+          {/* Right part to view resume */}
+          <section className="flex-1 p-4 md:p-8 overflow-auto bg-gray-100 flex justify-center items-start">
             <ResumePreview resume={resume} />
           </section>
-          {/* Template selector sidebar */}
-          <aside className="w-full max-w-[340px] min-w-[260px] bg-white border-l border-gray-200 shadow-lg flex flex-col p-0 md:p-6 lg:p-8 z-10">
-            <TemplateSelector selectedTemplate={selectedTemplate} />
-          </aside>
         </main>
       </div>
     </DndContext>
