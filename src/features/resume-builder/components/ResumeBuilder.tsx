@@ -155,16 +155,20 @@ const ResumeBuilder: React.FC = () => {
             </div>
           </div>
         </header>
-        {/* Main content area: always side-by-side */}
-        <main className="flex-1 flex flex-row gap-0 lg:gap-8 max-w-7xl mx-auto w-full">
-          {/* Cards area: visually distinct, wider */}
+        {/* Main content area: left (cards), center (preview), right (template selector) */}
+        <main className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-8 max-w-7xl mx-auto w-full">
+          {/* Cards area */}
           <div className="w-full max-w-[520px] min-w-[340px] pr-4">
             <EditorSidebar resume={resume} />
           </div>
-          {/* Preview area: visually separated */}
+          {/* Preview area */}
           <section className="flex-1 p-2 md:p-8 overflow-auto bg-gray-100 flex justify-center items-start border-l border-gray-200">
             <ResumePreview resume={resume} />
           </section>
+          {/* Template selector sidebar */}
+          <aside className="w-full max-w-[340px] min-w-[260px] bg-white border-l border-gray-200 shadow-lg flex flex-col p-0 md:p-6 lg:p-8 z-10">
+            <TemplateSelector selectedTemplate={selectedTemplate} />
+          </aside>
         </main>
       </div>
     </DndContext>
