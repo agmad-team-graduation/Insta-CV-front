@@ -109,9 +109,9 @@ const ResumeBuilder: React.FC = () => {
       sensors={sensors}
       collisionDetection={closestCenter}
     >
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
         {/* Header with actions */}
-        <header className="bg-white shadow-sm border-b border-gray-200 py-3 px-6">
+        <header className="flex-none bg-white shadow-sm border-b border-gray-200 py-3 px-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <FileTextIcon className="h-6 w-6 text-blue-600" />
@@ -159,12 +159,12 @@ const ResumeBuilder: React.FC = () => {
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 flex flex-col lg:flex-row">
-          {/* Left part for editing (hidden in preview mode) */}
+        <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left sidebar */}
           {!previewMode && (
-            <aside className="w-full lg:w-2/5 xl:w-1/3 bg-white border-r border-gray-200 flex flex-col">
-              {/* Top nav bar for left part */}
-              <div className="flex border-b border-gray-200">
+            <aside className="w-full lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
+              {/* Tabs */}
+              <div className="flex-none flex border-b border-gray-200">
                 <button
                   className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
                     activeTab === 'content'
@@ -194,18 +194,20 @@ const ResumeBuilder: React.FC = () => {
               </div>
 
               {/* Tab content */}
-              <div className="flex-1 overflow-auto p-4 md:p-6">
-                {activeTab === 'content' ? (
-                  <EditorSidebar resume={resume} />
-                ) : (
-                  <TemplateSelector selectedTemplate={selectedTemplate} />
-                )}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-4 md:p-6">
+                  {activeTab === 'content' ? (
+                    <EditorSidebar resume={resume} />
+                  ) : (
+                    <TemplateSelector selectedTemplate={selectedTemplate} />
+                  )}
+                </div>
               </div>
             </aside>
           )}
 
           {/* Right part to view resume */}
-          <section className="flex-1 p-4 md:p-8 overflow-auto bg-gray-100 flex justify-center items-start">
+          <section className="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-100 flex justify-center items-start">
             <ResumePreview resume={resume} />
           </section>
         </main>

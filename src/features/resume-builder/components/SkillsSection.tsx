@@ -16,6 +16,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { SkillItem } from '../types/index';
 import useResumeStore from '../store/resumeStore';
 import SectionItemEditor from './SectionItemEditor';
+import EditableField from './ui/EditableField';
 
 interface SkillsSectionProps {
   skills: SkillItem[];
@@ -148,6 +149,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { 
     addItem, 
     reorderItems, 
@@ -155,6 +157,20 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     updateSectionTitle, 
     toggleSectionVisibility 
   } = useResumeStore();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: 'skillSection' });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -194,40 +210,67 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     setEditingId(null);
   };
 
+  const handleTitleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div 
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-200 ${
+        isDragging ? 'opacity-50 cursor-grabbing' : ''
+      }`}
+    >
       {/* Header Bar */}
       <div className="border-b border-gray-100">
         <button
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" onClick={handleTitleClick}>
             <div className="p-2 bg-gray-100 text-gray-600 rounded-lg">
               <WrenchIcon size={18} />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">{sectionTitle}</h2>
+            <EditableField
+              value={sectionTitle}
+              onChange={(value) => updateSectionTitle('skillSection', value)}
+              className="!p-0 hover:bg-transparent font-semibold text-lg text-gray-900"
+              onEditStart={() => setIsEditingTitle(true)}
+              onEditEnd={() => setIsEditingTitle(false)}
+            />
           </div>
           <div className="flex items-center gap-2">
             {/* Skill Level Guide */}
-            <div className="hidden md:flex items-center gap-3 mr-4 text-xs">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-amber-100" title="Beginner"></div>
-                <span>Beginner</span>
+            {isExpanded && (
+              <div className="hidden md:flex items-center gap-3 mr-4 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-amber-100" title="Beginner"></div>
+                  <span>Beginner</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-green-100" title="Intermediate"></div>
+                  <span>Intermediate</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-blue-100" title="Proficient"></div>
+                  <span>Proficient</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-purple-100" title="Expert"></div>
+                  <span>Expert</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-green-100" title="Intermediate"></div>
-                <span>Intermediate</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-blue-100" title="Proficient"></div>
-                <span>Proficient</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-purple-100" title="Expert"></div>
-                <span>Expert</span>
-              </div>
-            </div>
+            )}
+            <button
+              {...attributes}
+              {...listeners}
+              className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+              title="Drag to reorder section"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVerticalIcon size={16} />
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();

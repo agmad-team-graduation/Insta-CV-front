@@ -34,7 +34,9 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`${className} ${isDragging ? 'dragging' : ''}`}
+      className={`${className} transition-all duration-200 ${
+        isDragging ? 'opacity-50 scale-105 cursor-grabbing' : ''
+      }`}
     >
       {children}
     </div>

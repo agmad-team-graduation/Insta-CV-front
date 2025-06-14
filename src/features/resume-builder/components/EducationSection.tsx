@@ -270,6 +270,10 @@ const EducationSection: React.FC<EducationSectionProps> = ({
     }
   };
 
+  const handleTitleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div 
       ref={setNodeRef}
@@ -284,8 +288,10 @@ const EducationSection: React.FC<EducationSectionProps> = ({
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <div className="flex items-center gap-3">
-            <BookOpenIcon size={20} className="text-gray-600" />
+          <div className="flex items-center gap-3" onClick={handleTitleClick}>
+            <div className="p-2 bg-gray-100 text-gray-600 rounded-lg">
+              <BookOpenIcon size={18} />
+            </div>
             <EditableField
               value={sectionTitle}
               onChange={(value) => updateSectionTitle('educationSection', value)}
@@ -332,33 +338,37 @@ const EducationSection: React.FC<EducationSectionProps> = ({
         }`}
       >
         <div className="p-6">
-          {/* Rest of the content */}
-          <div className="space-y-4">
-            {education.map((edu) => (
-              <EducationCard
-                key={edu.id}
-                education={edu}
-                onToggleVisibility={() => toggleItemVisibility('educationSection', edu.id)}
-                onEdit={() => setEditingId(edu.id)}
-                isEditMode={editingId === edu.id}
-                onEditComplete={() => setEditingId(null)}
-              />
-            ))}
-          </div>
+          {education.length > 0 ? (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={education.map(edu => edu.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-4">
+                  {education.map((edu) => (
+                    <EducationCard
+                      key={edu.id}
+                      education={edu}
+                      onToggleVisibility={handleToggleVisibility}
+                      onEdit={handleEdit}
+                      isEditMode={editingId === edu.id}
+                      onEditComplete={handleEditComplete}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <BookOpenIcon size={48} className="mx-auto mb-4 text-gray-300" />
+              <p className="text-lg font-medium mb-2">No education entries yet</p>
+              <p className="text-sm">Add your first education entry to get started</p>
+            </div>
+          )}
+
+          {/* Add Education Button */}
           <button
-            onClick={() => addItem('educationSection', {
-              degree: '',
-              school: '',
-              city: '',
-              country: '',
-              startDate: '',
-              endDate: '',
-              description: '',
-              present: false
-            })}
-            className="mt-4 w-full py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+            onClick={handleAddEducation}
+            className="mt-6 w-full py-3 px-4 border-2 border-dashed border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
           >
-            <PlusIcon size={16} />
+            <PlusIcon size={18} />
             Add Education
           </button>
         </div>
