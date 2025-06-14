@@ -25,6 +25,7 @@ function JobDetailsPage() {
         const endpoint = isRecommended ? `/api/v1/jobs/scrape/${jobID}` : `/api/v1/jobs/${jobID}`;
         const response = await apiClient.get(endpoint);
         setJob(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching job details:", error);
       } finally {
@@ -172,7 +173,7 @@ function JobDetailsPage() {
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
-                    outerRadius={100}
+                    outerRadius={92}
                     dataKey="value"
                     paddingAngle={5}
                     startAngle={90}
