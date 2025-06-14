@@ -10,7 +10,9 @@ import {
   EyeOffIcon,
   EyeIcon,
   ArrowUpDownIcon,
-  AlertCircleIcon
+  AlertCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from 'lucide-react';
 import { Resume } from '../types';
 import useResumeStore from '../store/resumeStore';
@@ -20,6 +22,9 @@ import DraggableItem from './ui/DraggableItem';
 import EditorAccordion from './EditorAccordion';
 import SectionItemEditor from './SectionItemEditor';
 import WorkExperienceSection from './WorkExperienceSection';
+import EducationSection from './EducationSection';
+import ProjectsSection from './ProjectsSection';
+import SkillsSection from './SkillsSection';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 
 interface EditorSidebarProps {
@@ -46,7 +51,9 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     })
   );
 
-  const sectionKeys = ['educationSection', 'experienceSection', 'skillSection', 'projectSection'];
+  const sectionKeys = ['educationSection', 'experienceSection', 'skillSection', 'projectSection'] as const;
+  type SectionKey = typeof sectionKeys[number];
+  type AllSectionId = SectionKey | 'personalDetails' | 'summary';
   // Get section order from resume.sectionsOrder or fallback to default order
   const orderedSectionKeys = [...sectionKeys].sort((a, b) => {
     const orderA = resume.sectionsOrder?.[a.replace('Section', '')] ?? 0;
@@ -68,7 +75,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     reorderSections(newOrderObj);
   };
 
-  const toggleSection = (sectionId: string) => {
+  const toggleSection = (sectionId: AllSectionId) => {
     setExpandedSections(prev => 
       prev.includes(sectionId)
         ? prev.filter(id => id !== sectionId)
@@ -120,52 +127,33 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     });
   };
 
-  const getSectionItemsById = (sectionKey: string) => {
+  const getSectionItemsById = (sectionKey: SectionKey) => {
     switch (sectionKey) {
       case 'educationSection':
-        return resume.educationSection.items.map(item => ({ ...item, id: String(item.id) }));
+        return resume.educationSection.items;
       case 'experienceSection':
-        return resume.experienceSection.items.map(item => ({ ...item, id: String(item.id) }));
+        return resume.experienceSection.items;
       case 'projectSection':
-        return resume.projectSection.items.map(item => ({ ...item, id: String(item.id) }));
+        return resume.projectSection.items;
       case 'skillSection':
-        return resume.skillSection.items.map(item => ({ ...item, id: String(item.id) }));
+        return resume.skillSection.items;
       default:
         return [];
     }
   };
 
-  const handleDragEnd = (sectionKey: string, result: any) => {
-    if (!result.active || !result.over) return;
-    
-    const activeId = parseInt(result.active.id);
-    const overId = parseInt(result.over.id);
-    
-    if (activeId === overId) return;
-    
-    let items;
-    switch (sectionKey) {
-      case 'educationSection':
-        items = [...resume.educationSection.items];
-        break;
-      case 'experienceSection':
-        items = [...resume.experienceSection.items];
-        break;
-      case 'projectSection':
-        items = [...resume.projectSection.items];
-        break;
-      case 'skillSection':
-        items = [...resume.skillSection.items];
-        break;
-      default:
-        return;
+  const handleDragEnd = (sectionKey: SectionKey, event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!active || !over || active.id === over.id) return;
+
+    const items = getSectionItemsById(sectionKey);
+    const activeIndex = items.findIndex((item: { id: number }) => item.id === Number(active.id));
+    const overIndex = items.findIndex((item: { id: number }) => item.id === Number(over.id));
+
+    if (activeIndex !== -1 && overIndex !== -1) {
+      const newOrder = arrayMove(items, activeIndex, overIndex);
+      reorderItems(sectionKey, newOrder);
     }
-    
-    const oldIndex = items.findIndex(item => item.id === activeId);
-    const newIndex = items.findIndex(item => item.id === overId);
-    
-    const newItems = arrayMove(items as any, oldIndex, newIndex);
-    reorderItems(sectionKey as any, newItems);
   };
 
   return (
@@ -243,43 +231,48 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                 </DraggableItem>
               );
             }
-
+            if (sectionKey === 'educationSection') {
+              return (
+                <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">
+                  <EducationSection
+                    education={resume.educationSection.items}
+                    sectionTitle={resume.educationSection.sectionTitle}
+                    hidden={resume.educationSection.hidden}
+                  />
+                </DraggableItem>
+              );
+            }
+            if (sectionKey === 'projectSection') {
+              return (
+                <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">
+                  <ProjectsSection
+                    projects={resume.projectSection.items}
+                    sectionTitle={resume.projectSection.sectionTitle}
+                    hidden={resume.projectSection.hidden}
+                  />
+                </DraggableItem>
+              );
+            }
             let icon, section, addHandler, sectionTitle, hidden;
             let handleItemDragEnd;
             switch (sectionKey) {
-              case 'educationSection':
-                icon = <BookOpenIcon size={18} />;
-                section = resume.educationSection;
-                addHandler = handleAddEducation;
-                sectionTitle = section.sectionTitle;
-                hidden = section.hidden;
-                handleItemDragEnd = (event: DragEndEvent) => handleDragEnd('educationSection', event);
-                break;
               case 'skillSection':
-                icon = <WrenchIcon size={18} />;
-                section = resume.skillSection;
-                addHandler = handleAddSkill;
-                sectionTitle = section.sectionTitle;
-                hidden = section.hidden;
-                handleItemDragEnd = (event: DragEndEvent) => handleDragEnd('skillSection', event);
-                break;
-              case 'projectSection':
-                icon = <CodeIcon size={18} />;
-                section = resume.projectSection;
-                addHandler = handleAddProject;
-                sectionTitle = section.sectionTitle;
-                hidden = section.hidden;
-                handleItemDragEnd = (event: DragEndEvent) => handleDragEnd('projectSection', event);
-                break;
+                return (
+                  <DraggableItem key={sectionKey} id={sectionKey}>
+                    <SkillsSection
+                      skills={resume.skillSection.items}
+                      sectionTitle={resume.skillSection.sectionTitle}
+                      hidden={resume.skillSection.hidden}
+                    />
+                  </DraggableItem>
+                );
               default:
                 return null;
             }
             return (
               <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">
                 <div className={`rounded-xl shadow-lg border p-6 hover:shadow-xl transition-all duration-300 ${
-                  sectionKey === 'educationSection' ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-100' :
                   sectionKey === 'skillSection' ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100' :
-                  sectionKey === 'projectSection' ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-100' :
                   'bg-white border-gray-100'
                 }`}>
                   <EditorAccordion
@@ -287,9 +280,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-3">
                           <div className={`p-2 rounded-lg ${
-                            sectionKey === 'educationSection' ? 'bg-green-100 text-green-600' :
                             sectionKey === 'skillSection' ? 'bg-blue-100 text-blue-600' :
-                            sectionKey === 'projectSection' ? 'bg-orange-100 text-orange-600' :
                             'bg-gray-100 text-gray-600'
                           }`}>
                             {icon}
@@ -344,9 +335,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     <button
                       onClick={addHandler}
                       className={`mt-6 w-full py-3 px-4 rounded-lg border-2 border-dashed transition-all duration-200 font-medium flex items-center justify-center gap-2 ${
-                        sectionKey === 'educationSection' ? 'border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400' :
                         sectionKey === 'skillSection' ? 'border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400' :
-                        sectionKey === 'projectSection' ? 'border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400' :
                         'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
                       }`}
                     >

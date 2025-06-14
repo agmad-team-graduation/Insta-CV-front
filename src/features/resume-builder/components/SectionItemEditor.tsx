@@ -93,23 +93,23 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
     if (updateItem) {
       updateItem(sectionKey, editedItem.id, editedItem);
       setIsEditing(false);
-      onComplete();
+      onComplete?.();
     }
   };
 
   const handleCancel = () => {
     setEditedItem(item);
     setIsEditing(false);
-    onComplete();
+    onComplete?.();
   };
 
   const renderEducationEditor = () => {
-    const educationItem = item as EducationItem;
+    const educationItem = editedItem as EducationItem;
     return (
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-100">
+      <div className="rounded-xl p-4 border border-gray-200">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{educationItem.degree || 'New Education'}</h3>
           </div>
           <button 
@@ -127,6 +127,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             onChange={(value) => handleUpdate<EducationItem>('degree', value)}
             label="Degree"
             placeholder="e.g., Bachelor of Science in Computer Science"
+            isEditing={isEditing}
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,6 +136,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               onChange={(value) => handleUpdate<EducationItem>('school', value)}
               label="School/University"
               placeholder="e.g., Harvard University"
+              isEditing={isEditing}
             />
             
             <div className="grid grid-cols-2 gap-2">
@@ -143,12 +145,14 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 onChange={(value) => handleUpdate<EducationItem>('city', value)}
                 label="City"
                 placeholder="e.g., Boston"
+                isEditing={isEditing}
               />
               <EditableField
                 value={educationItem.country}
                 onChange={(value) => handleUpdate<EducationItem>('country', value)}
                 label="Country"
                 placeholder="e.g., USA"
+                isEditing={isEditing}
               />
             </div>
           </div>
@@ -160,6 +164,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 onChange={(value) => handleUpdate<EducationItem>('startDate', value)}
                 type="date"
                 label="Start Date"
+                isEditing={isEditing}
               />
             </div>
             <div className="flex-1">
@@ -169,6 +174,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                   onChange={(value) => handleUpdate<EducationItem>('endDate', value)}
                   type="date"
                   label="End Date"
+                  isEditing={isEditing}
                 />
               )}
             </div>
@@ -193,7 +199,23 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             multiline
             label="Description"
             placeholder="Describe your achievements, relevant coursework, or other details..."
+            isEditing={isEditing}
           />
+
+          <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+            <button
+              onClick={handleCancel}
+              className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -298,16 +320,16 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             isEditing={isEditing}
           />
 
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+          <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
             <button
               onClick={handleCancel}
-              className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
             >
               Save Changes
             </button>
@@ -320,10 +342,10 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
   const renderProjectEditor = () => {
     const projectItem = item as ProjectItem;
     return (
-      <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100">
+      <div className="rounded-xl p-4 border border-gray-200">
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{projectItem.title || 'New Project'}</h3>
           </div>
           <button 
@@ -341,6 +363,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             onChange={(value) => handleUpdate<ProjectItem>('title', value)}
             label="Project Title"
             placeholder="e.g., E-commerce Mobile App"
+            isEditing={isEditing}
           />
           
           <div className="flex gap-3 items-end">
@@ -350,6 +373,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 onChange={(value) => handleUpdate<ProjectItem>('startDate', value)}
                 type="date"
                 label="Start Date"
+                isEditing={isEditing}
               />
             </div>
             <div className="flex-1">
@@ -359,6 +383,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                   onChange={(value) => handleUpdate<ProjectItem>('endDate', value)}
                   type="date"
                   label="End Date"
+                  isEditing={isEditing}
                 />
               )}
             </div>
@@ -383,6 +408,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             multiline
             label="Description"
             placeholder="Describe the project, your role, technologies used, and outcomes..."
+            isEditing={isEditing}
           />
           
           <div className="space-y-3">
@@ -391,7 +417,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               {!showAddSkill && (
                 <button
                   onClick={() => setShowAddSkill(true)}
-                  className="text-orange-600 hover:text-orange-700 text-sm flex items-center gap-1 px-3 py-1 rounded-lg hover:bg-orange-50 transition-all duration-200"
+                  className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1 px-3 py-1 rounded-lg hover:bg-blue-50 transition-all duration-200"
                 >
                   <PlusIcon size={14} />
                   Add Skill
@@ -400,13 +426,13 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             </div>
             
             {showAddSkill && (
-              <div className="flex gap-2 p-3 bg-white rounded-lg border border-orange-200">
+              <div className="flex gap-2 p-3 bg-white rounded-lg border border-gray-200">
                 <input
                   type="text"
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                   placeholder="Enter skill (e.g., React, Node.js)"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleAddSkill();
@@ -418,7 +444,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 />
                 <button
                   onClick={handleAddSkill}
-                  className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-200 font-medium"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
                 >
                   Add
                 </button>
@@ -438,12 +464,12 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               {projectItem.skills?.map((skill) => (
                 <div
                   key={skill.id}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-orange-200 rounded-full text-sm font-medium text-orange-700 hover:bg-orange-50 transition-all duration-200"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
                   <span>{skill.skill}</span>
                   <button
                     onClick={() => handleRemoveSkill(skill.id)}
-                    className="text-orange-500 hover:text-red-500 transition-colors duration-200"
+                    className="text-gray-500 hover:text-red-500 transition-colors duration-200"
                   >
                     <XIcon size={14} />
                   </button>
@@ -451,60 +477,90 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               ))}
             </div>
           </div>
+
+          <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+            <button
+              onClick={handleCancel}
+              className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     );
   };
 
   const renderSkillEditor = () => {
-    const skillItem = item as SkillItem;
+    const skill = item as SkillItem;
     return (
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <h3 className="font-semibold text-gray-800">{skillItem.skill || 'New Skill'}</h3>
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="p-4">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+              <h3 className="font-semibold text-gray-800">{skill.skill || 'New Skill'}</h3>
+            </div>
+            <button 
+              onClick={handleDelete}
+              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
+              title="Delete skill"
+            >
+              <Trash2Icon size={16} />
+            </button>
           </div>
-          <button 
-            onClick={handleDelete}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-            title="Delete skill"
-          >
-            <Trash2Icon size={16} />
-          </button>
-        </div>
-        
-        <div className="space-y-4">
-          <EditableField
-            value={skillItem.skill}
-            onChange={(value) => handleUpdate<SkillItem>('skill', value)}
-            label="Skill Name"
-            placeholder="e.g., JavaScript, Python, Design..."
-          />
-          
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Proficiency Level
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { value: 'BEGINNER', label: 'Beginner', color: 'bg-red-100 text-red-700 border-red-200' },
-                { value: 'INTERMEDIATE', label: 'Intermediate', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-                { value: 'ADVANCED', label: 'Advanced', color: 'bg-blue-100 text-blue-700 border-blue-200' },
-                { value: 'EXPERT', label: 'Expert', color: 'bg-green-100 text-green-700 border-green-200' }
-              ].map((level) => (
-                <button
-                  key={level.value}
-                  onClick={() => handleUpdate<SkillItem>('level', level.value)}
-                  className={`px-3 py-2 rounded-lg border-2 transition-all duration-200 text-sm font-medium ${
-                    skillItem.level === level.value
-                      ? level.color + ' ring-2 ring-offset-1 ring-blue-300'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  {level.label}
-                </button>
-              ))}
+          <div className="space-y-4">
+            {/* Skill Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Skill Name
+              </label>
+              <input
+                type="text"
+                value={skill.skill}
+                onChange={(e) => handleUpdate('skill', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., JavaScript, Python, Design..."
+              />
+            </div>
+
+            {/* Skill Level */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Proficiency Level
+              </label>
+              <select
+                value={skill.level}
+                onChange={(e) => handleUpdate('level', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="BEGINNER">Beginner</option>
+                <option value="INTERMEDIATE">Intermediate</option>
+                <option value="PROFICIENT">Proficient</option>
+                <option value="EXPERT">Expert</option>
+              </select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+              <button
+                onClick={handleCancel}
+                className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-3 py-1.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
@@ -512,18 +568,22 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
     );
   };
 
-  switch (sectionKey) {
-    case 'educationSection':
-      return renderEducationEditor();
-    case 'experienceSection':
-      return renderExperienceEditor();
-    case 'projectSection':
-      return renderProjectEditor();
-    case 'skillSection':
-      return renderSkillEditor();
-    default:
-      return null;
-  }
+  const renderEditor = () => {
+    switch (sectionKey) {
+      case 'educationSection':
+        return renderEducationEditor();
+      case 'experienceSection':
+        return renderExperienceEditor();
+      case 'projectSection':
+        return renderProjectEditor();
+      case 'skillSection':
+        return renderSkillEditor();
+      default:
+        return null;
+    }
+  };
+
+  return renderEditor();
 };
 
 export default SectionItemEditor; 

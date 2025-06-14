@@ -51,8 +51,10 @@ const TechnicalTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
         {sortedSections.map(([key, section]) => {
           if (section.hidden) return null;
           
-          // Sort items by orderIndex
-          const sortedItems = [...section.items].sort((a, b) => a.orderIndex - b.orderIndex);
+          // Sort items by orderIndex and filter out hidden items
+          const sortedItems = [...section.items]
+            .filter(item => !item.hidden)
+            .sort((a, b) => a.orderIndex - b.orderIndex);
           
           return (
             <div key={key} className="mb-8">
