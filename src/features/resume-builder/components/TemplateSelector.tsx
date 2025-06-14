@@ -1,5 +1,5 @@
 import React from 'react';
-import { Template, TemplateName } from '../types';
+import { Template, TemplateName } from '../types/index';
 import useResumeStore from '../store/resumeStore';
 import { CheckIcon } from 'lucide-react';
 
