@@ -47,6 +47,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       name: 'Hunter Green',
       description: 'Multi-column resume template with an elegant hunter green color scheme.',
       thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    },
+    {
+      id: 'atlanticblue',
+      name: 'Atlantic Blue',
+      description: 'Multi-column resume with sidebar left featuring a professional atlantic blue color scheme.',
+      thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     }
   ];
 
