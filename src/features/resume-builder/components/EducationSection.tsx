@@ -19,6 +19,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEn
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import useResumeStore from '../store/resumeStore';
 import SectionItemEditor from './SectionItemEditor';
+import EditableField from './ui/EditableField';
 
 interface EducationSectionProps {
   education: EducationEntry[];
@@ -198,6 +199,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { 
     addItem, 
     reorderItems, 
@@ -205,6 +207,20 @@ const EducationSection: React.FC<EducationSectionProps> = ({
     updateSectionTitle, 
     toggleSectionVisibility 
   } = useResumeStore();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: 'educationSection' });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -255,7 +271,13 @@ const EducationSection: React.FC<EducationSectionProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div 
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-200 ${
+        isDragging ? 'opacity-50 cursor-grabbing' : ''
+      }`}
+    >
       {/* Header Bar */}
       <div className="border-b border-gray-100">
         <button
@@ -263,12 +285,25 @@ const EducationSection: React.FC<EducationSectionProps> = ({
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-100 text-gray-600 rounded-lg">
-              <BookOpenIcon size={18} />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">{sectionTitle}</h2>
+            <BookOpenIcon size={20} className="text-gray-600" />
+            <EditableField
+              value={sectionTitle}
+              onChange={(value) => updateSectionTitle('educationSection', value)}
+              className="!p-0 hover:bg-transparent font-semibold text-lg text-gray-900"
+              onEditStart={() => setIsEditingTitle(true)}
+              onEditEnd={() => setIsEditingTitle(false)}
+            />
           </div>
           <div className="flex items-center gap-2">
+            <button
+              {...attributes}
+              {...listeners}
+              className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+              title="Drag to reorder section"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVerticalIcon size={16} />
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -297,37 +332,33 @@ const EducationSection: React.FC<EducationSectionProps> = ({
         }`}
       >
         <div className="p-6">
-          {education.length > 0 ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={education.map(edu => edu.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
-                  {education.map((edu) => (
-                    <EducationCard
-                      key={edu.id}
-                      education={edu}
-                      onToggleVisibility={handleToggleVisibility}
-                      onEdit={handleEdit}
-                      isEditMode={editingId === edu.id}
-                      onEditComplete={handleEditComplete}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <BookOpenIcon size={48} className="mx-auto mb-4 text-gray-300" />
-              <p className="text-lg font-medium mb-2">No education added yet</p>
-              <p className="text-sm">Add your first education entry to get started</p>
-            </div>
-          )}
-
-          {/* Add Education Button */}
+          {/* Rest of the content */}
+          <div className="space-y-4">
+            {education.map((edu) => (
+              <EducationCard
+                key={edu.id}
+                education={edu}
+                onToggleVisibility={() => toggleItemVisibility('educationSection', edu.id)}
+                onEdit={() => setEditingId(edu.id)}
+                isEditMode={editingId === edu.id}
+                onEditComplete={() => setEditingId(null)}
+              />
+            ))}
+          </div>
           <button
-            onClick={handleAddEducation}
-            className="mt-6 w-full py-3 px-4 border-2 border-dashed border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
+            onClick={() => addItem('educationSection', {
+              degree: '',
+              school: '',
+              city: '',
+              country: '',
+              startDate: '',
+              endDate: '',
+              description: '',
+              present: false
+            })}
+            className="mt-4 w-full py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors flex items-center justify-center gap-2"
           >
-            <PlusIcon size={18} />
+            <PlusIcon size={16} />
             Add Education
           </button>
         </div>

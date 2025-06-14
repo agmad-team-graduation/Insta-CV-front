@@ -46,11 +46,11 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
         </div>
 
         {/* Profile/Summary */}
-        {resume.summary && (
+        {resume.summary && !resume.summaryHidden && (
           <div className="mb-8">
             <div className="flex items-center mb-4">
               <UserIcon size={20} className="mr-3 text-slate-300" />
-              <h2 className="text-lg font-bold text-white">PROFILE</h2>
+              <h2 className="text-lg font-bold text-white">{resume.summaryTitle || 'PROFILE'}</h2>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed">{resume.summary}</p>
           </div>

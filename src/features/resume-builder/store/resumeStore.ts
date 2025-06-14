@@ -13,8 +13,9 @@ interface ResumeState {
   fetchResume: (resumeId?: number) => Promise<void>;
   updatePersonalDetails: (details: Partial<Resume['personalDetails']>) => void;
   updateSummary: (summary: string) => void;
+  updateSummaryTitle: (newTitle: string) => void;
   updateSectionTitle: (sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>, newTitle: string) => void;
-  toggleSectionVisibility: (sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>) => void;
+  toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summary') => void;
   reorderSections: (newOrder: Record<string, number>) => void;
   reorderItems: <T>(
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
@@ -89,6 +90,18 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     });
   },
 
+  updateSummaryTitle: (newTitle) => {
+    set((state) => {
+      if (!state.resume) return state;
+      return {
+        resume: {
+          ...state.resume,
+          summaryTitle: newTitle
+        }
+      };
+    });
+  },
+
   updateSectionTitle: (sectionKey, newTitle) => {
     set((state) => {
       if (!state.resume) return state;
@@ -107,6 +120,25 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   toggleSectionVisibility: (sectionKey) => {
     set((state) => {
       if (!state.resume) return state;
+      if (sectionKey === 'personalDetails') {
+        return {
+          resume: {
+            ...state.resume,
+            personalDetails: {
+              ...state.resume.personalDetails,
+              hidden: !state.resume.personalDetails.hidden
+            }
+          }
+        };
+      }
+      if (sectionKey === 'summary') {
+        return {
+          resume: {
+            ...state.resume,
+            summaryHidden: !state.resume.summaryHidden
+          }
+        };
+      }
       return {
         resume: {
           ...state.resume,

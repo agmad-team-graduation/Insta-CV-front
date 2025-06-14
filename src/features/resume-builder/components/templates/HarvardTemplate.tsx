@@ -31,9 +31,9 @@ const HarvardTemplate: React.FC<TemplateProps> = ({ resume }) => {
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 border-b">
-          <h2 className="text-lg font-bold mb-3 text-gray-800 uppercase tracking-wide">OBJECTIVE</h2>
+          <h2 className="text-lg font-bold mb-3 text-gray-800 uppercase tracking-wide">{resume.summaryTitle || 'OBJECTIVE'}</h2>
           <p className="text-gray-700 leading-relaxed">{resume.summary}</p>
         </div>
       )}

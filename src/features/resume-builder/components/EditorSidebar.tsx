@@ -26,6 +26,8 @@ import EducationSection from './EducationSection';
 import ProjectsSection from './ProjectsSection';
 import SkillsSection from './SkillsSection';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import PersonalDetailsSection from './PersonalDetailsSection';
+import ProfessionalSummarySection from './ProfessionalSummarySection';
 
 interface EditorSidebarProps {
   resume: Resume;
@@ -151,7 +153,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     const overIndex = items.findIndex((item: { id: number }) => item.id === Number(over.id));
 
     if (activeIndex !== -1 && overIndex !== -1) {
-      const newOrder = arrayMove(items, activeIndex, overIndex);
+      const newOrder = arrayMove(items as any, activeIndex, overIndex);
       reorderItems(sectionKey, newOrder);
     }
   };
@@ -160,62 +162,17 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
       <div className="space-y-6 w-full">
         {/* Personal Details */}
-        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300">
-          <EditorAccordion
-            title="Personal Details"
-            icon={<UserIcon size={18} />}
-            isExpanded={expandedSections.includes('personalDetails')}
-            onToggle={() => toggleSection('personalDetails')}
-          >
-            <div className="space-y-4 mt-4">
-              <EditableField
-                value={resume.personalDetails.fullName}
-                onChange={(value) => updatePersonalDetails({ fullName: value })}
-                label="Full Name"
-                placeholder="e.g., John Doe"
-              />
-              <EditableField
-                value={resume.personalDetails.email}
-                onChange={(value) => updatePersonalDetails({ email: value })}
-                type="email"
-                label="Email"
-                placeholder="e.g., john.doe@email.com"
-              />
-              <EditableField
-                value={resume.personalDetails.phone}
-                onChange={(value) => updatePersonalDetails({ phone: value })}
-                type="tel"
-                label="Phone"
-                placeholder="e.g., +1 (555) 123-4567"
-              />
-              <EditableField
-                value={resume.personalDetails.address}
-                onChange={(value) => updatePersonalDetails({ address: value })}
-                label="Address"
-                placeholder="e.g., New York, NY, USA"
-              />
-            </div>
-          </EditorAccordion>
-        </div>
+        <PersonalDetailsSection
+          personalDetails={resume.personalDetails}
+          sectionTitle="Personal Details"
+          hidden={resume.personalDetails.hidden || false}
+        />
         {/* Summary */}
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg border border-indigo-100 p-6 hover:shadow-xl transition-all duration-300">
-          <EditorAccordion
-            title="Professional Summary"
-            icon={<BookOpenIcon size={18} />}
-            isExpanded={expandedSections.includes('summary')}
-            onToggle={() => toggleSection('summary')}
-          >
-            <div className="mt-4">
-              <EditableField
-                value={resume.summary}
-                onChange={updateSummary}
-                multiline
-                label="Summary"
-                placeholder="Write a compelling professional summary that highlights your key skills, experience, and career objectives..."
-              />
-            </div>
-          </EditorAccordion>
-        </div>
+        <ProfessionalSummarySection
+          summary={resume.summary}
+          sectionTitle="Professional Summary"
+          hidden={resume.summaryHidden || false}
+        />
         {/* Main Sections: Draggable as cards */}
         <SortableContext items={orderedSectionKeys} strategy={verticalListSortingStrategy}>
           {orderedSectionKeys.map((sectionKey) => {
@@ -322,9 +279,9 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                   >
                     {/* DnD for items inside section */}
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleItemDragEnd}>
-                      <SortableContext items={section.items.map((item) => String(item.id))} strategy={verticalListSortingStrategy}>
+                      <SortableContext items={section.items.map((item : any) => String(item.id))} strategy={verticalListSortingStrategy}>
                         <div className="space-y-4 mt-4">
-                          {section.items.map((item) => (
+                          {section.items.map((item : any) => (
                             <DraggableItem key={item.id} id={String(item.id)} className="transition-all duration-200 hover:scale-[1.01]">
                               <SectionItemEditor sectionKey={sectionKey} item={item} />
                             </DraggableItem>

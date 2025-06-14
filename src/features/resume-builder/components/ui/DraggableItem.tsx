@@ -36,16 +36,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({
       style={style}
       className={`${className} ${isDragging ? 'dragging' : ''}`}
     >
-      <div className="flex items-start">
-        <div
-          {...attributes}
-          {...listeners}
-          className={`cursor-grab hover:text-blue-600 active:cursor-grabbing p-2 touch-none ${handleClassName}`}
-        >
-          <GripVertical size={20} />
-        </div>
-        <div className="flex-1">{children}</div>
-      </div>
+      {children}
     </div>
   );
 };

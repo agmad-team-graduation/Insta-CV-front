@@ -39,8 +39,9 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 bg-gray-100 border-b">
+          <h2 className="text-xl font-bold mb-3 text-gray-800 text-center">{resume.summaryTitle || 'Professional Summary'}</h2>
           <p className="text-gray-700 text-center italic">{resume.summary}</p>
         </div>
       )}

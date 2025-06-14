@@ -42,9 +42,9 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) =>
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 bg-green-50 border-l-4 border-green-800">
-          <h2 className="text-xl font-bold mb-3 text-green-800">Professional Summary</h2>
+          <h2 className="text-xl font-bold mb-3 text-green-800">{resume.summaryTitle || 'Professional Summary'}</h2>
           <p className="text-gray-700 leading-relaxed">{resume.summary}</p>
         </div>
       )}

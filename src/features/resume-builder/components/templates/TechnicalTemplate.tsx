@@ -39,9 +39,9 @@ const TechnicalTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 bg-gray-100 border-b">
-          <h2 className="text-xl font-bold mb-3 text-gray-800 font-mono">// Summary</h2>
+          <h2 className="text-xl font-bold mb-3 text-gray-800 font-mono">// {resume.summaryTitle || 'Summary'}</h2>
           <p className="text-gray-700 font-mono">{resume.summary}</p>
         </div>
       )}

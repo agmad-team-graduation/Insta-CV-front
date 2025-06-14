@@ -118,6 +118,13 @@ const SkillCard: React.FC<SkillCardProps> = ({
           {/* Actions */}
           <div className="flex items-center gap-1">
             <button
+              onClick={() => onEdit(skill.id)}
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+              title="Edit skill"
+            >
+              <PencilIcon size={14} />
+            </button>
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleVisibility(skill.id);

@@ -39,8 +39,9 @@ const MinimalTemplate: React.FC<TemplateProps> = ({ resume }) => {
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 border-b">
+          <h2 className="text-lg font-semibold mb-3 text-gray-900">{resume.summaryTitle || 'Summary'}</h2>
           <p className="text-gray-700">{resume.summary}</p>
         </div>
       )}

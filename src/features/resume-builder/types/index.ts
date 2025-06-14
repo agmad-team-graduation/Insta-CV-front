@@ -4,6 +4,8 @@ export interface Resume {
   jobId: number;
   personalDetails: PersonalDetails;
   summary: string;
+  summaryTitle?: string;
+  summaryHidden?: boolean;
   educationSection: Section<EducationItem>;
   experienceSection: Section<ExperienceItem>;
   skillSection: Section<SkillItem>;
@@ -18,6 +20,7 @@ export interface PersonalDetails {
   email: string;
   phone: string;
   address: string;
+  hidden?: boolean;
 }
 
 export interface Section<T> {

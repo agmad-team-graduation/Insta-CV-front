@@ -36,9 +36,9 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
       </div>
       
       {/* Summary */}
-      {resume.summary && (
+      {resume.summary && !resume.summaryHidden && (
         <div className="p-6 bg-gray-50 border-b">
-          <h2 className="text-xl font-bold mb-3 text-gray-700">Summary</h2>
+          <h2 className="text-xl font-bold mb-3 text-gray-700">{resume.summaryTitle || 'Summary'}</h2>
           <p className="text-gray-700">{resume.summary}</p>
         </div>
       )}
