@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Trash2Icon,
   PlusIcon,
@@ -22,6 +22,12 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
   const { updateItem, deleteItem } = useResumeStore();
   const [newSkill, setNewSkill] = useState('');
   const [showAddSkill, setShowAddSkill] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
+  const [editedItem, setEditedItem] = useState(item);
+
+  useEffect(() => {
+    setEditedItem(item);
+  }, [item]);
 
   const handleUpdate = <T extends object>(field: keyof T, value: any) => {
     updateItem(sectionKey, item.id, { [field]: value });
@@ -81,6 +87,20 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
     
     const updatedSkills = projectItem.skills.filter(s => s.id !== skillId);
     updateItem<ProjectItem>('projectSection', item.id, { skills: updatedSkills });
+  };
+
+  const handleSave = () => {
+    if (updateItem) {
+      updateItem(sectionKey, editedItem.id, editedItem);
+      setIsEditing(false);
+      onComplete();
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedItem(item);
+    setIsEditing(false);
+    onComplete();
   };
 
   const renderEducationEditor = () => {
@@ -180,7 +200,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
   };
 
   const renderExperienceEditor = () => {
-    const experienceItem = item as ExperienceItem;
+    const experienceItem = editedItem as ExperienceItem;
     return (
       <div className="rounded-xl p-4 border border-gray-200">
         <div className="flex justify-between items-start mb-4">
@@ -188,22 +208,13 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{experienceItem.jobTitle || 'New Experience'}</h3>
           </div>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={onComplete}
-              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 p-2 rounded-full transition-all duration-200"
-              title="Cancel editing"
-            >
-              <XIcon size={16} />
-            </button>
-            <button 
-              onClick={handleDelete}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-              title="Delete experience"
-            >
-              <Trash2Icon size={16} />
-            </button>
-          </div>
+          <button 
+            onClick={handleDelete}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
+            title="Delete experience"
+          >
+            <Trash2Icon size={16} />
+          </button>
         </div>
         
         <div className="space-y-4">
@@ -212,6 +223,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             onChange={(value) => handleUpdate<ExperienceItem>('jobTitle', value)}
             label="Job Title"
             placeholder="e.g., Senior Software Engineer"
+            isEditing={isEditing}
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -220,6 +232,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               onChange={(value) => handleUpdate<ExperienceItem>('company', value)}
               label="Company"
               placeholder="e.g., Google Inc."
+              isEditing={isEditing}
             />
             
             <div className="grid grid-cols-2 gap-2">
@@ -228,12 +241,14 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 onChange={(value) => handleUpdate<ExperienceItem>('city', value)}
                 label="City"
                 placeholder="e.g., San Francisco"
+                isEditing={isEditing}
               />
               <EditableField
                 value={experienceItem.country}
                 onChange={(value) => handleUpdate<ExperienceItem>('country', value)}
                 label="Country"
                 placeholder="e.g., USA"
+                isEditing={isEditing}
               />
             </div>
           </div>
@@ -245,6 +260,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                 onChange={(value) => handleUpdate<ExperienceItem>('startDate', value)}
                 type="date"
                 label="Start Date"
+                isEditing={isEditing}
               />
             </div>
             <div className="flex-1">
@@ -254,6 +270,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
                   onChange={(value) => handleUpdate<ExperienceItem>('endDate', value)}
                   type="date"
                   label="End Date"
+                  isEditing={isEditing}
                 />
               )}
             </div>
@@ -278,7 +295,23 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             multiline
             label="Description"
             placeholder="Describe your responsibilities, achievements, and impact..."
+            isEditing={isEditing}
           />
+
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+            <button
+              onClick={handleCancel}
+              className="px-4 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
     );

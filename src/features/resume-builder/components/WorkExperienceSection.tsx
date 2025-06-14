@@ -32,7 +32,7 @@ interface GroupedExperience {
 }
 
 interface ExperienceCardProps {
-  experience: GroupedExperience;
+  experience: ExperienceItem;
   onToggleVisibility: (id: number) => void;
   onEdit: (id: number) => void;
   isEditMode: boolean;
@@ -53,7 +53,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: experience.entries[0].id });
+  } = useSortable({ id: experience.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -93,7 +93,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
       >
         <SectionItemEditor 
           sectionKey="experienceSection" 
-          item={experience.entries[0]} 
+          item={experience} 
           onComplete={onEditComplete}
         />
       </div>
@@ -123,79 +123,42 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
             </button>
 
             {/* Content */}
-            <div 
+            <div
               className="flex-1 cursor-pointer hover:bg-gray-50 rounded-lg p-2 -m-2"
-              onClick={() => onEdit(experience.entries[0].id)}
+              onClick={() => onEdit(experience.id)}
             >
-              {experience.isGrouped ? (
-                <div className="mb-3">
-                  <h3 className="text-base font-semibold text-gray-900 mb-2">
-                    {experience.jobTitle} <span className="text-sm font-normal text-gray-500">(multiple employers)</span>
-                  </h3>
-                  {experience.entries.map((entry, index) => (
-                    <div key={entry.id} className="mb-3 last:mb-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-gray-700 italic">{entry.company}</span>
-                        <div className="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wide">
-                          <div className="flex items-center gap-1">
-                            <CalendarIcon size={12} />
-                            {formatDateRange(entry.startDate, entry.endDate, entry.present)}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPinIcon size={12} />
-                            {entry.city}, {entry.country}
-                          </div>
-                        </div>
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-base font-semibold text-gray-900">{experience.jobTitle}</h3>
+                  <span className="text-sm font-normal text-gray-600 italic">{experience.company}</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wide mb-3">
+                  <div className="flex items-center gap-1">
+                    <CalendarIcon size={12} />
+                    {formatDateRange(experience.startDate, experience.endDate, experience.present)}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPinIcon size={12} />
+                    {experience.city}, {experience.country}
+                  </div>
+                </div>
+                {experience.description && (
+                  <div className="space-y-1">
+                    {parseDescription(experience.description).map((bullet, index) => (
+                      <div key={index} className="text-sm text-gray-600">
+                        {bullet}
                       </div>
-                      {entry.description && (
-                        <div className="ml-4">
-                          {parseDescription(entry.description).map((bullet, bulletIndex) => (
-                            <div key={bulletIndex} className="text-sm text-gray-600 mb-1 flex items-start">
-                              <span className="text-gray-400 mr-2 mt-1.5 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></span>
-                              <span className="font-medium text-gray-500 mr-2">{entry.company}:</span>
-                              {bullet}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-base font-semibold text-gray-900">{experience.entries[0].jobTitle}</h3>
-                    <span className="text-sm font-normal text-gray-600 italic">{experience.entries[0].company}</span>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-gray-500 uppercase tracking-wide mb-3">
-                    <div className="flex items-center gap-1">
-                      <CalendarIcon size={12} />
-                      {formatDateRange(experience.entries[0].startDate, experience.entries[0].endDate, experience.entries[0].present)}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPinIcon size={12} />
-                      {experience.entries[0].city}, {experience.entries[0].country}
-                    </div>
-                  </div>
-                  {experience.entries[0].description && (
-                    <div className="space-y-1">
-                      {parseDescription(experience.entries[0].description).map((bullet, index) => (
-                        <div key={index} className="text-sm text-gray-600 flex items-start">
-                          <span className="text-gray-400 mr-2 mt-1.5 w-1 h-1 bg-gray-400 rounded-full flex-shrink-0"></span>
-                          {bullet}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => onEdit(experience.entries[0].id)}
+              onClick={() => onEdit(experience.id)}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
               title="Edit experience"
             >
@@ -204,12 +167,12 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onToggleVisibility(experience.entries[0].id);
+                onToggleVisibility(experience.id);
               }}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
-              title={experience.entries[0].hidden ? 'Show item' : 'Hide item'}
+              title={experience.hidden ? 'Show item' : 'Hide item'}
             >
-              {experience.entries[0].hidden ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+              {experience.hidden ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
             </button>
           </div>
         </div>
@@ -238,25 +201,6 @@ const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
       activationConstraint: { distance: 8 },
     })
   );
-
-  // Group experiences by job title
-  const groupedExperiences: GroupedExperience[] = React.useMemo(() => {
-    const groups: { [key: string]: ExperienceItem[] } = {};
-    
-    experiences.forEach(exp => {
-      const key = exp.jobTitle.toLowerCase().trim();
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key].push(exp);
-    });
-
-    return Object.entries(groups).map(([jobTitle, entries]) => ({
-      jobTitle: entries[0].jobTitle, // Use original casing
-      entries: entries.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
-      isGrouped: entries.length > 1
-    }));
-  }, [experiences]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -316,11 +260,7 @@ const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
                 e.stopPropagation();
                 toggleSectionVisibility('experienceSection');
               }}
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                hidden 
-                  ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                  : 'bg-green-100 text-green-600 hover:bg-green-200'
-              }`}
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
               title={hidden ? 'Show section' : 'Hide section'}
             >
               {hidden ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
@@ -347,13 +287,13 @@ const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={experiences.map(exp => exp.id)} strategy={verticalListSortingStrategy}>
                 <div className="space-y-4">
-                  {groupedExperiences.map((group) => (
+                  {experiences.map((experience) => (
                     <ExperienceCard
-                      key={group.entries[0].id}
-                      experience={group}
+                      key={experience.id}
+                      experience={experience}
                       onToggleVisibility={handleToggleVisibility}
                       onEdit={handleEdit}
-                      isEditMode={editingId === group.entries[0].id}
+                      isEditMode={editingId === experience.id}
                       onEditComplete={handleEditComplete}
                     />
                   ))}
