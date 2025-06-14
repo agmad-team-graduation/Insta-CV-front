@@ -41,6 +41,12 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       name: 'Harvard Resume',
       description: 'Classic Sans Serif template following Harvard Career Services guidelines.',
       thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+    },
+    {
+      id: 'huntergreen',
+      name: 'Hunter Green',
+      description: 'Multi-column resume template with an elegant hunter green color scheme.',
+      thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     }
   ];
 

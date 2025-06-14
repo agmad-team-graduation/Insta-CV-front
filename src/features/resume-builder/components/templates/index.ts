@@ -5,6 +5,7 @@ import ClassicTemplate from './ClassicTemplate';
 import MinimalTemplate from './MinimalTemplate';
 import TechnicalTemplate from './TechnicalTemplate';
 import HarvardTemplate from './HarvardTemplate';
+import HunterGreenTemplate from './HunterGreenTemplate';
 
 export interface TemplateProps {
   resume: Resume;
@@ -20,6 +21,7 @@ export const templateRegistry: Record<TemplateName, TemplateComponent> = {
   minimal: MinimalTemplate,
   technical: TechnicalTemplate,
   harvard: HarvardTemplate,
+  huntergreen: HunterGreenTemplate,
 };
 
 // Get template component by name
@@ -34,4 +36,5 @@ export {
   MinimalTemplate,
   TechnicalTemplate,
   HarvardTemplate,
+  HunterGreenTemplate,
 }; 
