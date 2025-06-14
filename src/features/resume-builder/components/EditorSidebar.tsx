@@ -1,26 +1,8 @@
-import React, { useState } from 'react';
-import { 
-  UserIcon, 
-  BookOpenIcon, 
-  BriefcaseIcon, 
-  CodeIcon, 
-  WrenchIcon, 
-  PlusIcon,
-  MinusIcon,
-  EyeOffIcon,
-  EyeIcon,
-  ArrowUpDownIcon,
-  AlertCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon
-} from 'lucide-react';
+import React from 'react';
 import { Resume } from '../types';
 import useResumeStore from '../store/resumeStore';
-import EditableField from './ui/EditableField';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import DraggableItem from './ui/DraggableItem';
-import EditorAccordion from './EditorAccordion';
-import SectionItemEditor from './SectionItemEditor';
 import WorkExperienceSection from './WorkExperienceSection';
 import EducationSection from './EducationSection';
 import ProjectsSection from './ProjectsSection';
@@ -35,16 +17,9 @@ interface EditorSidebarProps {
 
 const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
   const {
-    updatePersonalDetails,
-    updateSummary,
-    updateSectionTitle,
-    toggleSectionVisibility,
-    addItem,
     reorderItems,
     reorderSections
   } = useResumeStore();
-
-  const [expandedSections, setExpandedSections] = useState<string[]>(['personalDetails', 'summary']);
 
   // DnD sensors for section reordering
   const sensors = useSensors(
@@ -56,6 +31,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
   const sectionKeys = ['educationSection', 'experienceSection', 'skillSection', 'projectSection'] as const;
   type SectionKey = typeof sectionKeys[number];
   type AllSectionId = SectionKey | 'personalDetails' | 'summary';
+
   // Get section order from resume.sectionsOrder or fallback to default order
   const orderedSectionKeys = [...sectionKeys].sort((a, b) => {
     const orderA = resume.sectionsOrder?.[a.replace('Section', '')] ?? 0;
@@ -75,58 +51,6 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
       newOrderObj[key.replace('Section', '')] = idx + 1;
     });
     reorderSections(newOrderObj);
-  };
-
-  const toggleSection = (sectionId: AllSectionId) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId)
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
-    );
-  };
-
-  const handleAddEducation = () => {
-    addItem<any>('educationSection', {
-      degree: 'New Degree',
-      school: 'University Name',
-      city: 'City',
-      country: 'Country',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
-      description: 'Enter your education details here',
-      present: false
-    });
-  };
-
-  const handleAddExperience = () => {
-    addItem<any>('experienceSection', {
-      jobTitle: 'New Position',
-      company: 'Company Name',
-      city: 'City',
-      country: 'Country',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
-      description: 'Enter your responsibilities and achievements here',
-      present: false
-    });
-  };
-
-  const handleAddProject = () => {
-    addItem<any>('projectSection', {
-      title: 'New Project',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
-      description: 'Describe your project here',
-      skills: [],
-      present: false
-    });
-  };
-
-  const handleAddSkill = () => {
-    addItem<any>('skillSection', {
-      skill: 'New Skill',
-      level: 'INTERMEDIATE'
-    });
   };
 
   const getSectionItemsById = (sectionKey: SectionKey) => {

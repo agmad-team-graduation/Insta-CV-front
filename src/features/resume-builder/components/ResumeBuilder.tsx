@@ -20,7 +20,6 @@ const ResumeBuilder: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
   // DnD sensors configuration
@@ -58,8 +57,6 @@ const ResumeBuilder: React.FC = () => {
   const handleDownloadPdf = async () => {
     if (!resume) return;
     
-    setIsGeneratingPdf(true);
-    
     try {
       // This is handled in the ResumePreview component
       const previewElement = document.getElementById('resume-preview-container');
@@ -69,8 +66,6 @@ const ResumeBuilder: React.FC = () => {
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
-    } finally {
-      setIsGeneratingPdf(false);
     }
   };
 
@@ -143,15 +138,10 @@ const ResumeBuilder: React.FC = () => {
               </button>
               <button
                 onClick={handleDownloadPdf}
-                disabled={isGeneratingPdf}
                 className="btn btn-primary"
                 title="Download as PDF"
               >
-                {isGeneratingPdf ? (
-                  <Loader2Icon className="animate-spin h-4 w-4 mr-2" />
-                ) : (
-                  <DownloadIcon size={18} />
-                )}
+                <DownloadIcon size={18} />
                 <span className="hidden sm:inline">Download PDF</span>
               </button>
             </div>

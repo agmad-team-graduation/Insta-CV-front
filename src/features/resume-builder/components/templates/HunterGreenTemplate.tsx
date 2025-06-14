@@ -3,7 +3,7 @@ import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon } from 'lucide-react';
 
-const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
+const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     education: resume.educationSection,
@@ -17,7 +17,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) =>
   });
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-5xl mx-auto" ref={previewRef}>
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-5xl mx-auto">
       {/* Header with personal details */}
       <div className="p-8 bg-gradient-to-r from-green-800 to-green-700 text-white">
         <div className="flex items-center justify-between">
