@@ -19,6 +19,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-ki
 import DraggableItem from './ui/DraggableItem';
 import EditorAccordion from './EditorAccordion';
 import SectionItemEditor from './SectionItemEditor';
+import WorkExperienceSection from './WorkExperienceSection';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 
 interface EditorSidebarProps {
@@ -171,58 +172,78 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
       <div className="space-y-6 w-full">
         {/* Personal Details */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300">
           <EditorAccordion
             title="Personal Details"
             icon={<UserIcon size={18} />}
             isExpanded={expandedSections.includes('personalDetails')}
             onToggle={() => toggleSection('personalDetails')}
           >
-            <div className="space-y-3">
+            <div className="space-y-4 mt-4">
               <EditableField
                 value={resume.personalDetails.fullName}
                 onChange={(value) => updatePersonalDetails({ fullName: value })}
                 label="Full Name"
+                placeholder="e.g., John Doe"
               />
               <EditableField
                 value={resume.personalDetails.email}
                 onChange={(value) => updatePersonalDetails({ email: value })}
                 type="email"
                 label="Email"
+                placeholder="e.g., john.doe@email.com"
               />
               <EditableField
                 value={resume.personalDetails.phone}
                 onChange={(value) => updatePersonalDetails({ phone: value })}
                 type="tel"
                 label="Phone"
+                placeholder="e.g., +1 (555) 123-4567"
               />
               <EditableField
                 value={resume.personalDetails.address}
                 onChange={(value) => updatePersonalDetails({ address: value })}
                 label="Address"
+                placeholder="e.g., New York, NY, USA"
               />
             </div>
           </EditorAccordion>
         </div>
         {/* Summary */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl shadow-lg border border-indigo-100 p-6 hover:shadow-xl transition-all duration-300">
           <EditorAccordion
-            title="Summary"
-            icon={<AlertCircleIcon size={18} />}
+            title="Professional Summary"
+            icon={<BookOpenIcon size={18} />}
             isExpanded={expandedSections.includes('summary')}
             onToggle={() => toggleSection('summary')}
           >
-            <EditableField
-              value={resume.summary}
-              onChange={updateSummary}
-              multiline
-              placeholder="Write a brief professional summary..."
-            />
+            <div className="mt-4">
+              <EditableField
+                value={resume.summary}
+                onChange={updateSummary}
+                multiline
+                label="Summary"
+                placeholder="Write a compelling professional summary that highlights your key skills, experience, and career objectives..."
+              />
+            </div>
           </EditorAccordion>
         </div>
         {/* Main Sections: Draggable as cards */}
         <SortableContext items={orderedSectionKeys} strategy={verticalListSortingStrategy}>
           {orderedSectionKeys.map((sectionKey) => {
+            // Handle experience section separately with new component
+            if (sectionKey === 'experienceSection') {
+              return (
+                <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">
+                  <WorkExperienceSection
+                    experiences={resume.experienceSection.items}
+                    sectionTitle={resume.experienceSection.sectionTitle}
+                    hidden={resume.experienceSection.hidden}
+                  />
+                </DraggableItem>
+              );
+            }
+
             let icon, section, addHandler, sectionTitle, hidden;
             let handleItemDragEnd;
             switch (sectionKey) {
@@ -233,14 +254,6 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                 sectionTitle = section.sectionTitle;
                 hidden = section.hidden;
                 handleItemDragEnd = (event: DragEndEvent) => handleDragEnd('educationSection', event);
-                break;
-              case 'experienceSection':
-                icon = <BriefcaseIcon size={18} />;
-                section = resume.experienceSection;
-                addHandler = handleAddExperience;
-                sectionTitle = section.sectionTitle;
-                hidden = section.hidden;
-                handleItemDragEnd = (event: DragEndEvent) => handleDragEnd('experienceSection', event);
                 break;
               case 'skillSection':
                 icon = <WrenchIcon size={18} />;
@@ -263,34 +276,50 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
             }
             return (
               <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">
-                <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+                <div className={`rounded-xl shadow-lg border p-6 hover:shadow-xl transition-all duration-300 ${
+                  sectionKey === 'educationSection' ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-100' :
+                  sectionKey === 'skillSection' ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100' :
+                  sectionKey === 'projectSection' ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-100' :
+                  'bg-white border-gray-100'
+                }`}>
                   <EditorAccordion
                     title={
                       <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-2">
-                          {icon}
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${
+                            sectionKey === 'educationSection' ? 'bg-green-100 text-green-600' :
+                            sectionKey === 'skillSection' ? 'bg-blue-100 text-blue-600' :
+                            sectionKey === 'projectSection' ? 'bg-orange-100 text-orange-600' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {icon}
+                          </div>
                           <EditableField
                             value={sectionTitle}
                             onChange={(value) => updateSectionTitle(sectionKey, value)}
-                            className="!p-0 hover:bg-transparent"
+                            className="!p-0 hover:bg-transparent font-semibold"
                           />
-                          <span className="ml-2 flex items-center cursor-grab text-gray-400 hover:bg-gray-100 rounded-full p-1 transition" title="Drag to reorder section">
-                            <ArrowUpDownIcon size={20} />
+                          <span className="ml-2 flex items-center cursor-grab text-gray-400 hover:bg-white hover:text-gray-600 rounded-full p-2 transition-all duration-200 shadow-sm" title="Drag to reorder section">
+                            <ArrowUpDownIcon size={16} />
                           </span>
                         </div>
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleSectionVisibility(sectionKey);
                             }}
-                            className="p-1 rounded hover:bg-gray-100"
+                            className={`p-2 rounded-lg transition-all duration-200 ${
+                              hidden 
+                                ? 'bg-red-100 text-red-600 hover:bg-red-200' 
+                                : 'bg-green-100 text-green-600 hover:bg-green-200'
+                            }`}
                             title={hidden ? 'Show section' : 'Hide section'}
                           >
                             {hidden ? (
-                              <EyeOffIcon size={16} className="text-gray-500" />
+                              <EyeOffIcon size={16} />
                             ) : (
-                              <EyeIcon size={16} className="text-blue-600" />
+                              <EyeIcon size={16} />
                             )}
                           </button>
                         </div>
@@ -303,9 +332,9 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     {/* DnD for items inside section */}
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleItemDragEnd}>
                       <SortableContext items={section.items.map((item) => String(item.id))} strategy={verticalListSortingStrategy}>
-                        <div className="space-y-3">
+                        <div className="space-y-4 mt-4">
                           {section.items.map((item) => (
-                            <DraggableItem key={item.id} id={String(item.id)} className="border rounded-md p-3 bg-white">
+                            <DraggableItem key={item.id} id={String(item.id)} className="transition-all duration-200 hover:scale-[1.01]">
                               <SectionItemEditor sectionKey={sectionKey} item={item} />
                             </DraggableItem>
                           ))}
@@ -314,9 +343,14 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     </DndContext>
                     <button
                       onClick={addHandler}
-                      className="mt-4 w-full btn btn-secondary"
+                      className={`mt-6 w-full py-3 px-4 rounded-lg border-2 border-dashed transition-all duration-200 font-medium flex items-center justify-center gap-2 ${
+                        sectionKey === 'educationSection' ? 'border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400' :
+                        sectionKey === 'skillSection' ? 'border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400' :
+                        sectionKey === 'projectSection' ? 'border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400' :
+                        'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                      }`}
                     >
-                      <PlusIcon size={16} />
+                      <PlusIcon size={18} />
                       Add {sectionKey.replace('Section', '')[0].toUpperCase() + sectionKey.replace('Section', '').slice(1)}
                     </button>
                   </EditorAccordion>

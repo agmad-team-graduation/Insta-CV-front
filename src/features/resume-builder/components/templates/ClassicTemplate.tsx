@@ -3,7 +3,7 @@ import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon } from 'lucide-react';
 
-const ClassicTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
+const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     education: resume.educationSection,
@@ -17,7 +17,7 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
   });
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto" ref={previewRef}>
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
       {/* Header with personal details */}
       <div className="p-8 bg-gray-800 text-white text-center">
         <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
@@ -75,20 +75,23 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume, previewRef }) => {
                   </div>
                 ))}
                 
-                {key === 'experience' && sortedItems.map((experience: any) => (
-                  <div key={experience.id} className="mb-4">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold">{experience.jobTitle}</h3>
-                      <span className="text-sm text-gray-600">
-                        {formatDateRange(experience.startDate, experience.endDate, experience.present)}
-                      </span>
+                {key === 'experience' && sortedItems.map((experience: any) => {
+                  if (experience.hidden) return null;
+                  return (
+                    <div key={experience.id} className="mb-4">
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-lg font-semibold">{experience.jobTitle}</h3>
+                        <span className="text-sm text-gray-600">
+                          {formatDateRange(experience.startDate, experience.endDate, experience.present)}
+                        </span>
+                      </div>
+                      <p className="text-gray-700">{experience.company}, {experience.city}, {experience.country}</p>
+                      {experience.description && (
+                        <p className="text-gray-600 mt-2">{experience.description}</p>
+                      )}
                     </div>
-                    <p className="text-gray-700">{experience.company}, {experience.city}, {experience.country}</p>
-                    {experience.description && (
-                      <p className="text-gray-600 mt-2">{experience.description}</p>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {key === 'project' && sortedItems.map((project: any) => (
                   <div key={project.id} className="mb-4">

@@ -9,7 +9,6 @@ import HunterGreenTemplate from './HunterGreenTemplate';
 
 export interface TemplateProps {
   resume: Resume;
-  previewRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export type TemplateComponent = React.FC<TemplateProps>;
