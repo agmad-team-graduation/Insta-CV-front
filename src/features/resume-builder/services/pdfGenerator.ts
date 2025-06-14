@@ -33,6 +33,19 @@ export const generatePdf = async (
     // Apply print-specific styles
     clonedElement.classList.add('print-mode');
     
+    // Remove border radius for PDF export
+    const style = document.createElement('style');
+    style.textContent = `
+      .print-mode {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      .print-mode * {
+        border-radius: 0 !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
     // Create temporary container
     const container = document.createElement('div');
     container.appendChild(clonedElement);
@@ -73,6 +86,7 @@ export const generatePdf = async (
     
     // Clean up
     document.body.removeChild(container);
+    document.head.removeChild(style);
     
     return pdf;
   } catch (error) {
