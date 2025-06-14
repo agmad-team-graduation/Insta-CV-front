@@ -30,7 +30,6 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
 
   const sectionKeys = ['educationSection', 'experienceSection', 'skillSection', 'projectSection'] as const;
   type SectionKey = typeof sectionKeys[number];
-  type AllSectionId = SectionKey | 'personalDetails' | 'summary';
 
   // Get section order from resume.sectionsOrder or fallback to default order
   const orderedSectionKeys = [...sectionKeys].sort((a, b) => {
@@ -65,20 +64,6 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
         return resume.skillSection.items;
       default:
         return [];
-    }
-  };
-
-  const handleDragEnd = (sectionKey: SectionKey, event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!active || !over || active.id === over.id) return;
-
-    const items = getSectionItemsById(sectionKey);
-    const activeIndex = items.findIndex((item: { id: number }) => item.id === Number(active.id));
-    const overIndex = items.findIndex((item: { id: number }) => item.id === Number(over.id));
-
-    if (activeIndex !== -1 && overIndex !== -1) {
-      const newOrder = arrayMove(items as any, activeIndex, overIndex);
-      reorderItems(sectionKey, newOrder);
     }
   };
 

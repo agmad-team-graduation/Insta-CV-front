@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon } from 'lucide-react';
+import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
 
 const ResumeBuilder: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     resume, 
     isLoading, 
@@ -20,6 +22,7 @@ const ResumeBuilder: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
   // DnD sensors configuration
@@ -57,6 +60,8 @@ const ResumeBuilder: React.FC = () => {
   const handleDownloadPdf = async () => {
     if (!resume) return;
     
+    setIsGeneratingPdf(true);
+    
     try {
       // This is handled in the ResumePreview component
       const previewElement = document.getElementById('resume-preview-container');
@@ -66,6 +71,8 @@ const ResumeBuilder: React.FC = () => {
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
+    } finally {
+      setIsGeneratingPdf(false);
     }
   };
 
@@ -108,10 +115,21 @@ const ResumeBuilder: React.FC = () => {
         {/* Header with actions */}
         <header className="flex-none bg-white shadow-sm border-b border-gray-200 py-3 px-6">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <FileTextIcon className="h-6 w-6 text-blue-600" />
-              <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                title="Back to Dashboard"
+              >
+                <ArrowLeftIcon size={18} />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              <div className="flex items-center space-x-2">
+                <FileTextIcon className="h-6 w-6 text-blue-600" />
+                <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+              </div>
             </div>
+            
             <div className="flex items-center space-x-3">
               {isSaving && (
                 <div className="flex items-center text-gray-500">
@@ -119,15 +137,19 @@ const ResumeBuilder: React.FC = () => {
                   <span className="text-sm">Saving...</span>
                 </div>
               )}
+              
               {showSaveSuccess && (
                 <div className="text-green-600 text-sm flex items-center">
                   <span>✓ Saved</span>
                 </div>
               )}
+              
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`btn ${
-                  previewMode ? 'btn-primary' : 'btn-secondary'
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  previewMode 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
                 title={previewMode ? 'Exit Preview' : 'Preview Mode'}
               >
@@ -136,12 +158,18 @@ const ResumeBuilder: React.FC = () => {
                   {previewMode ? 'Exit Preview' : 'Preview'}
                 </span>
               </button>
+              
               <button
                 onClick={handleDownloadPdf}
-                className="btn btn-primary"
+                disabled={isGeneratingPdf}
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 title="Download as PDF"
               >
-                <DownloadIcon size={18} />
+                {isGeneratingPdf ? (
+                  <Loader2Icon className="animate-spin h-4 w-4" />
+                ) : (
+                  <DownloadIcon size={18} />
+                )}
                 <span className="hidden sm:inline">Download PDF</span>
               </button>
             </div>
@@ -184,22 +212,22 @@ const ResumeBuilder: React.FC = () => {
               </div>
 
               {/* Tab content */}
-              <div className="flex-1 overflow-y-auto">
-                <div className="p-4 md:p-6">
-                  {activeTab === 'content' ? (
-                    <EditorSidebar resume={resume} />
-                  ) : (
-                    <TemplateSelector selectedTemplate={selectedTemplate} />
-                  )}
-                </div>
+              <div className="flex-1 overflow-auto">
+                {activeTab === 'content' ? (
+                  <EditorSidebar resume={resume} />
+                ) : (
+                  <TemplateSelector
+                    selectedTemplate={selectedTemplate}
+                  />
+                )}
               </div>
             </aside>
           )}
 
-          {/* Right part to view resume */}
-          <section className="flex-1 p-4 md:p-8 overflow-y-auto bg-gray-100 flex justify-center items-start">
+          {/* Preview area */}
+          <div className={`flex-1 p-4 md:p-8 overflow-auto bg-gray-100 ${previewMode ? 'flex justify-center' : ''}`}>
             <ResumePreview resume={resume} />
-          </section>
+          </div>
         </main>
       </div>
     </DndContext>

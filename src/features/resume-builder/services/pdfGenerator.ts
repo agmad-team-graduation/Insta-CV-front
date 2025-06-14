@@ -1,4 +1,5 @@
-import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas-pro';
+import { jsPDF } from 'jspdf';
 import { Resume, TemplateName } from '../types';
 
 interface GeneratePdfOptions {
@@ -23,20 +24,7 @@ export const generatePdf = async (
     margin: 10,
   };
 
-  const pdfOptions = {
-    ...defaultOptions,
-    ...options,
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    },
-    jsPDF: {
-      format: 'a4',
-      orientation: 'portrait',
-      unit: 'mm',
-    },
-  };
+  const { filename } = { ...defaultOptions, ...options };
 
   try {
     // Make a clone to avoid modifying the displayed element
@@ -52,11 +40,36 @@ export const generatePdf = async (
     container.style.left = '-9999px';
     document.body.appendChild(container);
     
-    // Generate PDF
-    const pdf = await html2pdf()
-      .set(pdfOptions as any)
-      .from(clonedElement)
-      .save();
+    // Generate canvas using html2canvas-pro
+    const canvas = await html2canvas(clonedElement, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      backgroundColor: '#ffffff'
+    });
+
+    // Create PDF using jsPDF
+    const pdf = new jsPDF({
+      format: 'a4',
+      orientation: 'portrait',
+      unit: 'mm'
+    });
+
+    const imgWidth = 210; // A4 width in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    pdf.addImage(
+      canvas.toDataURL('image/jpeg', 1.0),
+      'JPEG',
+      0,
+      0,
+      imgWidth,
+      imgHeight
+    );
+    
+    // Save the PDF
+    pdf.save(filename);
     
     // Clean up
     document.body.removeChild(container);

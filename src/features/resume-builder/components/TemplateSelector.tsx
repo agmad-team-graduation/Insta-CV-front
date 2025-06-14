@@ -7,63 +7,74 @@ interface TemplateSelectorProps {
   selectedTemplate: TemplateName;
 }
 
+interface ExtendedTemplate extends Template {
+  features: string[];
+}
+
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate }) => {
   const { setSelectedTemplate } = useResumeStore();
 
-  // Template options
-  const templates: Template[] = [
+  // Template options with improved descriptions and thumbnails
+  const templates: ExtendedTemplate[] = [
     {
       id: 'modern',
       name: 'Modern',
-      description: 'A clean, contemporary design with a colored header and sidebar sections.',
-      thumbnail: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'A contemporary design with a bold blue header, perfect for tech and creative professionals.',
+      thumbnail: 'https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Bold header', 'Clean typography', 'Modern layout']
     },
     {
       id: 'classic',
       name: 'Classic',
-      description: 'Traditional resume layout with a formal, professional appearance.',
-      thumbnail: 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'A timeless, professional template with a dark header. Ideal for corporate roles.',
+      thumbnail: 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Professional', 'Traditional', 'Corporate']
     },
     {
       id: 'minimal',
       name: 'Minimal',
-      description: 'Simple, elegant design with focus on content and readability.',
-      thumbnail: 'https://images.pexels.com/photos/7319303/pexels-photo-7319303.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'A clean, minimalist design that puts focus on your content. Great for creative professionals.',
+      thumbnail: 'https://images.pexels.com/photos/7319303/pexels-photo-7319303.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Minimalist', 'Content-focused', 'Elegant']
     },
     {
       id: 'technical',
       name: 'Technical',
-      description: 'Designed for technical roles with skills visualization and timeline features.',
-      thumbnail: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'Specifically designed for technical roles with a monospace font and structured layout.',
+      thumbnail: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Monospace', 'Technical', 'Developer-friendly']
     },
     {
       id: 'harvard',
-      name: 'Harvard Resume',
-      description: 'Classic Sans Serif template following Harvard Career Services guidelines.',
-      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      name: 'Harvard',
+      description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
+      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Academic', 'Professional', 'Research-focused']
     },
     {
       id: 'huntergreen',
       name: 'Hunter Green',
-      description: 'Multi-column resume template with an elegant hunter green color scheme.',
-      thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'A sophisticated template with a hunter green color scheme. Perfect for business professionals.',
+      thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Elegant', 'Hunter green', 'Business']
     },
     {
       id: 'atlanticblue',
       name: 'Atlantic Blue',
-      description: 'Multi-column resume with sidebar left featuring a professional atlantic blue color scheme.',
-      thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      description: 'A modern template with a deep blue color scheme and sidebar layout.',
+      thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Sidebar', 'Deep blue', 'Modern']
     }
   ];
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4">
       <div className="mb-4">
         <h2 className="text-lg font-medium text-gray-800 mb-1">Choose a Template</h2>
-        <p className="text-gray-600 text-sm">Select a template design for your resume</p>
+        <p className="text-gray-600 text-sm">Select a template design that best represents your professional style</p>
       </div>
       
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {templates.map((template) => (
           <div 
             key={template.id}
@@ -75,23 +86,46 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
             onClick={() => setSelectedTemplate(template.id)}
           >
             <div className="relative">
-              <img 
-                src={template.thumbnail} 
-                alt={`${template.name} template`} 
-                className="w-full h-40 object-cover"
-              />
-              {selectedTemplate === template.id && (
-                <div className="absolute inset-0 bg-blue-500 bg-opacity-30 flex items-center justify-center">
-                  <div className="bg-white rounded-full p-2">
-                    <CheckIcon size={24} className="text-blue-600" />
+              <div className="aspect-[16/9] bg-gray-100 relative">
+                <img 
+                  src={template.thumbnail} 
+                  alt={`${template.name} template`} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = 'https://placehold.co/600x400/e2e8f0/64748b?text=Template+Preview';
+                  }}
+                />
+                {selectedTemplate === template.id && (
+                  <div className="absolute inset-0 bg-blue-500 bg-opacity-30 flex items-center justify-center">
+                    <div className="bg-white rounded-full p-1.5">
+                      <CheckIcon size={20} className="text-blue-600" />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
             
-            <div className="p-4">
-              <h3 className="font-medium text-gray-800">{template.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{template.description}</p>
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <h3 className="font-medium text-gray-800 text-sm">{template.name}</h3>
+                {selectedTemplate === template.id && (
+                  <span className="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                    Selected
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-gray-600 mb-2 line-clamp-2">{template.description}</p>
+              <div className="flex flex-wrap gap-1">
+                {template.features.map((feature: string, index: number) => (
+                  <span 
+                    key={index}
+                    className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded-full"
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         ))}
