@@ -12,7 +12,6 @@ import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage
 import { useCookies } from 'react-cookie';
 import JobsPage from './features/jobs/components/AllJobs/JobsPage';
 import AuthLayout from '@/common/components/layout/AuthLayout';
-import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './features/profile/pages/Profile';
@@ -25,69 +24,54 @@ import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
 import ResumesPage from './features/resume-builder/pages/ResumesPage';
 
-
 // Array of paths where we want to show navbar and footer
 const NavbarFooterRoutes = ['/', '/signup'];
 
 // Create a wrapper component to use useLocation hook
-function AppContent() {
+const AppContent = () => {
   const location = useLocation();
-  const shouldShowNavbarFooter = NavbarFooterRoutes.includes(location.pathname);
   const [cookies] = useCookies(['isLoggedIn']);
-  
-  return (
-    <>
-            <Toaster />
+  const token = cookies.isLoggedIn || '';
+  const showNavbarFooter = NavbarFooterRoutes.includes(location.pathname);
 
-      {shouldShowNavbarFooter && <Navbar />}
-      <div className="content">
+  return (
+    <div className="flex flex-col min-h-screen">
+      {showNavbarFooter && <Navbar />}
+      <main className="flex-grow">
         <Routes>
-          <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />
-          <Route path='/signup' element={
-            <SignUpProvider>
-              <SignUp/>
-            </SignUpProvider>
-          } />
-          <Route path='/login' element={
-            <LoginProvider>
-              <Login/>
-            </LoginProvider>
-          }/>
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-          <Route path='/set-password' element={<SetPassword />} />
-          <Route path='/email-verification' element={<SetPassword />} />
-          <Route path='/oauth2-success' element={<OAuth2Success />} />
-          {/* Protected routes with sidebar */}
-          <Route element={<AuthLayout />}>
-            <Route path='/dashboard' element={<Dashboard />} />
-            <Route path='/jobs' element={<JobsPage />} />
-            <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
-            <Route path='/jobs/add' element={<AddJobPage />} />
-            <Route path='/profile' element={<Profile />} />
-            <Route path='/github-profile' element={<GithubProfile />} />
-            <Route path='/recommended-jobs' element={<RecommendedJobs />} />
-            <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
-            <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
-            <Route path='/resumes' element={<ResumesPage />} />
-          </Route>
-          <Route path='/resumes' element={<ResumeBuilderLayout />}>
-            <Route path=':id' element={<ResumeBuilder />} />
-          </Route>
-        </Routes>
-      </div>
-      {shouldShowNavbarFooter && <Footer />}
-    </>
-  );
-}
+          {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/signup" element={<SignUpProvider><SignUp /></SignUpProvider>} />
+          <Route path="/login" element={<LoginProvider><Login /></LoginProvider>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/set-password" element={<SetPassword />} />
+          <Route path="/oauth2/success" element={<OAuth2Success />} />
 
-function App() {
-  return (
-    <div className="app">
-      <div className="w-full">
-        <AppContent />
-      </div>
+          {/* Protected routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/github-profile" element={<GithubProfile />} />
+            <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/jobs/recommended" element={<RecommendedJobs />} />
+            <Route path="/job-details/:jobID" element={<JobDetailsPage />} />
+            <Route path="/interview-questions/:jobID" element={<InterviewQuestionsPage />} />
+            <Route path="/resumes" element={<ResumesPage />} />
+            <Route path="/resumes/:id" element={<ResumeBuilderLayout><ResumeBuilder /></ResumeBuilderLayout>} />
+          </Route>
+
+          {/* Catch all route - redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+      {showNavbarFooter && <Footer />}
+      <Toaster />
     </div>
   );
+};
+
+function App() {
+  return <AppContent />;
 }
 
-export default App
+export default App;

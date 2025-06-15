@@ -3,8 +3,9 @@ import { Calendar, MapPin, Users, Info, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import JobAnalysisDialog from './JobAnalysisDialog';
 import apiClient from "@/common/utils/apiClient";
+import { toast } from 'sonner';
 
-const JobCard = ({ job, isRecommended = false }) => {
+const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
   const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
   const [currentJob, setCurrentJob] = useState(null);
   const [pollingInterval, setPollingInterval] = useState(null);
@@ -16,7 +17,6 @@ const JobCard = ({ job, isRecommended = false }) => {
 
   // Use the 'date' property if available, otherwise fallback to 'postedDate'
   let displayDate = '';
-  console.log(job);
   if (job.date) {
     const d = new Date(job.date);
     displayDate = isNaN(d) ? job.date : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -97,21 +97,29 @@ const JobCard = ({ job, isRecommended = false }) => {
     
     try {
       await apiClient.delete(`/api/v1/jobs/${job.id}`);
-      window.location.reload();
+      onJobDelete(job.id);
+      toast.success("Job deleted successfully");
     } catch (error) {
-      console.error("Error deleting job:", error);
+      if (error.response?.status === 409) {
+        toast.error("Cannot delete this job because it is related to an existing resume");
+      } else {
+        toast.error("Failed to delete job. Make sure all related resumes are deleted first.");
+      }
     }
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
-      <button 
-        onClick={handleDeleteJob}
-        className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors z-10"
-        aria-label="Delete job"
-      >
-        <X size={16} />
-      </button>
+      <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
+        <span className="text-xs text-gray-400 font-mono">#{job.id}</span>
+        <button 
+          onClick={handleDeleteJob}
+          className="p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
+          aria-label="Delete job"
+        >
+          <X size={16} />
+        </button>
+      </div>
 
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">

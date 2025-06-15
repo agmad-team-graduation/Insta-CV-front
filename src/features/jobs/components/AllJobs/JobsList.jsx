@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie';
 
 const PAGE_SIZE = 9;
 
-const JobsList = ({ isRecommended = false }) => {
+const JobsList = ({ isRecommended = false, refreshTrigger = 0 }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,39 +15,40 @@ const JobsList = ({ isRecommended = false }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [cookies] = useCookies(['isLoggedIn']);
 
-  useEffect(() => {
-    const loadJobs = async () => {
-      try {
-        setLoading(true);
-        const endpoint = isRecommended 
-          ? `/api/v1/jobs/scrape/get-recommendations?page=${currentPage - 1}&size=${PAGE_SIZE}`
-          : `/api/v1/jobs/all?page=${currentPage - 1}&size=${PAGE_SIZE}`;
-        
-        const response = await apiClient.get(endpoint);
-        
-        // Handle both response formats (content array or direct array)
-        const jobsData = response.data.content || response.data;
-        const totalPagesData = response.data.totalPages || 1;
-        
-        if (Array.isArray(jobsData)) {
-          setJobs(jobsData);
-          setTotalPages(totalPagesData);
-        } else {
-          setJobs([]);
-          setTotalPages(0);
-        }
-        setError(null);
-      } catch (err) {
-        setError('Failed to load jobs. Please try again later.');
-        console.error(err);
+  const loadJobs = async () => {
+    try {
+      setLoading(true);
+      const endpoint = isRecommended 
+        ? `/api/v1/jobs/scrape/get-recommendations?page=${currentPage - 1}&size=${PAGE_SIZE}`
+        : `/api/v1/jobs/all?page=${currentPage - 1}&size=${PAGE_SIZE}`;
+      
+      const response = await apiClient.get(endpoint);
+      
+      // Handle both response formats (content array or direct array)
+      const jobsData = response.data.content || response.data;
+      const totalPagesData = response.data.totalPages || 1;
+      
+      if (Array.isArray(jobsData)) {
+        setJobs(jobsData);
+        setTotalPages(totalPagesData);
+      } else {
         setJobs([]);
         setTotalPages(0);
-      } finally {
-        setLoading(false);
       }
-    };
+      setError(null);
+    } catch (err) {
+      setError('Failed to load jobs. Please try again later.');
+      console.error(err);
+      setJobs([]);
+      setTotalPages(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadJobs();
-  }, [currentPage, isRecommended]);
+  }, [currentPage, isRecommended, refreshTrigger]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -55,6 +56,14 @@ const JobsList = ({ isRecommended = false }) => {
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handleJobDelete = (deletedJobId) => {
+    setJobs(prevJobs => prevJobs.filter(job => job.id !== deletedJobId));
+    // If we're on the last page and delete the last item, go to previous page
+    if (jobs.length === 1 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
   };
 
   if (loading) {
@@ -87,7 +96,12 @@ const JobsList = ({ isRecommended = false }) => {
       {jobs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {jobs.map((job) => (
-            <JobCard key={job.id} job={job} isRecommended={isRecommended} />
+            <JobCard 
+              key={job.id} 
+              job={job} 
+              isRecommended={isRecommended} 
+              onJobDelete={handleJobDelete}
+            />
           ))}
         </div>
       )}

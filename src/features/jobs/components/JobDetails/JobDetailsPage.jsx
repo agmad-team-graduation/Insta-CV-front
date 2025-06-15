@@ -123,6 +123,7 @@ function JobDetailsPage() {
             <ArrowLeft className="w-6 h-6" />
             <span>Back</span>
           </Button>
+          <span className="text-sm text-gray-400 font-mono">Job ID: #{jobID}</span>
         </div>
 
         {/* Main content area with left taking 2/3 and right taking 1/3 */}

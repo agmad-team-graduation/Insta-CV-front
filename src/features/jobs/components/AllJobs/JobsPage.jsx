@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import JobsList from "./JobsList";
 import { Briefcase, Filter, Plus } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
+import AddJobDialog from '../AddJob/AddJobDialog';
 
 const JobsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showAddJobDialog, setShowAddJobDialog] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleJobAdded = () => {
+    // Increment refreshTrigger to trigger a refresh of the jobs list
+    setRefreshTrigger(prev => prev + 1);
+    setShowAddJobDialog(false);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -20,7 +29,7 @@ const JobsPage = () => {
             <div className="flex space-x-4 items-center">
               <Button 
                 className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => navigate("/jobs/add")}
+                onClick={() => setShowAddJobDialog(true)}
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Job</span>
@@ -53,10 +62,15 @@ const JobsPage = () => {
       {/* Main content area with flex-grow to push footer down */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div className="min-h-[calc(100vh-16rem)]">
-          <JobsList isRecommended={false} />
+          <JobsList refreshTrigger={refreshTrigger} />
         </div>
       </main>
       
+      <AddJobDialog 
+        open={showAddJobDialog}
+        onOpenChange={setShowAddJobDialog}
+        onJobAdded={handleJobAdded}
+      />
     </div>
   );
 };
