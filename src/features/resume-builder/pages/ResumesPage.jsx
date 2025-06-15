@@ -2,12 +2,51 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
-import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
+import { Badge } from "@/common/components/ui/badge";
 
 const PAGE_SIZE = 9; // Show 9 resumes per page (3x3 grid)
+
+// Helper function to count visible sections
+const countVisibleSections = (resume) => {
+  let count = 0;
+  if (!resume.summarySection.hidden) count++;
+  if (!resume.educationSection.hidden) count++;
+  if (!resume.experienceSection.hidden) count++;
+  if (!resume.projectSection.hidden) count++;
+  if (!resume.skillSection.hidden) count++;
+  return count;
+};
+
+// Helper function to get template display name
+const getTemplateDisplayName = (templateName) => {
+  const templateNames = {
+    modern: 'Modern',
+    classic: 'Classic',
+    technical: 'Technical',
+    minimal: 'Minimal',
+    hunterGreen: 'Hunter Green',
+    harvard: 'Harvard',
+    atlanticBlue: 'Atlantic Blue'
+  };
+  return templateNames[templateName] || templateName;
+};
+
+// Helper function to format date and time
+const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};
 
 const ResumesPage = () => {
   const [allResumes, setAllResumes] = useState([]);
@@ -114,9 +153,13 @@ const ResumesPage = () => {
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center">
                   <FileText className="h-5 w-5 text-blue-600 mr-2" />
-                  <h3 className="font-medium text-gray-900">
-                    {resume.personalDetails?.fullName || 'Untitled Resume'}
-                  </h3>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-mono font-medium text-gray-900">
+                        Resume #{resume.id}
+                      </h3>
+                    </div>
+                  </div>
                 </div>
                 <Button
                   variant="ghost"
@@ -128,11 +171,24 @@ const ResumesPage = () => {
                 </Button>
               </div>
               
+              {/* Summary Preview */}
+              {resume.summarySection?.summary && !resume.summarySection.hidden && (
+                <div className="mb-4 text-sm text-gray-600 line-clamp-2">
+                  {resume.summarySection.summary}
+                </div>
+              )}
+              
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
                   <span>
-                    Last updated: {new Date(resume.updatedAt).toLocaleDateString()}
+                    Updated: {formatDateTime(resume.updatedAt)}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <List className="h-4 w-4 mr-2" />
+                  <span>
+                    {countVisibleSections(resume)} active sections
                   </span>
                 </div>
                 <div className="flex items-center">
