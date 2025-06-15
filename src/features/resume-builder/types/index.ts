@@ -2,10 +2,14 @@
 export interface Resume {
   id: number;
   jobId: number;
+  cvTitle?: string;
   personalDetails: PersonalDetails;
-  summary: string;
-  summaryTitle?: string;
-  summaryHidden?: boolean;
+  summarySection: {
+    summary: string;
+    sectionTitle: string;
+    hidden: boolean;
+    orderIndex: number;
+  };
   educationSection: Section<EducationItem>;
   experienceSection: Section<ExperienceItem>;
   skillSection: Section<SkillItem>;

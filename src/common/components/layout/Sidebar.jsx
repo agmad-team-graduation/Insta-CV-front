@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avat
 import { cn } from '@/common/lib/utils';
 import { useCookies } from 'react-cookie';
 import { Button } from '@/common/components/ui/button';
+import useResumeStore from '@/features/resume-builder/store/resumeStore';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -13,17 +14,28 @@ const navItems = [
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },
-  { icon: FileText, label: 'Resume Builder', href: '/resume-builder' },
+  { icon: FileText, label: 'Resumes', href: '/resumes' },
 ];
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+  const { createNewResume } = useResumeStore();
 
   const handleLogout = () => {
     removeCookie('isLoggedIn', { path: '/' });
     navigate('/');
+  };
+
+  const handleResumeBuilderClick = async (e) => {
+    e.preventDefault();
+    try {
+      const newResumeId = await createNewResume();
+      navigate(`/resume-builder/${newResumeId}`);
+    } catch (error) {
+      console.error('Error creating new resume:', error);
+    }
   };
 
   return (
@@ -38,7 +50,7 @@ const Sidebar = () => {
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.href;
+            const isActive = location.pathname.startsWith(item.href);
             
             return (
               <li key={item.href}>

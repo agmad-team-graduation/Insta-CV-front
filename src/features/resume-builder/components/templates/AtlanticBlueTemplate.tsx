@@ -2,10 +2,20 @@ import React from 'react';
 import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, GlobeIcon, AwardIcon, UserIcon } from 'lucide-react';
+import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
+
+type SectionType = Section<EducationItem> | Section<ExperienceItem> | Section<ProjectItem> | Section<SkillItem>;
+type SummarySection = {
+  summary: string;
+  sectionTitle: string;
+  hidden: boolean;
+  orderIndex: number;
+};
 
 const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
+    summary: resume.summarySection,
     education: resume.educationSection,
     experience: resume.experienceSection,
     project: resume.projectSection,
@@ -46,15 +56,20 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
         </div>
 
         {/* Profile/Summary */}
-        {resume.summary && !resume.summaryHidden && (
-          <div className="mb-8">
-            <div className="flex items-center mb-4">
-              <UserIcon size={20} className="mr-3 text-slate-300" />
-              <h2 className="text-lg font-bold text-white">{resume.summaryTitle || 'PROFILE'}</h2>
+        {sortedSections.map(([key, section]) => {
+          if (section.hidden || key !== 'summary') return null;
+          
+          const summarySection = section as SummarySection;
+          return (
+            <div key={key} className="mb-8">
+              <div className="flex items-center mb-4">
+                <UserIcon size={20} className="mr-3 text-slate-300" />
+                <h2 className="text-lg font-bold text-white">{summarySection.sectionTitle}</h2>
+              </div>
+              <p className="text-slate-300 text-sm leading-relaxed">{summarySection.summary}</p>
             </div>
-            <p className="text-slate-300 text-sm leading-relaxed">{resume.summary}</p>
-          </div>
-        )}
+          );
+        })}
 
         {/* Languages Section */}
         <div className="mb-8">
@@ -106,13 +121,16 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
         </div>
       </div>
 
-      {/* Right Main Content */}
+      {/* Main Content */}
       <div className="w-2/3 p-8">
         {sortedSections.map(([key, section]) => {
-          if (section.hidden) return null;
+          if (section.hidden || key === 'summary') return null;
           
-          // Sort items by orderIndex
-          const sortedItems = [...section.items].sort((a, b) => a.orderIndex - b.orderIndex);
+          // For other sections, we know they have items
+          const typedSection = section as SectionType;
+          const sortedItems = [...typedSection.items]
+            .filter(item => !item.hidden)
+            .sort((a, b) => a.orderIndex - b.orderIndex);
           
           let icon;
           let iconColor = "text-slate-600";
@@ -138,7 +156,7 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div className="flex items-center mb-6">
                 {icon}
                 <h2 className="text-xl font-bold ml-3 text-slate-800 uppercase tracking-wide">
-                  {section.sectionTitle}
+                  {typedSection.sectionTitle}
                 </h2>
               </div>
               

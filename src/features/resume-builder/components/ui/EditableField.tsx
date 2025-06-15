@@ -127,12 +127,24 @@ const EditableField: React.FC<EditableFieldProps> = ({
           </div>
         )}
         
-        <button 
-          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white rounded-full p-1.5 shadow-md border border-gray-200 hover:border-blue-300 hover:shadow-lg"
+        <div 
+          role="button"
+          tabIndex={0}
+          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white rounded-full p-1.5 shadow-md border border-gray-200 hover:border-blue-300 hover:shadow-lg cursor-pointer"
           title="Edit"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClick();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleClick();
+            }
+          }}
         >
           <PenIcon size={14} className="text-blue-600" />
-        </button>
+        </div>
       </div>
     </div>
   );

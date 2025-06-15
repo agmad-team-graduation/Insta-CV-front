@@ -1,6 +1,8 @@
 import { create } from 'zustand';
-import { fetchDemoResume, updateResume } from '../services/api';
-import { Resume, Section, TemplateName } from '../types';
+import { fetchResume, updateResume, generateCV, createCV } from '../services/api';
+import { Resume, Section, TemplateName, ApiResponse } from '../types';
+import apiClient from '../../../common/utils/apiClient';
+import { toast } from 'sonner';
 
 interface ResumeState {
   resume: Resume | null;
@@ -8,14 +10,18 @@ interface ResumeState {
   error: string | null;
   selectedTemplate: TemplateName;
   isSaving: boolean;
+  isGenerating: boolean;
   
   // Actions
   fetchResume: (resumeId?: number) => Promise<void>;
+  createNewResume: () => Promise<number>;
+  generateCVForJob: (jobId: number) => Promise<number>;
   updatePersonalDetails: (details: Partial<Resume['personalDetails']>) => void;
   updateSummary: (summary: string) => void;
   updateSummaryTitle: (newTitle: string) => void;
+  updateResumeTitle: (newTitle: string) => Promise<void>;
   updateSectionTitle: (sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>, newTitle: string) => void;
-  toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summary') => void;
+  toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summarySection') => void;
   reorderSections: (newOrder: Record<string, number>) => void;
   reorderItems: <T>(
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
@@ -48,18 +54,35 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   error: null,
   selectedTemplate: 'modern',
   isSaving: false,
+  isGenerating: false,
 
   fetchResume: async (resumeId?: number) => {
+    if (!resumeId) return;
     set({ isLoading: true, error: null });
     try {
-      // In a real app, use fetchResume(resumeId) instead
-      const resumeData = await fetchDemoResume();
+      console.log("fetching resume", resumeId);
+      const resumeData = await fetchResume(resumeId);
       set({ resume: resumeData, isLoading: false });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to fetch resume data', 
         isLoading: false 
       });
+    }
+  },
+
+  createNewResume: async (createEmpty: boolean = false): Promise<number> => {
+    set({ isLoading: true, error: null });
+    try {
+      const resumeData = await createCV(createEmpty);
+      set({ resume: resumeData, isLoading: false });
+      return resumeData.id;
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to create new resume', 
+        isLoading: false 
+      });
+      throw error;
     }
   },
 
@@ -84,7 +107,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       return {
         resume: {
           ...state.resume,
-          summary
+          summarySection: {
+            ...state.resume.summarySection,
+            summary
+          }
         }
       };
     });
@@ -96,7 +122,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       return {
         resume: {
           ...state.resume,
-          summaryTitle: newTitle
+          summarySection: {
+            ...state.resume.summarySection,
+            sectionTitle: newTitle
+          }
         }
       };
     });
@@ -131,14 +160,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
           }
         };
       }
-      if (sectionKey === 'summary') {
-        return {
-          resume: {
-            ...state.resume,
-            summaryHidden: !state.resume.summaryHidden
-          }
-        };
-      }
       return {
         resume: {
           ...state.resume,
@@ -154,33 +175,75 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   reorderSections: (newOrder) => {
     set((state) => {
       if (!state.resume) return state;
-      return {
-        resume: {
-          ...state.resume,
-          sectionsOrder: newOrder
+
+      // Create a new sectionsOrder object with updated orderIndex values
+      const updatedSectionsOrder = Object.entries(newOrder).reduce((acc, [sectionKey, newIndex]) => {
+        acc[sectionKey] = newIndex;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Update each section's orderIndex in the resume object
+      const updatedResume = {
+        ...state.resume,
+        sectionsOrder: updatedSectionsOrder,
+        summarySection: {
+          ...state.resume.summarySection,
+          orderIndex: updatedSectionsOrder.summary || state.resume.summarySection.orderIndex
+        },
+        educationSection: {
+          ...state.resume.educationSection,
+          orderIndex: updatedSectionsOrder.education || state.resume.educationSection.orderIndex
+        },
+        experienceSection: {
+          ...state.resume.experienceSection,
+          orderIndex: updatedSectionsOrder.experience || state.resume.experienceSection.orderIndex
+        },
+        skillSection: {
+          ...state.resume.skillSection,
+          orderIndex: updatedSectionsOrder.skill || state.resume.skillSection.orderIndex
+        },
+        projectSection: {
+          ...state.resume.projectSection,
+          orderIndex: updatedSectionsOrder.project || state.resume.projectSection.orderIndex
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving section order:', error);
+        toast.error('Failed to save section order');
+      });
+
+      return { resume: updatedResume };
     });
   },
 
   reorderItems: (sectionKey, items) => {
     set((state) => {
       if (!state.resume) return state;
-      // Update orderIndex based on new order
+
+      // Update items with new orderIndex values
       const updatedItems = items.map((item, index) => ({
         ...item,
         orderIndex: index + 1
       }));
       
-      return {
-        resume: {
-          ...state.resume,
-          [sectionKey]: {
-            ...state.resume[sectionKey],
-            items: updatedItems
-          }
+      // Update the section with new items and their order
+      const updatedResume = {
+        ...state.resume,
+        [sectionKey]: {
+          ...state.resume[sectionKey],
+          items: updatedItems
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving items order:', error);
+        toast.error('Failed to save items order');
+      });
+      
+      return { resume: updatedResume };
     });
   },
 
@@ -241,7 +304,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       const section = state.resume[sectionKey];
       const filteredItems = section.items.filter(item => item.id !== itemId);
       
-      // Reorder the remaining items
       const reorderedItems = filteredItems.map((item, index) => ({
         ...item,
         orderIndex: index + 1
@@ -268,15 +330,21 @@ const useResumeStore = create<ResumeState>((set, get) => ({
         item.id === itemId ? { ...item, hidden: !item.hidden } : item
       );
       
-      return {
-        resume: {
-          ...state.resume,
-          [sectionKey]: {
-            ...section,
-            items: updatedItems
-          }
+      const updatedResume = {
+        ...state.resume,
+        [sectionKey]: {
+          ...section,
+          items: updatedItems
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving item visibility:', error);
+        toast.error('Failed to save item visibility');
+      });
+      
+      return { resume: updatedResume };
     });
   },
 
@@ -290,15 +358,55 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     
     set({ isSaving: true, error: null });
     try {
+      console.log("saving resume", resume);
       await updateResume(resume.id, resume);
       set({ isSaving: false });
     } catch (error) {
+      console.log("error saving resume", error);
       set({ 
         error: error instanceof Error ? error.message : 'Failed to save resume', 
         isSaving: false 
       });
     }
-  }
+  },
+
+  generateCVForJob: async (jobId: number): Promise<number> => {
+    set({ isGenerating: true, error: null });
+    try {
+      const resumeData = await generateCV(jobId);
+      set({ 
+        resume: resumeData, 
+        isGenerating: false
+      });
+      return resumeData.id;
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to generate CV', 
+        isGenerating: false 
+      });
+      throw error;
+    }
+  },
+
+  updateResumeTitle: async (newTitle: string) => {
+    const { resume } = get();
+    if (!resume) return;
+
+    try {
+      const response = await apiClient.put(`/api/v1/cv/update-title?cvId=${resume.id}&title=${encodeURIComponent(newTitle)}`);
+      set((state) => ({
+        resume: {
+          ...state.resume!,
+          cvTitle: response.data.cvTitle
+        }
+      }));
+      toast.success('Title updated successfully');
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast.error('Failed to update title');
+      throw error;
+    }
+  },
 }));
 
 export default useResumeStore; 

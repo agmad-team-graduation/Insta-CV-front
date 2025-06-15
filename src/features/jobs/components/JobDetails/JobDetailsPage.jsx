@@ -1,29 +1,39 @@
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { PieChart, Pie, Cell } from "recharts";
-import { ArrowLeft, Star, Plus } from "lucide-react";
+import { ArrowLeft, Star, Plus, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import apiClient from "@/common/utils/apiClient";
+import useResumeStore from "@/features/resume-builder/store/resumeStore";
 
 function JobDetailsPage() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
+  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const { jobID } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
-  const isRecommended = location.pathname.startsWith('/recommended-job-details/');
+  const [isExternal, setIsExternal] = useState(false);
+  const { generateCVForJob } = useResumeStore();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        // Use scrape endpoint if on recommended-job-details route
-        const endpoint = isRecommended ? `/api/v1/jobs/scrape/${jobID}` : `/api/v1/jobs/${jobID}`;
-        const response = await apiClient.get(endpoint);
+        // Try regular job endpoint first
+        let response;
+        try {
+          response = await apiClient.get(`/api/v1/jobs/${jobID}`);
+          setIsExternal(false);
+        } catch (error) {
+          // If regular job not found, try scrape endpoint
+          response = await apiClient.get(`/api/v1/jobs/scrape/${jobID}`);
+          setIsExternal(true);
+        }
         setJob(response.data);
         console.log(response.data);
       } catch (error) {
@@ -50,7 +60,22 @@ function JobDetailsPage() {
 
     fetchJobDetails();
     fetchRecommendations();
-  }, [jobID, location.pathname]);
+  }, [jobID]);
+
+  const handleGenerateCV = async () => {
+    setIsGeneratingCV(true);
+    try {
+      // Generate new CV and get the resume ID
+      const resumeId = await generateCVForJob(parseInt(jobID));
+      // Navigate to the new resume's URL
+      navigate(`/resumes/${resumeId}`);
+    } catch (error) {
+      console.error('Error generating CV:', error);
+      // Handle error (show toast, etc.)
+    } finally {
+      setIsGeneratingCV(false);
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -98,6 +123,7 @@ function JobDetailsPage() {
             <ArrowLeft className="w-6 h-6" />
             <span>Back</span>
           </Button>
+          <span className="text-sm text-gray-400 font-mono">Job ID: #{jobID}</span>
         </div>
 
         {/* Main content area with left taking 2/3 and right taking 1/3 */}
@@ -143,11 +169,24 @@ function JobDetailsPage() {
 
               {/* Resume generation and save buttons pinned at bottom */}
               <div className="pt-6 space-y-3">
-                <Button className="w-full text-lg py-6">Generate Resume for this Job</Button>
+                <Button 
+                  className="w-full text-lg py-6" 
+                  onClick={handleGenerateCV}
+                  disabled={isGeneratingCV}
+                >
+                  {isGeneratingCV ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Generating Resume...
+                    </>
+                  ) : (
+                    'Generate Resume for this Job'
+                  )}
+                </Button>
                 <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
                   Show Interview Questions
                 </Button>
-                {isRecommended && job.applyUrl && (
+                {isExternal && job.applyUrl && (
                   <Button
                     className="w-full text-lg py-6 mt-2"
                     variant="outline"
@@ -262,7 +301,7 @@ function JobDetailsPage() {
                     <h4 className="text-xl font-medium text-primary">{recJob.title || 'No Title'}</h4>
                     <p className="text-md text-muted-foreground">@ {recJob.company || 'Unknown Company'}</p>
                     <p className="text-md text-muted-foreground">{recJob.description ? recJob.description.slice(0, 100) + (recJob.description.length > 100 ? '...' : '') : 'No description.'}</p>
-                    <Button variant="outline" className="w-full mt-2" onClick={() => navigate(`/recommended-job-details/${recJob.id}`)}>
+                    <Button variant="outline" className="w-full mt-2" onClick={() => navigate(`/job-details/${recJob.id}`)}>
                       View Details
                     </Button>
                   </CardContent>

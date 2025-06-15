@@ -12,7 +12,6 @@ import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage
 import { useCookies } from 'react-cookie';
 import JobsPage from './features/jobs/components/AllJobs/JobsPage';
 import AuthLayout from '@/common/components/layout/AuthLayout';
-import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './features/profile/pages/Profile';
@@ -23,6 +22,7 @@ import { SetPassword } from './features/auth/components/SetPasswordForm';
 import InterviewQuestionsPage from './features/jobs/components/InterviewQuestions/interviewQuestionsPage';
 import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
+import ResumesPage from './features/resume-builder/pages/ResumesPage';
 
 
 // Array of paths where we want to show navbar and footer
@@ -36,8 +36,7 @@ function AppContent() {
   
   return (
     <>
-            <Toaster />
-
+      <Toaster />
       {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
@@ -61,15 +60,16 @@ function AppContent() {
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/jobs' element={<JobsPage />} />
             <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
-            <Route path='/jobs/add' element={<AddJobPage />} />
+            {/* <Route path='/jobs/add' element={<AddJobPage />} /> */}
             <Route path='/profile' element={<Profile />} />
             <Route path='/github-profile' element={<GithubProfile />} />
             <Route path='/recommended-jobs' element={<RecommendedJobs />} />
             <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
+            <Route path='/resumes' element={<ResumesPage />} />
           </Route>
-          <Route path='/resume-builder' element={<ResumeBuilderLayout />}>
-            <Route path='/resume-builder' element={<ResumeBuilder />} />
+          <Route path='/resumes' element={<ResumeBuilderLayout />}>
+            <Route path=':id' element={<ResumeBuilder />} />
           </Route>
         </Routes>
       </div>

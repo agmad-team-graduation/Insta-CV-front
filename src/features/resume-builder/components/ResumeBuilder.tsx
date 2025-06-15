@@ -1,29 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
+import { Input } from "../../../common/components/ui/input";
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { 
     resume, 
     isLoading, 
     error, 
-    fetchResume, 
+    fetchResume,
+    createNewResume,
     selectedTemplate,
     isSaving,
-    saveResume
+    saveResume,
+    generateCVForJob,
+    isGenerating,
+    updateResumeTitle
   } = useResumeStore();
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editingTitle, setEditingTitle] = useState('');
   
   // DnD sensors configuration
   const sensors = useSensors(
@@ -38,9 +46,23 @@ const ResumeBuilder: React.FC = () => {
   );
 
   useEffect(() => {
-    // Fetch resume data on component mount
-    fetchResume();
-  }, [fetchResume]);
+    const initializeResume = async () => {
+      if (id) {
+        // If we have an ID, fetch that resume
+        await fetchResume(parseInt(id));
+      } else {
+        // If no ID, create a new resume and navigate to it
+        try {
+          const newResumeId = await createNewResume();
+          navigate(`/resumes/${newResumeId}`);
+        } catch (error) {
+          console.error('Error creating new resume:', error);
+        }
+      }
+    };
+
+    initializeResume();
+  }, [id, fetchResume, createNewResume, navigate]);
   
   // Auto-save every 5 seconds when changes are made
   useEffect(() => {
@@ -56,6 +78,19 @@ const ResumeBuilder: React.FC = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [resume, isSaving, saveResume]);
+
+  // Handle CV generation and navigation
+  const handleGenerateCV = async (jobId: number) => {
+    try {
+      await generateCVForJob(jobId);
+      // After successful generation, navigate to the new resume
+      if (resume?.id) {
+        navigate(`/resumes/${resume.id}`);
+      }
+    } catch (error) {
+      console.error('Error generating CV:', error);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (!resume) return;
@@ -73,6 +108,35 @@ const ResumeBuilder: React.FC = () => {
       console.error('Error generating PDF:', error);
     } finally {
       setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleTitleEdit = () => {
+    if (!resume) return;
+    setEditingTitle(resume.cvTitle || `Resume #${resume.id}`);
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = async () => {
+    if (!resume) return;
+    try {
+      await updateResumeTitle(editingTitle);
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error('Error saving title:', error);
+    }
+  };
+
+  const handleTitleCancel = () => {
+    setIsEditingTitle(false);
+    setEditingTitle('');
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      handleTitleCancel();
     }
   };
 
@@ -117,16 +181,40 @@ const ResumeBuilder: React.FC = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(-1)}
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                title="Back to Dashboard"
+                title="Go Back"
               >
                 <ArrowLeftIcon size={18} />
                 <span className="hidden sm:inline">Back</span>
               </button>
               <div className="flex items-center space-x-2">
                 <FileTextIcon className="h-6 w-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+                {isEditingTitle ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editingTitle}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingTitle(e.target.value)}
+                      onKeyDown={handleTitleKeyDown}
+                      onBlur={handleTitleSave}
+                      className="h-8 text-sm w-64"
+                      autoFocus
+                      type="text"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 group">
+                    <h1 className="text-xl font-semibold text-gray-800">
+                      {resume?.cvTitle || `Resume #${resume?.id}`}
+                    </h1>
+                    <button
+                      onClick={handleTitleEdit}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded"
+                    >
+                      <PencilIcon className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             
