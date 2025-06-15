@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon } from 'lucide-react';
-import useResumeStore from '../../store/resumeStore';
+import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
 
-function ResumeBuilder() {
+const ResumeBuilder: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     resume, 
     isLoading, 
@@ -18,11 +20,12 @@ function ResumeBuilder() {
     saveResume
   } = useResumeStore();
   
-  const [activeTab, setActiveTab] = useState('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
+  // DnD sensors configuration
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -35,9 +38,11 @@ function ResumeBuilder() {
   );
 
   useEffect(() => {
+    // Fetch resume data on component mount
     fetchResume();
   }, [fetchResume]);
   
+  // Auto-save every 5 seconds when changes are made
   useEffect(() => {
     if (resume && !isSaving) {
       const timeoutId = setTimeout(() => {
@@ -58,6 +63,7 @@ function ResumeBuilder() {
     setIsGeneratingPdf(true);
     
     try {
+      // This is handled in the ResumePreview component
       const previewElement = document.getElementById('resume-preview-container');
       if (previewElement) {
         const event = new CustomEvent('generate-pdf');
@@ -105,13 +111,23 @@ function ResumeBuilder() {
       sensors={sensors}
       collisionDetection={closestCenter}
     >
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
         {/* Header with actions */}
-        <header className="bg-white shadow-sm border-b border-gray-200 py-3 px-6">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <FileTextIcon className="h-6 w-6 text-blue-600" />
-              <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+        <header className="flex-none bg-white shadow-sm border-b border-gray-200 py-3 px-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                title="Back to Dashboard"
+              >
+                <ArrowLeftIcon size={18} />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+              <div className="flex items-center space-x-2">
+                <FileTextIcon className="h-6 w-6 text-blue-600" />
+                <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+              </div>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -130,8 +146,10 @@ function ResumeBuilder() {
               
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`btn ${
-                  previewMode ? 'btn-primary' : 'btn-secondary'
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  previewMode 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                 }`}
                 title={previewMode ? 'Exit Preview' : 'Preview Mode'}
               >
@@ -144,11 +162,11 @@ function ResumeBuilder() {
               <button
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
-                className="btn btn-primary"
+                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 title="Download as PDF"
               >
                 {isGeneratingPdf ? (
-                  <Loader2Icon className="animate-spin h-4 w-4 mr-2" />
+                  <Loader2Icon className="animate-spin h-4 w-4" />
                 ) : (
                   <DownloadIcon size={18} />
                 )}
@@ -159,12 +177,12 @@ function ResumeBuilder() {
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 flex flex-col lg:flex-row">
-          {/* Sidebar (hidden in preview mode on mobile) */}
-          {(!previewMode || window.innerWidth >= 1024) && (
-            <div className="w-full lg:w-80 xl:w-96 bg-white border-r border-gray-200 flex flex-col">
+        <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left sidebar */}
+          {!previewMode && (
+            <aside className="w-full lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
               {/* Tabs */}
-              <div className="flex border-b border-gray-200">
+              <div className="flex-none flex border-b border-gray-200">
                 <button
                   className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
                     activeTab === 'content'
@@ -203,7 +221,7 @@ function ResumeBuilder() {
                   />
                 )}
               </div>
-            </div>
+            </aside>
           )}
 
           {/* Preview area */}
@@ -214,6 +232,6 @@ function ResumeBuilder() {
       </div>
     </DndContext>
   );
-}
+};
 
-export default ResumeBuilder;
+export default ResumeBuilder; 
