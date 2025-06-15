@@ -68,21 +68,6 @@ const Sidebar = () => {
               </li>
             );
           })}
-          
-          {/* Resume Builder Link */}
-          <li>
-            <button
-              onClick={handleResumeBuilderClick}
-              className={cn(
-                "w-full flex items-center px-4 py-3 mx-2 rounded-md transition-colors",
-                "hover:bg-gray-50 hover:text-blue-600",
-                location.pathname.startsWith('/resume-builder/') ? "bg-blue-50 text-blue-600" : "text-gray-600"
-              )}
-            >
-              <FileText className="h-5 w-5 mr-3" />
-              Resume Builder
-            </button>
-          </li>
         </ul>
       </nav>
       

@@ -112,13 +112,13 @@ const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
       <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
         <span className="text-xs text-gray-400 font-mono">#{job.id}</span>
-        <button 
+        {!isRecommended && <button 
           onClick={handleDeleteJob}
           className="p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
           aria-label="Delete job"
         >
           <X size={16} />
-        </button>
+        </button>}
       </div>
 
       <div className="p-6">
