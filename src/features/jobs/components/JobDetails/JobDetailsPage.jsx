@@ -61,7 +61,7 @@ function JobDetailsPage() {
       // Generate new CV and get the resume ID
       const resumeId = await generateCVForJob(parseInt(jobID));
       // Navigate to the new resume's URL
-      navigate(`/resume-builder/${resumeId}`);
+      navigate(`/resumes/${resumeId}`);
     } catch (error) {
       console.error('Error generating CV:', error);
       // Handle error (show toast, etc.)

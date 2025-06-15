@@ -14,6 +14,7 @@ const navItems = [
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },
+  { icon: FileText, label: 'Resumes', href: '/resumes' },
 ];
 
 const Sidebar = () => {
@@ -49,7 +50,7 @@ const Sidebar = () => {
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.href;
+            const isActive = location.pathname.startsWith(item.href);
             
             return (
               <li key={item.href}>

@@ -50,7 +50,7 @@ const ResumeBuilder: React.FC = () => {
         // If no ID, create a new resume and navigate to it
         try {
           const newResumeId = await createNewResume();
-          navigate(`/resume-builder/${newResumeId}`);
+          navigate(`/resumes/${newResumeId}`);
         } catch (error) {
           console.error('Error creating new resume:', error);
         }
@@ -81,7 +81,7 @@ const ResumeBuilder: React.FC = () => {
       await generateCVForJob(jobId);
       // After successful generation, navigate to the new resume
       if (resume?.id) {
-        navigate(`/resume-builder/${resume.id}`);
+        navigate(`/resumes/${resume.id}`);
       }
     } catch (error) {
       console.error('Error generating CV:', error);

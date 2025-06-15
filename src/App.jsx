@@ -23,6 +23,7 @@ import { SetPassword } from './features/auth/components/SetPasswordForm';
 import InterviewQuestionsPage from './features/jobs/components/InterviewQuestions/interviewQuestionsPage';
 import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
+import ResumesPage from './features/resume-builder/pages/ResumesPage';
 
 
 // Array of paths where we want to show navbar and footer
@@ -67,8 +68,9 @@ function AppContent() {
             <Route path='/recommended-jobs' element={<RecommendedJobs />} />
             <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
+            <Route path='/resumes' element={<ResumesPage />} />
           </Route>
-          <Route path='/resume-builder' element={<ResumeBuilderLayout />}>
+          <Route path='/resumes' element={<ResumeBuilderLayout />}>
             <Route path=':id' element={<ResumeBuilder />} />
           </Route>
         </Routes>
