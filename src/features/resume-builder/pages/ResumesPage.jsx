@@ -1,28 +1,46 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
-import { FileText, Plus, Calendar, Edit, Trash2 } from 'lucide-react';
+import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
 
+const PAGE_SIZE = 9; // Show 9 resumes per page (3x3 grid)
+
 const ResumesPage = () => {
-  const [resumes, setResumes] = useState([]);
+  const [allResumes, setAllResumes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const { createNewResume } = useResumeStore();
 
+  // Calculate pagination values
+  const totalPages = Math.ceil(allResumes.length / PAGE_SIZE);
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  
+  // Get current page's resumes
+  const currentResumes = useMemo(() => {
+    // Sort resumes by updatedAt in descending order (newest first)
+    const sortedResumes = [...allResumes].sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+    return sortedResumes.slice(startIndex, endIndex);
+  }, [allResumes, startIndex, endIndex]);
+
   useEffect(() => {
     fetchResumes();
-  }, []);
+  }, []); // Only fetch once since we have all data
 
   const fetchResumes = async () => {
     try {
       const response = await apiClient.get('/api/v1/cv/user');
-      setResumes(response.data);
+      setAllResumes(response.data || []);
     } catch (error) {
       console.error('Error fetching resumes:', error);
+      toast.error('Failed to fetch resumes');
     } finally {
       setLoading(false);
     }
@@ -34,6 +52,7 @@ const ResumesPage = () => {
       navigate(`/resumes/${newResumeId}`);
     } catch (error) {
       console.error('Error creating new resume:', error);
+      toast.error('Failed to create new resume');
     }
   };
 
@@ -43,11 +62,24 @@ const ResumesPage = () => {
     try {
       await apiClient.delete(`/api/v1/cv/${resumeId}`);
       toast.success('Resume deleted successfully');
-      fetchResumes(); // Refresh the list
+      // Update local state by removing the deleted resume
+      setAllResumes(prev => prev.filter(resume => resume.id !== resumeId));
+      // If we're on the last page and delete the last item, go to previous page
+      if (currentResumes.length === 1 && currentPage > 1) {
+        setCurrentPage(prev => prev - 1);
+      }
     } catch (error) {
       console.error('Error deleting resume:', error);
       toast.error('Failed to delete resume');
     }
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
   if (loading) {
@@ -72,7 +104,7 @@ const ResumesPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {resumes.map((resume) => (
+        {currentResumes.map((resume) => (
           <Card 
             key={resume.id}
             className="hover:shadow-lg transition-shadow cursor-pointer"
@@ -103,18 +135,18 @@ const ResumesPage = () => {
                     Last updated: {new Date(resume.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
-                {resume.jobId && (
-                  <div className="flex items-center">
-                    <Edit className="h-4 w-4 mr-2" />
-                    <span>Generated for Job #{resume.jobId}</span>
-                  </div>
-                )}
+                <div className="flex items-center">
+                  <Edit className="h-4 w-4 mr-2" />
+                  <span>
+                    {resume.jobId ? `Generated for Job #${resume.jobId}` : 'General CV'}
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
 
-        {resumes.length === 0 && (
+        {allResumes.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg border border-gray-200">
             <FileText className="h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Resumes Yet</h3>
@@ -129,6 +161,30 @@ const ResumesPage = () => {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-4 mt-8">
+          <Button 
+            onClick={handlePrevPage} 
+            disabled={currentPage === 1} 
+            variant="outline" 
+            size="icon"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <span className="text-sm text-gray-700">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button 
+            onClick={handleNextPage} 
+            disabled={currentPage === totalPages} 
+            variant="outline" 
+            size="icon"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

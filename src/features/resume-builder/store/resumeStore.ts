@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { fetchResume, updateResume, generateCV, createCV } from '../services/api';
 import { Resume, Section, TemplateName, ApiResponse } from '../types';
 import apiClient from '../../../common/utils/apiClient';
+import { toast } from 'sonner';
 
 interface ResumeState {
   resume: Resume | null;
@@ -175,32 +176,71 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   reorderSections: (newOrder) => {
     set((state) => {
       if (!state.resume) return state;
-      return {
-        resume: {
-          ...state.resume,
-          sectionsOrder: newOrder
+
+      // Create a new sectionsOrder object with updated orderIndex values
+      const updatedSectionsOrder = Object.entries(newOrder).reduce((acc, [sectionKey, newIndex]) => {
+        acc[sectionKey] = newIndex;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Update each section's orderIndex in the resume object
+      const updatedResume = {
+        ...state.resume,
+        sectionsOrder: updatedSectionsOrder,
+        educationSection: {
+          ...state.resume.educationSection,
+          orderIndex: updatedSectionsOrder.education || state.resume.educationSection.orderIndex
+        },
+        experienceSection: {
+          ...state.resume.experienceSection,
+          orderIndex: updatedSectionsOrder.experience || state.resume.experienceSection.orderIndex
+        },
+        skillSection: {
+          ...state.resume.skillSection,
+          orderIndex: updatedSectionsOrder.skill || state.resume.skillSection.orderIndex
+        },
+        projectSection: {
+          ...state.resume.projectSection,
+          orderIndex: updatedSectionsOrder.project || state.resume.projectSection.orderIndex
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving section order:', error);
+        toast.error('Failed to save section order');
+      });
+
+      return { resume: updatedResume };
     });
   },
 
   reorderItems: (sectionKey, items) => {
     set((state) => {
       if (!state.resume) return state;
+
+      // Update items with new orderIndex values
       const updatedItems = items.map((item, index) => ({
         ...item,
         orderIndex: index + 1
       }));
       
-      return {
-        resume: {
-          ...state.resume,
-          [sectionKey]: {
-            ...state.resume[sectionKey],
-            items: updatedItems
-          }
+      // Update the section with new items and their order
+      const updatedResume = {
+        ...state.resume,
+        [sectionKey]: {
+          ...state.resume[sectionKey],
+          items: updatedItems
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving items order:', error);
+        toast.error('Failed to save items order');
+      });
+      
+      return { resume: updatedResume };
     });
   },
 
