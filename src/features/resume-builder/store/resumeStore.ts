@@ -70,10 +70,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     }
   },
 
-  createNewResume: async (): Promise<number> => {
+  createNewResume: async (createEmpty: boolean = false): Promise<number> => {
     set({ isLoading: true, error: null });
     try {
-      const resumeData = await createCV(false);
+      const resumeData = await createCV(createEmpty);
       set({ resume: resumeData, isLoading: false });
       return resumeData.id;
     } catch (error) {

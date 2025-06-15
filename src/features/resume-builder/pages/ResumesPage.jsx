@@ -2,22 +2,44 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
-import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType } from 'lucide-react';
+import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType, FileUp, User, Briefcase } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
 import { Badge } from "@/common/components/ui/badge";
+import CreateResumeDialog from '../components/CreateResumeDialog';
 
 const PAGE_SIZE = 9; // Show 9 resumes per page (3x3 grid)
 
 // Helper function to count visible sections
-const countVisibleSections = (resume) => {
+const countActiveSections = (resume) => {
   let count = 0;
-  if (!resume.summarySection.hidden) count++;
-  if (!resume.educationSection.hidden) count++;
-  if (!resume.experienceSection.hidden) count++;
-  if (!resume.projectSection.hidden) count++;
-  if (!resume.skillSection.hidden) count++;
+  
+  // Summary section is counted if visible and has content
+  if (!resume.summarySection.hidden && resume.summarySection.summary?.trim()) {
+    count++;
+  }
+  
+  // Education section is counted if visible and has items
+  if (!resume.educationSection.hidden && resume.educationSection.items?.length > 0) {
+    count++;
+  }
+  
+  // Experience section is counted if visible and has items
+  if (!resume.experienceSection.hidden && resume.experienceSection.items?.length > 0) {
+    count++;
+  }
+  
+  // Project section is counted if visible and has items
+  if (!resume.projectSection.hidden && resume.projectSection.items?.length > 0) {
+    count++;
+  }
+  
+  // Skill section is counted if visible and has items
+  if (!resume.skillSection.hidden && resume.skillSection.items?.length > 0) {
+    count++;
+  }
+  
   return count;
 };
 
@@ -52,6 +74,7 @@ const ResumesPage = () => {
   const [allResumes, setAllResumes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const navigate = useNavigate();
   const { createNewResume } = useResumeStore();
 
@@ -85,14 +108,35 @@ const ResumesPage = () => {
     }
   };
 
-  const handleCreateNew = async () => {
+  const handleCreateNew = () => {
+    setShowCreateDialog(true);
+  };
+
+  const handleCreateEmptyResume = async () => {
     try {
-      const newResumeId = await createNewResume();
+      const newResumeId = await createNewResume(true);
+      setShowCreateDialog(false);
       navigate(`/resumes/${newResumeId}`);
     } catch (error) {
       console.error('Error creating new resume:', error);
       toast.error('Failed to create new resume');
     }
+  };
+
+  const handleCreateFromProfile = async () => {
+    try {
+      const newResumeId = await createNewResume(false);
+      setShowCreateDialog(false);
+      navigate(`/resumes/${newResumeId}`);
+    } catch (error) {
+      console.error('Error creating resume from profile:', error);
+      toast.error('Failed to create resume from profile');
+    }
+  };
+
+  const handleCreateForJob = () => {
+    setShowCreateDialog(false);
+    navigate('/jobs'); // Navigate to jobs page to select a job
   };
 
   const handleDelete = async (resumeId, e) => {
@@ -142,6 +186,11 @@ const ResumesPage = () => {
         </Button>
       </div>
 
+      <CreateResumeDialog 
+        open={showCreateDialog} 
+        onOpenChange={setShowCreateDialog} 
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentResumes.map((resume) => (
           <Card 
@@ -188,7 +237,7 @@ const ResumesPage = () => {
                 <div className="flex items-center">
                   <List className="h-4 w-4 mr-2" />
                   <span>
-                    {countVisibleSections(resume)} active sections
+                    {countActiveSections(resume)} active sections
                   </span>
                 </div>
                 <div className="flex items-center">

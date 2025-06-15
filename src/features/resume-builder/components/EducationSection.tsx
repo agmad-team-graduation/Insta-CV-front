@@ -338,7 +338,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({
         }`}
       >
         <div className="p-6">
-          {education.length > 0 ? (
+          {education?.length > 0 ? (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={education.map(edu => edu.id)} strategy={verticalListSortingStrategy}>
                 <div className="space-y-4">
