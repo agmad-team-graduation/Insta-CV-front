@@ -327,15 +327,21 @@ const useResumeStore = create<ResumeState>((set, get) => ({
         item.id === itemId ? { ...item, hidden: !item.hidden } : item
       );
       
-      return {
-        resume: {
-          ...state.resume,
-          [sectionKey]: {
-            ...section,
-            items: updatedItems
-          }
+      const updatedResume = {
+        ...state.resume,
+        [sectionKey]: {
+          ...section,
+          items: updatedItems
         }
       };
+
+      // Save the changes to the backend
+      updateResume(updatedResume.id, updatedResume).catch(error => {
+        console.error('Error saving item visibility:', error);
+        toast.error('Failed to save item visibility');
+      });
+      
+      return { resume: updatedResume };
     });
   },
 
