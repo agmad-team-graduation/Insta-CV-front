@@ -2,12 +2,13 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
-import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType, FileUp, User, Briefcase } from 'lucide-react';
+import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType, FileUp, User, Briefcase, Pencil } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
 import { Badge } from "@/common/components/ui/badge";
 import CreateResumeDialog from '../components/CreateResumeDialog';
+import { Input } from "@/common/components/ui/input";
 
 const PAGE_SIZE = 9; // Show 9 resumes per page (3x3 grid)
 
@@ -75,6 +76,8 @@ const ResumesPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingTitleId, setEditingTitleId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState('');
   const navigate = useNavigate();
   const { createNewResume } = useResumeStore();
 
@@ -165,6 +168,38 @@ const ResumesPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
+  const handleTitleEdit = (resume) => {
+    setEditingTitleId(resume.id);
+    setEditingTitle(resume.cvTitle || `Resume #${resume.id}`);
+  };
+
+  const handleTitleSave = async (resumeId) => {
+    try {
+      const response = await apiClient.put(`/api/v1/cv/update-title?cvId=${resumeId}&title=${encodeURIComponent(editingTitle)}`);
+      setAllResumes(prev => prev.map(resume => 
+        resume.id === resumeId ? { ...resume, cvTitle: response.data.cvTitle } : resume
+      ));
+      setEditingTitleId(null);
+      toast.success('Title updated successfully');
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast.error('Failed to update title');
+    }
+  };
+
+  const handleTitleCancel = () => {
+    setEditingTitleId(null);
+    setEditingTitle('');
+  };
+
+  const handleTitleKeyDown = (e, resumeId) => {
+    if (e.key === 'Enter') {
+      handleTitleSave(resumeId);
+    } else if (e.key === 'Escape') {
+      handleTitleCancel();
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -196,24 +231,50 @@ const ResumesPage = () => {
           <Card 
             key={resume.id}
             className="hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => navigate(`/resumes/${resume.id}`)}
+            onClick={(e) => {
+              // Don't navigate if clicking on the title edit input
+              if (e.target.closest('.title-edit-container')) return;
+              navigate(`/resumes/${resume.id}`);
+            }}
           >
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center">
-                  <FileText className="h-5 w-5 text-blue-600 mr-2" />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-mono font-medium text-gray-900">
-                        Resume #{resume.id}
-                      </h3>
-                    </div>
+                <div className="flex items-center flex-1 min-w-0">
+                  <FileText className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    {editingTitleId === resume.id ? (
+                      <div className="title-edit-container" onClick={e => e.stopPropagation()}>
+                        <Input
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onKeyDown={(e) => handleTitleKeyDown(e, resume.id)}
+                          onBlur={() => handleTitleSave(resume.id)}
+                          className="h-8 text-sm"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group">
+                        <h3 className="font-mono font-medium text-gray-900 truncate">
+                          {resume.cvTitle || `Resume #${resume.id}`}
+                        </h3>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleTitleEdit(resume);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded"
+                        >
+                          <Pencil className="h-3 w-3 text-gray-500" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-500 hover:text-red-600"
+                  className="text-gray-500 hover:text-red-600 ml-2 flex-shrink-0"
                   onClick={(e) => handleDelete(resume.id, e)}
                 >
                   <Trash2 className="h-4 w-4" />

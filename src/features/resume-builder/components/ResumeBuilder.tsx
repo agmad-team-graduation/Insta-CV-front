@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon } from 'lucide-react';
+import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
+import { Input } from "../../../common/components/ui/input";
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -21,13 +22,16 @@ const ResumeBuilder: React.FC = () => {
     isSaving,
     saveResume,
     generateCVForJob,
-    isGenerating
+    isGenerating,
+    updateResumeTitle
   } = useResumeStore();
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editingTitle, setEditingTitle] = useState('');
   
   // DnD sensors configuration
   const sensors = useSensors(
@@ -107,6 +111,35 @@ const ResumeBuilder: React.FC = () => {
     }
   };
 
+  const handleTitleEdit = () => {
+    if (!resume) return;
+    setEditingTitle(resume.cvTitle || `Resume #${resume.id}`);
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = async () => {
+    if (!resume) return;
+    try {
+      await updateResumeTitle(editingTitle);
+      setIsEditingTitle(false);
+    } catch (error) {
+      console.error('Error saving title:', error);
+    }
+  };
+
+  const handleTitleCancel = () => {
+    setIsEditingTitle(false);
+    setEditingTitle('');
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      handleTitleCancel();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
@@ -157,7 +190,31 @@ const ResumeBuilder: React.FC = () => {
               </button>
               <div className="flex items-center space-x-2">
                 <FileTextIcon className="h-6 w-6 text-blue-600" />
-                <h1 className="text-xl font-semibold text-gray-800">Resume Builder</h1>
+                {isEditingTitle ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editingTitle}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingTitle(e.target.value)}
+                      onKeyDown={handleTitleKeyDown}
+                      onBlur={handleTitleSave}
+                      className="h-8 text-sm w-64"
+                      autoFocus
+                      type="text"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 group">
+                    <h1 className="text-xl font-semibold text-gray-800">
+                      {resume?.cvTitle || `Resume #${resume?.id}`}
+                    </h1>
+                    <button
+                      onClick={handleTitleEdit}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded"
+                    >
+                      <PencilIcon className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             

@@ -2,6 +2,7 @@
 export interface Resume {
   id: number;
   jobId: number;
+  cvTitle?: string;
   personalDetails: PersonalDetails;
   summarySection: {
     summary: string;

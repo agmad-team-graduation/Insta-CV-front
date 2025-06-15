@@ -19,6 +19,7 @@ interface ResumeState {
   updatePersonalDetails: (details: Partial<Resume['personalDetails']>) => void;
   updateSummary: (summary: string) => void;
   updateSummaryTitle: (newTitle: string) => void;
+  updateResumeTitle: (newTitle: string) => Promise<void>;
   updateSectionTitle: (sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>, newTitle: string) => void;
   toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summarySection') => void;
   reorderSections: (newOrder: Record<string, number>) => void;
@@ -383,6 +384,26 @@ const useResumeStore = create<ResumeState>((set, get) => ({
         error: error instanceof Error ? error.message : 'Failed to generate CV', 
         isGenerating: false 
       });
+      throw error;
+    }
+  },
+
+  updateResumeTitle: async (newTitle: string) => {
+    const { resume } = get();
+    if (!resume) return;
+
+    try {
+      const response = await apiClient.put(`/api/v1/cv/update-title?cvId=${resume.id}&title=${encodeURIComponent(newTitle)}`);
+      set((state) => ({
+        resume: {
+          ...state.resume!,
+          cvTitle: response.data.cvTitle
+        }
+      }));
+      toast.success('Title updated successfully');
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast.error('Failed to update title');
       throw error;
     }
   },
