@@ -28,7 +28,7 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     })
   );
 
-  const sectionKeys = ['educationSection', 'experienceSection', 'skillSection', 'projectSection'] as const;
+  const sectionKeys = ['summarySection', 'educationSection', 'experienceSection', 'skillSection', 'projectSection'] as const;
   type SectionKey = typeof sectionKeys[number];
 
   // Get section order from resume.sectionsOrder or fallback to default order
@@ -76,16 +76,19 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
           sectionTitle="Personal Details"
           hidden={resume.personalDetails.hidden || false}
         />
-        {/* Summary */}
-        <ProfessionalSummarySection
-          summary={resume.summary}
-          sectionTitle="Professional Summary"
-          hidden={resume.summaryHidden || false}
-        />
         {/* Main Sections: Draggable as cards */}
         <SortableContext items={orderedSectionKeys} strategy={verticalListSortingStrategy}>
           {orderedSectionKeys.map((sectionKey) => {
-            // Handle experience section separately with new component
+            if (sectionKey === 'summarySection') {
+              return (
+                <ProfessionalSummarySection
+                  key={sectionKey}
+                  summary={resume.summarySection.summary}
+                  sectionTitle={resume.summarySection.sectionTitle}
+                  hidden={resume.summarySection.hidden || false}
+                />
+              );
+            }
             if (sectionKey === 'experienceSection') {
               return (
                 <DraggableItem key={sectionKey} id={sectionKey} className="mb-2">

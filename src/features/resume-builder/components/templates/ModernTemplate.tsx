@@ -1,11 +1,21 @@
 import React from 'react';
 import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
-import { MailIcon, PhoneIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon } from 'lucide-react';
+import { MailIcon, PhoneIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
+import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
+
+type SectionType = Section<EducationItem> | Section<ExperienceItem> | Section<ProjectItem> | Section<SkillItem>;
+type SummarySection = {
+  summary: string;
+  sectionTitle: string;
+  hidden: boolean;
+  orderIndex: number;
+};
 
 const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
+    summary: resume.summarySection,
     education: resume.educationSection,
     experience: resume.experienceSection,
     project: resume.projectSection,
@@ -35,21 +45,27 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
         </div>
       </div>
       
-      {/* Summary */}
-      {resume.summary && !resume.summaryHidden && (
-        <div className="p-6 bg-gray-50 border-b">
-          <h2 className="text-xl font-bold mb-3 text-gray-700">{resume.summaryTitle || 'Summary'}</h2>
-          <p className="text-gray-700">{resume.summary}</p>
-        </div>
-      )}
-      
       {/* Main content */}
       <div className="p-6">
         {sortedSections.map(([key, section]) => {
           if (section.hidden) return null;
           
-          // Sort items by orderIndex and filter out hidden items
-          const sortedItems = [...section.items]
+          if (key === 'summary') {
+            const summarySection = section as SummarySection;
+            return (
+              <div key={key} className="mb-8">
+                <div className="flex items-center mb-4">
+                  <UserIcon size={20} className="text-blue-600" />
+                  <h2 className="text-xl font-bold ml-2 text-gray-800">{summarySection.sectionTitle}</h2>
+                </div>
+                <p className="text-gray-700">{summarySection.summary}</p>
+              </div>
+            );
+          }
+          
+          // For other sections, we know they have items
+          const typedSection = section as SectionType;
+          const sortedItems = [...typedSection.items]
             .filter(item => !item.hidden)
             .sort((a, b) => a.orderIndex - b.orderIndex);
           
@@ -75,7 +91,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div key={key} className="mb-8">
               <div className="flex items-center mb-4">
                 {icon}
-                <h2 className="text-xl font-bold ml-2 text-gray-800">{section.sectionTitle}</h2>
+                <h2 className="text-xl font-bold ml-2 text-gray-800">{typedSection.sectionTitle}</h2>
               </div>
               
               <div className="space-y-4">

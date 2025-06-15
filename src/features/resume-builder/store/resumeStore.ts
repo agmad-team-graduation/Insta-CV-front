@@ -20,7 +20,7 @@ interface ResumeState {
   updateSummary: (summary: string) => void;
   updateSummaryTitle: (newTitle: string) => void;
   updateSectionTitle: (sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>, newTitle: string) => void;
-  toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summary') => void;
+  toggleSectionVisibility: (sectionKey: 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection' | 'personalDetails' | 'summarySection') => void;
   reorderSections: (newOrder: Record<string, number>) => void;
   reorderItems: <T>(
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
@@ -106,7 +106,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       return {
         resume: {
           ...state.resume,
-          summary
+          summarySection: {
+            ...state.resume.summarySection,
+            summary
+          }
         }
       };
     });
@@ -118,7 +121,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       return {
         resume: {
           ...state.resume,
-          summaryTitle: newTitle
+          summarySection: {
+            ...state.resume.summarySection,
+            sectionTitle: newTitle
+          }
         }
       };
     });
@@ -153,14 +159,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
           }
         };
       }
-      if (sectionKey === 'summary') {
-        return {
-          resume: {
-            ...state.resume,
-            summaryHidden: !state.resume.summaryHidden
-          }
-        };
-      }
       return {
         resume: {
           ...state.resume,
@@ -187,6 +185,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       const updatedResume = {
         ...state.resume,
         sectionsOrder: updatedSectionsOrder,
+        summarySection: {
+          ...state.resume.summarySection,
+          orderIndex: updatedSectionsOrder.summary || state.resume.summarySection.orderIndex
+        },
         educationSection: {
           ...state.resume.educationSection,
           orderIndex: updatedSectionsOrder.education || state.resume.educationSection.orderIndex

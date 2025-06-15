@@ -4,8 +4,11 @@ import {
   EyeIcon,
   EyeOffIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  GripVerticalIcon
 } from 'lucide-react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import useResumeStore from '../store/resumeStore';
 import EditableField from './ui/EditableField';
 
@@ -18,18 +21,38 @@ interface ProfessionalSummarySectionProps {
 const ProfessionalSummarySection: React.FC<ProfessionalSummarySectionProps> = ({ 
   summary, 
   sectionTitle, 
-  hidden 
+  hidden
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const { toggleSectionVisibility, updateSummary, updateSummaryTitle, resume } = useResumeStore();
+  const { toggleSectionVisibility, updateSummary, updateSummaryTitle } = useResumeStore();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: 'summarySection' });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const handleTitleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div 
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-200 ${
+        isDragging ? 'opacity-50 cursor-grabbing' : ''
+      }`}
+    >
       {/* Header Bar */}
       <div className="border-b border-gray-100">
         <div
@@ -41,7 +64,7 @@ const ProfessionalSummarySection: React.FC<ProfessionalSummarySectionProps> = ({
               <BookOpenIcon size={18} />
             </div>
             <EditableField
-              value={resume?.summaryTitle || sectionTitle}
+              value={sectionTitle}
               onChange={(value) => updateSummaryTitle(value)}
               className="!p-0 hover:bg-transparent font-semibold text-lg text-gray-900"
               onEditStart={() => setIsEditingTitle(true)}
@@ -50,9 +73,18 @@ const ProfessionalSummarySection: React.FC<ProfessionalSummarySectionProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <button
+              {...attributes}
+              {...listeners}
+              className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
+              title="Drag to reorder section"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVerticalIcon size={16} />
+            </button>
+            <button
               onClick={(e) => {
                 e.stopPropagation();
-                toggleSectionVisibility('summary');
+                toggleSectionVisibility('summarySection');
               }}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
               title={hidden ? 'Show section' : 'Hide section'}

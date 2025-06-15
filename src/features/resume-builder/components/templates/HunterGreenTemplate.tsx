@@ -1,11 +1,21 @@
 import React from 'react';
 import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
-import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon } from 'lucide-react';
+import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
+import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
+
+type SectionType = Section<EducationItem> | Section<ExperienceItem> | Section<ProjectItem> | Section<SkillItem>;
+type SummarySection = {
+  summary: string;
+  sectionTitle: string;
+  hidden: boolean;
+  orderIndex: number;
+};
 
 const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
+    summary: resume.summarySection,
     education: resume.educationSection,
     experience: resume.experienceSection,
     project: resume.projectSection,
@@ -41,22 +51,31 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
         </div>
       </div>
       
-      {/* Summary */}
-      {resume.summary && !resume.summaryHidden && (
-        <div className="p-6 bg-green-50 border-l-4 border-green-800">
-          <h2 className="text-xl font-bold mb-3 text-green-800">{resume.summaryTitle || 'Professional Summary'}</h2>
-          <p className="text-gray-700 leading-relaxed">{resume.summary}</p>
-        </div>
-      )}
-      
       {/* Multi-column layout */}
       <div className="grid grid-cols-3 gap-6 p-6">
         {/* Left Column - Education & Skills */}
         <div className="col-span-1 space-y-6">
           {sortedSections.map(([key, section]) => {
-            if (section.hidden || (key !== 'education' && key !== 'skill')) return null;
+            if (section.hidden || (key !== 'education' && key !== 'skill' && key !== 'summary')) return null;
             
-            const sortedItems = [...section.items].sort((a, b) => a.orderIndex - b.orderIndex);
+            if (key === 'summary') {
+              const summarySection = section as SummarySection;
+              return (
+                <div key={key} className="mb-6">
+                  <div className="flex items-center mb-3 pb-2 border-b-2 border-green-200">
+                    <UserIcon size={18} className="text-green-700" />
+                    <h2 className="text-lg font-bold ml-2 text-green-800">{summarySection.sectionTitle}</h2>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">{summarySection.summary}</p>
+                </div>
+              );
+            }
+            
+            // For other sections, we know they have items
+            const typedSection = section as SectionType;
+            const sortedItems = [...typedSection.items]
+              .filter(item => !item.hidden)
+              .sort((a, b) => a.orderIndex - b.orderIndex);
             
             let icon;
             switch (key) {
@@ -74,7 +93,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div key={key} className="mb-6">
                 <div className="flex items-center mb-3 pb-2 border-b-2 border-green-200">
                   {icon}
-                  <h2 className="text-lg font-bold ml-2 text-green-800">{section.sectionTitle}</h2>
+                  <h2 className="text-lg font-bold ml-2 text-green-800">{typedSection.sectionTitle}</h2>
                 </div>
                 
                 <div className="space-y-3">
@@ -115,15 +134,19 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
           {sortedSections.map(([key, section]) => {
             if (section.hidden || (key !== 'experience' && key !== 'project')) return null;
             
-            const sortedItems = [...section.items].sort((a, b) => a.orderIndex - b.orderIndex);
+            // For other sections, we know they have items
+            const typedSection = section as SectionType;
+            const sortedItems = [...typedSection.items]
+              .filter(item => !item.hidden)
+              .sort((a, b) => a.orderIndex - b.orderIndex);
             
             let icon;
             switch (key) {
               case 'experience':
-                icon = <BriefcaseIcon size={20} className="text-green-700" />;
+                icon = <BriefcaseIcon size={18} className="text-green-700" />;
                 break;
               case 'project':
-                icon = <CodeIcon size={20} className="text-green-700" />;
+                icon = <CodeIcon size={18} className="text-green-700" />;
                 break;
               default:
                 icon = null;
@@ -133,7 +156,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div key={key} className="mb-6">
                 <div className="flex items-center mb-4 pb-2 border-b-2 border-green-200">
                   {icon}
-                  <h2 className="text-xl font-bold ml-2 text-green-800">{section.sectionTitle}</h2>
+                  <h2 className="text-xl font-bold ml-2 text-green-800">{typedSection.sectionTitle}</h2>
                 </div>
                 
                 <div className="space-y-4">
