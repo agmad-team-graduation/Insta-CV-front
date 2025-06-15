@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { fetchResume, updateResume, generateCV, fetchDemoResume } from '../services/api';
+import { fetchResume, updateResume, generateCV, createCV } from '../services/api';
 import { Resume, Section, TemplateName, ApiResponse } from '../types';
 import apiClient from '../../../common/utils/apiClient';
 
@@ -10,12 +10,11 @@ interface ResumeState {
   selectedTemplate: TemplateName;
   isSaving: boolean;
   isGenerating: boolean;
-  generatedResumeId: number | null;
   
   // Actions
   fetchResume: (resumeId?: number) => Promise<void>;
-  generateCVForJob: (jobId: number) => Promise<void>;
-  clearGeneratedResume: () => void;
+  createNewResume: () => Promise<number>;
+  generateCVForJob: (jobId: number) => Promise<number>;
   updatePersonalDetails: (details: Partial<Resume['personalDetails']>) => void;
   updateSummary: (summary: string) => void;
   updateSummaryTitle: (newTitle: string) => void;
@@ -54,26 +53,34 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   selectedTemplate: 'modern',
   isSaving: false,
   isGenerating: false,
-  generatedResumeId: null,
 
   fetchResume: async (resumeId?: number) => {
+    if (!resumeId) return;
     set({ isLoading: true, error: null });
     try {
-      const idToFetch = resumeId || get().generatedResumeId;
-      if (idToFetch) {
-        console.log("fetching resume", idToFetch);
-        const resumeData = await fetchResume(idToFetch);
-        set({ resume: resumeData, isLoading: false });
-      } else {
-        console.log("fetching demo resume");
-        const resumeData = await fetchDemoResume();
-        set({ resume: resumeData, isLoading: false });
-      }
+      console.log("fetching resume", resumeId);
+      const resumeData = await fetchResume(resumeId);
+      set({ resume: resumeData, isLoading: false });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to fetch resume data', 
         isLoading: false 
       });
+    }
+  },
+
+  createNewResume: async (): Promise<number> => {
+    set({ isLoading: true, error: null });
+    try {
+      const resumeData = await createCV(false);
+      set({ resume: resumeData, isLoading: false });
+      return resumeData.id;
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to create new resume', 
+        isLoading: false 
+      });
+      throw error;
     }
   },
 
@@ -314,27 +321,23 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     }
   },
 
-  generateCVForJob: async (jobId: number) => {
+  generateCVForJob: async (jobId: number): Promise<number> => {
     set({ isGenerating: true, error: null });
     try {
       const resumeData = await generateCV(jobId);
-      console.log("generated resume", resumeData);
       set({ 
         resume: resumeData, 
-        isGenerating: false,
-        generatedResumeId: resumeData.id 
+        isGenerating: false
       });
+      return resumeData.id;
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to generate CV', 
         isGenerating: false 
       });
+      throw error;
     }
   },
-
-  clearGeneratedResume: () => {
-    set({ generatedResumeId: null });
-  }
 }));
 
 export default useResumeStore; 

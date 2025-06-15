@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avat
 import { cn } from '@/common/lib/utils';
 import { useCookies } from 'react-cookie';
 import { Button } from '@/common/components/ui/button';
+import useResumeStore from '@/features/resume-builder/store/resumeStore';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -13,17 +14,27 @@ const navItems = [
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },
-  { icon: FileText, label: 'Resume Builder', href: '/resume-builder' },
 ];
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+  const { createNewResume } = useResumeStore();
 
   const handleLogout = () => {
     removeCookie('isLoggedIn', { path: '/' });
     navigate('/');
+  };
+
+  const handleResumeBuilderClick = async (e) => {
+    e.preventDefault();
+    try {
+      const newResumeId = await createNewResume();
+      navigate(`/resume-builder/${newResumeId}`);
+    } catch (error) {
+      console.error('Error creating new resume:', error);
+    }
   };
 
   return (
@@ -56,6 +67,21 @@ const Sidebar = () => {
               </li>
             );
           })}
+          
+          {/* Resume Builder Link */}
+          <li>
+            <button
+              onClick={handleResumeBuilderClick}
+              className={cn(
+                "w-full flex items-center px-4 py-3 mx-2 rounded-md transition-colors",
+                "hover:bg-gray-50 hover:text-blue-600",
+                location.pathname.startsWith('/resume-builder/') ? "bg-blue-50 text-blue-600" : "text-gray-600"
+              )}
+            >
+              <FileText className="h-5 w-5 mr-3" />
+              Resume Builder
+            </button>
+          </li>
         </ul>
       </nav>
       

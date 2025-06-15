@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
@@ -10,15 +10,18 @@ import TemplateSelector from './TemplateSelector';
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { 
     resume, 
     isLoading, 
     error, 
-    fetchResume, 
+    fetchResume,
+    createNewResume,
     selectedTemplate,
     isSaving,
     saveResume,
-    clearGeneratedResume
+    generateCVForJob,
+    isGenerating
   } = useResumeStore();
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
@@ -39,16 +42,23 @@ const ResumeBuilder: React.FC = () => {
   );
 
   useEffect(() => {
-    // Only fetch if we don't have a resume
-    if (!resume) {
-      fetchResume();
-    }
-
-    // Cleanup: clear generated resume ID when component unmounts
-    return () => {
-      clearGeneratedResume();
+    const initializeResume = async () => {
+      if (id) {
+        // If we have an ID, fetch that resume
+        await fetchResume(parseInt(id));
+      } else {
+        // If no ID, create a new resume and navigate to it
+        try {
+          const newResumeId = await createNewResume();
+          navigate(`/resume-builder/${newResumeId}`);
+        } catch (error) {
+          console.error('Error creating new resume:', error);
+        }
+      }
     };
-  }, [fetchResume, clearGeneratedResume, resume]);
+
+    initializeResume();
+  }, [id, fetchResume, createNewResume, navigate]);
   
   // Auto-save every 5 seconds when changes are made
   useEffect(() => {
@@ -64,6 +74,19 @@ const ResumeBuilder: React.FC = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [resume, isSaving, saveResume]);
+
+  // Handle CV generation and navigation
+  const handleGenerateCV = async (jobId: number) => {
+    try {
+      await generateCVForJob(jobId);
+      // After successful generation, navigate to the new resume
+      if (resume?.id) {
+        navigate(`/resume-builder/${resume.id}`);
+      }
+    } catch (error) {
+      console.error('Error generating CV:', error);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (!resume) return;
@@ -125,9 +148,9 @@ const ResumeBuilder: React.FC = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(-1)}
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                title="Back to Dashboard"
+                title="Go Back"
               >
                 <ArrowLeftIcon size={18} />
                 <span className="hidden sm:inline">Back</span>

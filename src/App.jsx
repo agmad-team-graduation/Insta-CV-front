@@ -69,7 +69,7 @@ function AppContent() {
             <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
           </Route>
           <Route path='/resume-builder' element={<ResumeBuilderLayout />}>
-            <Route path='/resume-builder' element={<ResumeBuilder />} />
+            <Route path=':id' element={<ResumeBuilder />} />
           </Route>
         </Routes>
       </div>

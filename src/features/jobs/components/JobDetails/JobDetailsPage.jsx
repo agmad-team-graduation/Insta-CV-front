@@ -19,7 +19,7 @@ function JobDetailsPage() {
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
   const isRecommended = location.pathname.startsWith('/recommended-job-details/');
-  const { generateCVForJob, clearGeneratedResume } = useResumeStore();
+  const { generateCVForJob } = useResumeStore();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -58,12 +58,10 @@ function JobDetailsPage() {
   const handleGenerateCV = async () => {
     setIsGeneratingCV(true);
     try {
-      // Clear any previously generated resume
-      clearGeneratedResume();
-      // Generate new CV
-      await generateCVForJob(parseInt(jobID));
-      // Navigate to resume builder
-      navigate('/resume-builder');
+      // Generate new CV and get the resume ID
+      const resumeId = await generateCVForJob(parseInt(jobID));
+      // Navigate to the new resume's URL
+      navigate(`/resume-builder/${resumeId}`);
     } catch (error) {
       console.error('Error generating CV:', error);
       // Handle error (show toast, etc.)
