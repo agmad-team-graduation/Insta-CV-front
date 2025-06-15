@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut, Github } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avatar';
 import { cn } from '@/common/lib/utils';
 import { useCookies } from 'react-cookie';
@@ -9,6 +9,7 @@ import { Button } from '@/common/components/ui/button';
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: User, label: 'My Profile', href: '/profile' },
+  { icon: Github, label: 'Github Profile', href: '/github-profile' },
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
   { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
   { icon: FileText, label: 'Payout & Reports', href: '/reports' },

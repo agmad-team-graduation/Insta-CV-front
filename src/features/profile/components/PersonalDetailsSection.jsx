@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Button } from "@/common/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, Github } from "lucide-react";
 
 const labelClass = "text-gray-500 font-semibold text-sm mb-1 text-left";
 const valueClass = "text-black text-base text-left";
 
-const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about, isEditMode, onUpdate }) => {
+const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about, isEditMode, isGithubConnected, onUpdate, onGithubConnect }) => {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name, email, phone, jobTitle, location, about });
 
@@ -21,6 +21,12 @@ const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about,
   const handleSave = () => {
     onUpdate(form);
     setEditing(false);
+  };
+
+  const handleGithubConnect = () => {
+    if (!isGithubConnected && onGithubConnect) {
+      onGithubConnect();
+    }
   };
 
   return (
@@ -85,6 +91,21 @@ const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about,
           <div>
             <div className={labelClass}>Location</div>
             <div className={valueClass}>{location}</div>
+          </div>
+          <div className="flex items-end">
+            <div>
+              <div className={labelClass}>Github</div>
+              <Button
+                variant={isGithubConnected ? "secondary" : "outline"}
+                size="sm"
+                className={`flex items-center gap-2 ${isGithubConnected ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-100'}`}
+                onClick={handleGithubConnect}
+                disabled={isGithubConnected}
+              >
+                <Github className="h-4 w-4" />
+                {isGithubConnected ? "Connected" : "Connect with GitHub"}
+              </Button>
+            </div>
           </div>
           <div className="md:col-span-2 mt-2">
             <div className={labelClass}>About</div>

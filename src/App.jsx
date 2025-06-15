@@ -16,6 +16,7 @@ import AddJobPage from './features/jobs/components/AddJob/AddJobPage';
 import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './features/profile/pages/Profile';
+import GithubProfile from './features/github/githubProfile';
 import { ForgotPassword } from './features/auth/components/ForgotPassword';
 import RecommendedJobs from './features/jobs/components/RecommendedJobs/recommendedJobs';
 import { SetPassword } from './features/auth/components/SetPasswordForm';
@@ -62,6 +63,7 @@ function AppContent() {
             <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/jobs/add' element={<AddJobPage />} />
             <Route path='/profile' element={<Profile />} />
+            <Route path='/github-profile' element={<GithubProfile />} />
             <Route path='/recommended-jobs' element={<RecommendedJobs />} />
             <Route path='/recommended-job-details/:jobID' element={<JobDetailsPage />} />
             <Route path='/interview-questions/:jobID' element={<InterviewQuestionsPage />} />
