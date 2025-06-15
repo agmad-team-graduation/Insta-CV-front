@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { fetchDemoResume, updateResume } from '../services/api';
-import { Resume, Section, TemplateName } from '../types';
+import { fetchResume, updateResume, generateCV, fetchDemoResume } from '../services/api';
+import { Resume, Section, TemplateName, ApiResponse } from '../types';
+import apiClient from '../../../common/utils/apiClient';
 
 interface ResumeState {
   resume: Resume | null;
@@ -8,9 +9,13 @@ interface ResumeState {
   error: string | null;
   selectedTemplate: TemplateName;
   isSaving: boolean;
+  isGenerating: boolean;
+  generatedResumeId: number | null;
   
   // Actions
   fetchResume: (resumeId?: number) => Promise<void>;
+  generateCVForJob: (jobId: number) => Promise<void>;
+  clearGeneratedResume: () => void;
   updatePersonalDetails: (details: Partial<Resume['personalDetails']>) => void;
   updateSummary: (summary: string) => void;
   updateSummaryTitle: (newTitle: string) => void;
@@ -48,13 +53,22 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   error: null,
   selectedTemplate: 'modern',
   isSaving: false,
+  isGenerating: false,
+  generatedResumeId: null,
 
   fetchResume: async (resumeId?: number) => {
     set({ isLoading: true, error: null });
     try {
-      // In a real app, use fetchResume(resumeId) instead
-      const resumeData = await fetchDemoResume();
-      set({ resume: resumeData, isLoading: false });
+      const idToFetch = resumeId || get().generatedResumeId;
+      if (idToFetch) {
+        console.log("fetching resume", idToFetch);
+        const resumeData = await fetchResume(idToFetch);
+        set({ resume: resumeData, isLoading: false });
+      } else {
+        console.log("fetching demo resume");
+        const resumeData = await fetchDemoResume();
+        set({ resume: resumeData, isLoading: false });
+      }
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to fetch resume data', 
@@ -166,7 +180,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   reorderItems: (sectionKey, items) => {
     set((state) => {
       if (!state.resume) return state;
-      // Update orderIndex based on new order
       const updatedItems = items.map((item, index) => ({
         ...item,
         orderIndex: index + 1
@@ -241,7 +254,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       const section = state.resume[sectionKey];
       const filteredItems = section.items.filter(item => item.id !== itemId);
       
-      // Reorder the remaining items
       const reorderedItems = filteredItems.map((item, index) => ({
         ...item,
         orderIndex: index + 1
@@ -290,14 +302,38 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     
     set({ isSaving: true, error: null });
     try {
+      console.log("saving resume", resume);
       await updateResume(resume.id, resume);
       set({ isSaving: false });
     } catch (error) {
+      console.log("error saving resume", error);
       set({ 
         error: error instanceof Error ? error.message : 'Failed to save resume', 
         isSaving: false 
       });
     }
+  },
+
+  generateCVForJob: async (jobId: number) => {
+    set({ isGenerating: true, error: null });
+    try {
+      const resumeData = await generateCV(jobId);
+      console.log("generated resume", resumeData);
+      set({ 
+        resume: resumeData, 
+        isGenerating: false,
+        generatedResumeId: resumeData.id 
+      });
+    } catch (error) {
+      set({ 
+        error: error instanceof Error ? error.message : 'Failed to generate CV', 
+        isGenerating: false 
+      });
+    }
+  },
+
+  clearGeneratedResume: () => {
+    set({ generatedResumeId: null });
   }
 }));
 

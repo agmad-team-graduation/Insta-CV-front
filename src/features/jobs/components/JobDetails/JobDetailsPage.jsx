@@ -1,22 +1,25 @@
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { PieChart, Pie, Cell } from "recharts";
-import { ArrowLeft, Star, Plus } from "lucide-react";
+import { ArrowLeft, Star, Plus, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import apiClient from "@/common/utils/apiClient";
+import useResumeStore from "@/features/resume-builder/store/resumeStore";
 
 function JobDetailsPage() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
+  const [isGeneratingCV, setIsGeneratingCV] = useState(false);
   const { jobID } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
   const isRecommended = location.pathname.startsWith('/recommended-job-details/');
+  const { generateCVForJob, clearGeneratedResume } = useResumeStore();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -51,6 +54,23 @@ function JobDetailsPage() {
     fetchJobDetails();
     fetchRecommendations();
   }, [jobID, location.pathname]);
+
+  const handleGenerateCV = async () => {
+    setIsGeneratingCV(true);
+    try {
+      // Clear any previously generated resume
+      clearGeneratedResume();
+      // Generate new CV
+      await generateCVForJob(parseInt(jobID));
+      // Navigate to resume builder
+      navigate('/resume-builder');
+    } catch (error) {
+      console.error('Error generating CV:', error);
+      // Handle error (show toast, etc.)
+    } finally {
+      setIsGeneratingCV(false);
+    }
+  };
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -143,7 +163,20 @@ function JobDetailsPage() {
 
               {/* Resume generation and save buttons pinned at bottom */}
               <div className="pt-6 space-y-3">
-                <Button className="w-full text-lg py-6">Generate Resume for this Job</Button>
+                <Button 
+                  className="w-full text-lg py-6" 
+                  onClick={handleGenerateCV}
+                  disabled={isGeneratingCV}
+                >
+                  {isGeneratingCV ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Generating Resume...
+                    </>
+                  ) : (
+                    'Generate Resume for this Job'
+                  )}
+                </Button>
                 <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
                   Show Interview Questions
                 </Button>

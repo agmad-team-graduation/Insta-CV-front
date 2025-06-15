@@ -12,7 +12,7 @@ import {
   ChevronDownIcon,
   ChevronUpIcon
 } from 'lucide-react';
-import { EducationEntry } from '../types';
+import { EducationItem } from '../types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
@@ -22,21 +22,21 @@ import SectionItemEditor from './SectionItemEditor';
 import EditableField from './ui/EditableField';
 
 interface EducationSectionProps {
-  education: EducationEntry[];
+  education: EducationItem[];
   sectionTitle: string;
   hidden: boolean;
-  onUpdate?: (id: number, data: Partial<EducationEntry>) => void;
-  onAdd?: (data: EducationEntry) => void;
+  onUpdate?: (id: number, data: Partial<EducationItem>) => void;
+  onAdd?: (data: EducationItem) => void;
   onDelete?: (id: number) => void;
   onToggleVisibility?: (id: number) => void;
-  onReorder?: (items: EducationEntry[]) => void;
+  onReorder?: (items: EducationItem[]) => void;
   isEditMode?: boolean;
   onEditComplete?: () => void;
   onToggleSection?: () => void;
 }
 
 interface EducationCardProps {
-  education: EducationEntry;
+  education: EducationItem;
   onToggleVisibility: (id: number) => void;
   onEdit: (id: number) => void;
   isEditMode: boolean;
@@ -284,8 +284,8 @@ const EducationSection: React.FC<EducationSectionProps> = ({
     >
       {/* Header Bar */}
       <div className="border-b border-gray-100">
-        <button
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
+        <div
+          className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-3" onClick={handleTitleClick}>
@@ -328,7 +328,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({
               )}
             </div>
           </div>
-        </button>
+        </div>
       </div>
 
       {/* Content */}

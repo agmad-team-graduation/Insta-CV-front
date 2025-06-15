@@ -1,21 +1,13 @@
-import axios from 'axios';
 import { ApiResponse, Resume } from '../types';
-
-// Create axios instance with base URL
-const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1', // Updated to localhost for development
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import apiClient from '../../../common/utils/apiClient';
 
 /**
  * Fetch resume data by ID
  */
 export const fetchResume = async (resumeId: number): Promise<Resume> => {
   try {
-    const response = await api.get<ApiResponse<Resume>>(`/resumes/${resumeId}`);
-    return response.data.data;
+    const response = await apiClient.get<Resume>(`/api/v1/cv/${resumeId}`);
+    return response.data;
   } catch (error) {
     console.error('Error fetching resume:', error);
     throw error;
@@ -26,20 +18,17 @@ export const fetchResume = async (resumeId: number): Promise<Resume> => {
  * Update resume data
  */
 export const updateResume = async (resumeId: number, resumeData: Partial<Resume>): Promise<Resume> => {
-  // Since we're using demo data, simulate a successful update
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Return the updated data as if it was saved
-      resolve({
-        ...resumeData,
-        updatedAt: new Date().toISOString()
-      } as Resume);
-    }, 500);
-  });
+  try {
+    const response = await apiClient.put<Resume>(`/api/v1/cv/${resumeId}`, resumeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating resume:', error);
+    throw error;
+  }
 };
 
 /**
- * Fetch demo resume data (for development/testing)
+ * Generate a CV for a specific job
  */
 export const fetchDemoResume = async (): Promise<Resume> => {
   // This is a fallback demo data for development purposes
@@ -47,7 +36,7 @@ export const fetchDemoResume = async (): Promise<Resume> => {
     id: 5,
     jobId: 11,
     personalDetails: {
-      fullName: "Youssef Hassan",
+      fullName: "Youssef Hassan Demo",
       email: "youssef@gmail.com",
       phone: "01008430008",
       address: "100 Street, Cairo, Egypt"
@@ -173,8 +162,6 @@ export const fetchDemoResume = async (): Promise<Resume> => {
       skill: 4
     }
   };
-
-  // Simulate API request delay
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(demoData);
@@ -182,4 +169,16 @@ export const fetchDemoResume = async (): Promise<Resume> => {
   });
 };
 
-export default api; 
+/**
+ * Generate a CV for a specific job
+ */
+export const generateCV = async (jobId: number): Promise<Resume> => {
+  try {
+    const response = await apiClient.post<Resume>('/api/v1/cv/generate', { jobId });
+    console.log("generated resume", response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error generating CV:', error);
+    throw error;
+  }
+};

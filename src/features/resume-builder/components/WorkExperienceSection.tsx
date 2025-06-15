@@ -270,8 +270,8 @@ const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
     >
       {/* Header Bar */}
       <div className="border-b border-gray-100">
-        <button
-          className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
+        <div
+          className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <div className="flex items-center gap-3" onClick={handleTitleClick}>
@@ -314,7 +314,7 @@ const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
               )}
             </div>
           </div>
-        </button>
+        </div>
       </div>
 
       {/* Content */}

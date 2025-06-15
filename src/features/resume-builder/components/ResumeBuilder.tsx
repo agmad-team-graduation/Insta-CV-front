@@ -17,7 +17,8 @@ const ResumeBuilder: React.FC = () => {
     fetchResume, 
     selectedTemplate,
     isSaving,
-    saveResume
+    saveResume,
+    clearGeneratedResume
   } = useResumeStore();
   
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
@@ -38,9 +39,16 @@ const ResumeBuilder: React.FC = () => {
   );
 
   useEffect(() => {
-    // Fetch resume data on component mount
-    fetchResume();
-  }, [fetchResume]);
+    // Only fetch if we don't have a resume
+    if (!resume) {
+      fetchResume();
+    }
+
+    // Cleanup: clear generated resume ID when component unmounts
+    return () => {
+      clearGeneratedResume();
+    };
+  }, [fetchResume, clearGeneratedResume, resume]);
   
   // Auto-save every 5 seconds when changes are made
   useEffect(() => {
