@@ -18,15 +18,22 @@ function JobDetailsPage() {
   const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);
   const token = cookies.isLoggedIn || '';
-  const isRecommended = location.pathname.startsWith('/recommended-job-details/');
+  const [isExternal, setIsExternal] = useState(false);
   const { generateCVForJob } = useResumeStore();
 
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        // Use scrape endpoint if on recommended-job-details route
-        const endpoint = isRecommended ? `/api/v1/jobs/scrape/${jobID}` : `/api/v1/jobs/${jobID}`;
-        const response = await apiClient.get(endpoint);
+        // Try regular job endpoint first
+        let response;
+        try {
+          response = await apiClient.get(`/api/v1/jobs/${jobID}`);
+          setIsExternal(false);
+        } catch (error) {
+          // If regular job not found, try scrape endpoint
+          response = await apiClient.get(`/api/v1/jobs/scrape/${jobID}`);
+          setIsExternal(true);
+        }
         setJob(response.data);
         console.log(response.data);
       } catch (error) {
@@ -53,7 +60,7 @@ function JobDetailsPage() {
 
     fetchJobDetails();
     fetchRecommendations();
-  }, [jobID, location.pathname]);
+  }, [jobID]);
 
   const handleGenerateCV = async () => {
     setIsGeneratingCV(true);
@@ -178,7 +185,7 @@ function JobDetailsPage() {
                 <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
                   Show Interview Questions
                 </Button>
-                {isRecommended && job.applyUrl && (
+                {isExternal && job.applyUrl && (
                   <Button
                     className="w-full text-lg py-6 mt-2"
                     variant="outline"
@@ -293,7 +300,7 @@ function JobDetailsPage() {
                     <h4 className="text-xl font-medium text-primary">{recJob.title || 'No Title'}</h4>
                     <p className="text-md text-muted-foreground">@ {recJob.company || 'Unknown Company'}</p>
                     <p className="text-md text-muted-foreground">{recJob.description ? recJob.description.slice(0, 100) + (recJob.description.length > 100 ? '...' : '') : 'No description.'}</p>
-                    <Button variant="outline" className="w-full mt-2" onClick={() => navigate(`/recommended-job-details/${recJob.id}`)}>
+                    <Button variant="outline" className="w-full mt-2" onClick={() => navigate(`/job-details/${recJob.id}`)}>
                       View Details
                     </Button>
                   </CardContent>

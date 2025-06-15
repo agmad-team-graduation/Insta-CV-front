@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { fetchJobs } from "../../services/fetchJobs";
-import { useCookies } from 'react-cookie';
-import JobCard from './jobCard';
+import apiClient from '@/common/utils/apiClient';
+import JobCard from './JobCard';
 import { Briefcase, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/common/components/ui/button";
+import { useCookies } from 'react-cookie';
 
 const PAGE_SIZE = 9;
 
-const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externalError }) => {
+const JobsList = ({ isRecommended = false }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [cookies] = useCookies(['isLoggedIn']);
 
   useEffect(() => {
-    if (externalJobs) {
-      setJobs(externalJobs);
-      setLoading(!!externalLoading);
-      setError(externalError || null);
-      setTotalPages(1); // No pagination for external jobs
-      return;
-    }
     const loadJobs = async () => {
       try {
         setLoading(true);
-        const response = await fetchJobs(currentPage - 1, PAGE_SIZE);
-        setJobs(response || []);
-        setTotalPages(response.totalPages || 0);
+        const endpoint = isRecommended 
+          ? `/api/v1/jobs/scrape/get-recommendations?page=${currentPage - 1}&size=${PAGE_SIZE}`
+          : `/api/v1/jobs/all?page=${currentPage - 1}&size=${PAGE_SIZE}`;
+        
+        const response = await apiClient.get(endpoint);
+        
+        // Handle both response formats (content array or direct array)
+        const jobsData = response.data.content || response.data;
+        const totalPagesData = response.data.totalPages || 1;
+        
+        if (Array.isArray(jobsData)) {
+          setJobs(jobsData);
+          setTotalPages(totalPagesData);
+        } else {
+          setJobs([]);
+          setTotalPages(0);
+        }
         setError(null);
       } catch (err) {
         setError('Failed to load jobs. Please try again later.');
@@ -41,7 +47,7 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
       }
     };
     loadJobs();
-  }, [currentPage, activeTab, externalJobs, externalLoading, externalError]);
+  }, [currentPage, isRecommended]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -68,11 +74,9 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
     );
   }
 
-  const displayJobs = jobs;
-
   return (
     <div>
-      {displayJobs.length === 0 && !loading && (
+      {jobs.length === 0 && !loading && (
         <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg border border-gray-200">
           <Briefcase className="w-12 h-12 text-gray-400 mb-3" />
           <h3 className="text-lg font-medium text-gray-700 mb-1">No jobs found</h3>
@@ -80,15 +84,15 @@ const JobsList = ({ jobs: externalJobs, loading: externalLoading, error: externa
         </div>
       )}
 
-      {displayJobs.length > 0 && (
+      {jobs.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayJobs.map((job) => (
-            <JobCard key={job.id} job={job} isRecommended={!!externalJobs} />
+          {jobs.map((job) => (
+            <JobCard key={job.id} job={job} isRecommended={isRecommended} />
           ))}
         </div>
       )}
 
-      {!externalJobs && totalPages > 1 && (
+      {totalPages > 1 && (
         <div className="flex justify-center items-center space-x-4 mt-8">
           <Button onClick={handlePrevPage} disabled={currentPage === 1} variant="outline" size="icon">
             <ChevronLeft className="h-5 w-5" />

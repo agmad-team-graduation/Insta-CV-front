@@ -304,7 +304,19 @@ const ResumesPage = () => {
                 <div className="flex items-center">
                   <Edit className="h-4 w-4 mr-2" />
                   <span>
-                    {resume.jobId ? `Generated for Job #${resume.jobId}` : 'General CV'}
+                    {resume.jobId ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/job-details/${resume.jobId}`);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                      >
+                        Generated for Job #{resume.jobId}
+                      </button>
+                    ) : (
+                      'General CV'
+                    )}
                   </span>
                 </div>
               </div>

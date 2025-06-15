@@ -16,11 +16,12 @@ const JobCard = ({ job, isRecommended = false }) => {
 
   // Use the 'date' property if available, otherwise fallback to 'postedDate'
   let displayDate = '';
+  console.log(job);
   if (job.date) {
     const d = new Date(job.date);
     displayDate = isNaN(d) ? job.date : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  } else if (job.postedDate) {
-    const d = new Date(job.postedDate);
+  } else if (job.addDate) {
+    const d = new Date(job.addDate);
     displayDate = isNaN(d) ? job.postedDate : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   } else {
     displayDate = 'Invalid date';
@@ -70,8 +71,7 @@ const JobCard = ({ job, isRecommended = false }) => {
       
       if ((response.data.analyzed && response.data.skillMatchingAnalyzed) || !!isRecommended) {
         // If already analyzed, go directly to job details
-        const detailsRoute = isRecommended ? `/recommended-job-details/${job.id}` : `/job-details/${job.id}`;
-        navigate(detailsRoute);
+        navigate(`/job-details/${job.id}`);
       } else {
         // Start polling for job analysis status
         console.log(job);
@@ -88,8 +88,7 @@ const JobCard = ({ job, isRecommended = false }) => {
     } catch (error) {
       console.error("Error checking job analysis status:", error);
       // On error, navigate to details page anyway
-      const detailsRoute = isRecommended ? `/recommended-job-details/${job.id}` : `/job-details/${job.id}`;
-      navigate(detailsRoute);
+      navigate(`/job-details/${job.id}`);
     }
   };
 

@@ -9,8 +9,8 @@ const JobsPage = () => {
   const location = useLocation();
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <header className="bg-white shadow-sm flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center">
@@ -31,7 +31,7 @@ const JobsPage = () => {
       </header>
       
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-gray-200 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <button
@@ -50,17 +50,13 @@ const JobsPage = () => {
         </div>
       </div>
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <JobsList />
+      {/* Main content area with flex-grow to push footer down */}
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div className="min-h-[calc(100vh-16rem)]">
+          <JobsList isRecommended={false} />
+        </div>
       </main>
       
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} JobBoard. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
