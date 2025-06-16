@@ -20,11 +20,12 @@ const navItems = [
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn']);
+  const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn', 'user']);
   const { createNewResume } = useResumeStore();
 
   const handleLogout = () => {
     removeCookie('isLoggedIn', { path: '/' });
+    removeCookie('user', { path: '/' });
     navigate('/');
   };
 
@@ -37,6 +38,9 @@ const Sidebar = () => {
       console.error('Error creating new resume:', error);
     }
   };
+
+  // Get user data from cookies
+  const user = cookies.user || { name: 'User Name', email: 'user@example.com', photoUrl: '' };
 
   return (
     <div className="h-screen w-56 bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0">
@@ -74,11 +78,17 @@ const Sidebar = () => {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center">
           <Avatar>
-            <AvatarFallback className="bg-gray-200 text-gray-700">U</AvatarFallback>
+            {user.photoUrl ? (
+              <AvatarImage src={user.photoUrl} alt={user.name} />
+            ) : (
+              <AvatarFallback className="bg-gray-200 text-gray-700">
+                {user.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            )}
           </Avatar>
           <div className="ml-2">
-            <p className="text-sm font-medium text-gray-700 truncate">User Name</p>
-            <p className="text-xs text-gray-500 truncate">user@example.com</p>
+            <p className="text-sm font-medium text-gray-700 truncate">{user.name}</p>
+            <p className="text-xs text-gray-500 truncate">{user.email}</p>
           </div>
         </div>
         

@@ -21,6 +21,7 @@ export function LoginForm() {
     setEmail,
     password,
     setPassword,
+    user,
     handleSubmit,
   } = UseAuth();
 
@@ -37,6 +38,24 @@ export function LoginForm() {
     console.log("Login form data:", data);
     handleSubmit();
   };
+
+  if (user) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="flex items-center space-x-4 mb-4">
+          <img
+            src={user.photoUrl}
+            alt={user.name}
+            className="w-12 h-12 rounded-full"
+          />
+          <div>
+            <h3 className="text-lg font-medium">{user.name}</h3>
+            <p className="text-sm text-gray-500">{user.email}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md">

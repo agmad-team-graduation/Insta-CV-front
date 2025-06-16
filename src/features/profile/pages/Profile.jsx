@@ -25,6 +25,8 @@ const Profile = () => {
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [photoUrl, setPhotoUrl] = useState('');
   const [uploadingCV, setUploadingCV] = useState(false);
+  const [selectedCVFile, setSelectedCVFile] = useState(null);
+  const [showCVUploadDialog, setShowCVUploadDialog] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,7 +125,7 @@ const Profile = () => {
     setPhotoUrl(newPhotoUrl);
   };
 
-  const handleCVUpload = async (event) => {
+  const handleCVFileSelect = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -133,12 +135,22 @@ const Profile = () => {
       return;
     }
 
+    setSelectedCVFile(file);
+    setShowCVUploadDialog(true);
+  };
+
+  const handleCVUpload = async (shouldOverwrite) => {
+    if (!selectedCVFile) return;
+
+    // Close dialog immediately when user makes a choice
+    setShowCVUploadDialog(false);
+
     try {
       setUploadingCV(true);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', selectedCVFile);
 
-      const response = await apiClient.post('/api/v1/profiles/upload-cv', formData, {
+      const response = await apiClient.post(`/api/v1/profiles/upload-cv?overwrite=${shouldOverwrite}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -154,6 +166,7 @@ const Profile = () => {
       toast.error('Failed to upload CV. Please try again.');
     } finally {
       setUploadingCV(false);
+      setSelectedCVFile(null);
     }
   };
 
@@ -238,7 +251,7 @@ const Profile = () => {
                   type="file"
                   id="cv-upload"
                   accept=".pdf"
-                  onChange={handleCVUpload}
+                  onChange={handleCVFileSelect}
                   style={{ display: 'none' }}
                   disabled={uploadingCV}
                 />
@@ -404,6 +417,34 @@ const Profile = () => {
           }}
         />
       </div>
+
+      {/* CV Upload Dialog */}
+      <Dialog open={showCVUploadDialog} onOpenChange={setShowCVUploadDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload CV</DialogTitle>
+            <DialogDescription>
+              How would you like to process the uploaded CV?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+            <Button 
+              variant="outline" 
+              onClick={() => handleCVUpload(false)}
+              disabled={uploadingCV}
+            >
+              Add to Current Profile
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => handleCVUpload(true)}
+              disabled={uploadingCV}
+            >
+              Overwrite Current Profile
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
         <DialogContent>

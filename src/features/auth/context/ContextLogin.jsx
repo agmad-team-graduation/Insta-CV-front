@@ -4,49 +4,52 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '@/common/utils/apiClient'; 
 import { toast } from 'sonner';
 
-
 const AuthContext = createContext();
 
 export const LoginProvider = ({ children }) => {
     const navigate = useNavigate(); 
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [user, setUser] = useState(null);
 
-  const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken']);
+    const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken', 'user']);
 
+    const handleSubmit = async () => {
+        const newUser = { email, password };
 
-  const handleSubmit = async () => {
-    const newUser = { email, password };
+        try {
+            const { data } = await apiClient.post('/api/v1/auth/login', newUser);
 
-    try {
-      // now using axios instance
-      const {data} = await apiClient.post('/api/v1/auth/login', newUser);
+            // Store token and user data
+            setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
+            setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
+            setUser(data.user);
 
-      setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn}); 
-      navigate('/'); 
+            navigate('/'); 
 
-      setEmail('');
-      setPassword('');
+            setEmail('');
+            setPassword('');
 
-    } catch (err) {
-      toast.error(err.response.data.message,);
-    }
-  };
+        } catch (err) {
+            toast.error(err.response.data.message);
+        }
+    };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        email,
-        setEmail,
-        password,
-        setPassword,
-        handleSubmit,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider
+            value={{
+                email,
+                setEmail,
+                password,
+                setPassword,
+                user,
+                handleSubmit,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const UseAuth = () => useContext(AuthContext);
