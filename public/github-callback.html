@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head><title>GitHub OAuth Callback</title></head>
+  <body>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get("code");
+
+      if (code) {
+        fetch(`http://localhost:8080/api/github/test/callback?code=${code}`)
+          .then(res => res.json())
+          .then(data => {
+            // Send token response back to main window
+            window.opener.postMessage({ githubToken: data.access_token }, window.origin);
+            window.close();
+          })
+          .catch(() => {
+            window.opener.postMessage({ error: "GitHub callback failed" }, window.origin);
+            window.close();
+          });
+      } else {
+        window.opener.postMessage({ error: "Missing code in callback" }, window.origin);
+        window.close();
+      }
+    </script>
+  </body>
+</html>
