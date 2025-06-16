@@ -3,6 +3,7 @@ import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, GlobeIcon, AwardIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
+import apiClient from '@/common/utils/apiClient';
 
 type SectionType = Section<EducationItem> | Section<ExperienceItem> | Section<ProjectItem> | Section<SkillItem>;
 type SummarySection = {
@@ -13,6 +14,25 @@ type SummarySection = {
 };
 
 const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
+  const [photoUrl, setPhotoUrl] = React.useState<string | null>(null);
+  const [hasPhoto, setHasPhoto] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        const existsResponse = await apiClient.get('/api/users/photo/exists');
+        if (existsResponse.data.exists) {
+          const photoResponse = await apiClient.get('/api/users/photo');
+          setPhotoUrl(photoResponse.data.photoUrl);
+          setHasPhoto(true);
+        }
+      } catch (error) {
+        console.error('Error fetching photo:', error);
+      }
+    };
+    fetchPhoto();
+  }, []);
+
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     summary: resume.summarySection,
@@ -32,11 +52,21 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
       <div className="w-1/3 bg-slate-800 text-white p-8">
         {/* Header with name and title */}
         <div className="text-center mb-8">
-          <div className="w-32 h-32 bg-slate-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <UserIcon size={48} className="text-slate-300" />
+          <div className="w-32 h-32 bg-slate-600 rounded-full mx-auto mb-4 overflow-hidden">
+            {hasPhoto && photoUrl ? (
+              <img 
+                src={photoUrl} 
+                alt={resume.personalDetails.fullName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <UserIcon size={48} className="text-slate-300" />
+              </div>
+            )}
           </div>
           <h1 className="text-2xl font-bold mb-2">{resume.personalDetails.fullName}</h1>
-          <p className="text-slate-300 text-lg">Business Development Consultant</p>
+          <p className="text-slate-300 text-lg">{resume.personalDetails.jobTitle || 'Job Title?'}</p>
         </div>
 
         {/* Contact Information */}

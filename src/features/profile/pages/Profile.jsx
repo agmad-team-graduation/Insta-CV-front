@@ -22,6 +22,7 @@ const Profile = () => {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [lastTx, setLastTx] = useState(null);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,6 +117,10 @@ const Profile = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
+  const handlePhotoUpdate = (newPhotoUrl) => {
+    setPhotoUrl(newPhotoUrl);
+  };
+
   if (loading) {
     return <div className="container mx-auto py-6 px-4 text-center">Loading profile...</div>;
   }
@@ -184,12 +189,13 @@ const Profile = () => {
               <ProfileHeader
                 name={profileData.personalDetails?.fullName || ""}
                 title={profileData.personalDetails?.jobTitle || "Software Engineer"}
-                avatar="/lovable-uploads/3a91b290-2dee-4e8c-99ab-1ee517bcf7a0.png"
+                avatar={photoUrl}
                 country={profileData.personalDetails?.address?.split(", ")[2] || ""}
                 email={profileData.personalDetails?.email || ""}
                 phone={profileData.personalDetails?.phone || ""}
                 location={profileData.personalDetails?.address || ""}
                 jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                onPhotoUpdate={handlePhotoUpdate}
               />
             </CardContent>
           </Card>
