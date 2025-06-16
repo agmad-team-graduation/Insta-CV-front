@@ -12,6 +12,7 @@ import PersonalDetailsSection from "@/features/profile/components/PersonalDetail
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/common/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { useBlocker } from "../../../useBlocker";
+import { Upload } from "lucide-react";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -23,6 +24,7 @@ const Profile = () => {
   const [lastTx, setLastTx] = useState(null);
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [photoUrl, setPhotoUrl] = useState('');
+  const [uploadingCV, setUploadingCV] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -121,6 +123,40 @@ const Profile = () => {
     setPhotoUrl(newPhotoUrl);
   };
 
+  const handleCVUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check if file is PDF
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file only');
+      return;
+    }
+
+    try {
+      setUploadingCV(true);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await apiClient.post('/api/v1/profiles/upload-cv', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Refresh profile data after successful upload
+      const profileResponse = await apiClient.get("/api/v1/profiles/me");
+      setProfileData(profileResponse.data);
+      
+      toast.success('CV uploaded successfully! Profile updated.');
+    } catch (error) {
+      console.error('Error uploading CV:', error);
+      toast.error('Failed to upload CV. Please try again.');
+    } finally {
+      setUploadingCV(false);
+    }
+  };
+
   if (loading) {
     return <div className="container mx-auto py-6 px-4 text-center">Loading profile...</div>;
   }
@@ -186,6 +222,28 @@ const Profile = () => {
         <>
           <Card className="mb-6">
             <CardContent>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">Profile</h1>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    id="cv-upload"
+                    accept=".pdf"
+                    onChange={handleCVUpload}
+                    style={{ display: 'none' }}
+                    disabled={uploadingCV}
+                  />
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={uploadingCV}
+                    onClick={() => document.getElementById('cv-upload').click()}
+                  >
+                    <Upload className="h-4 w-4" />
+                    {uploadingCV ? 'Uploading...' : 'Upload CV'}
+                  </Button>
+                </div>
+              </div>
               <ProfileHeader
                 name={profileData.personalDetails?.fullName || ""}
                 title={profileData.personalDetails?.jobTitle || "Software Engineer"}
