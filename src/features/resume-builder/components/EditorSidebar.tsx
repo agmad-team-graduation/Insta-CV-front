@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Resume } from '../types';
 import useResumeStore from '../store/resumeStore';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -38,6 +38,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
     return orderA - orderB;
   });
 
+  const [expandedSection, setExpandedSection] = useState<string | null>('personalDetails');
+
   const handleSectionDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!active || !over || active.id === over.id) return;
@@ -75,6 +77,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
           personalDetails={resume.personalDetails}
           sectionTitle="Personal Details"
           hidden={resume.personalDetails.hidden || false}
+          isExpanded={expandedSection === 'personalDetails'}
+          onToggle={() => setExpandedSection(expandedSection === 'personalDetails' ? null : 'personalDetails')}
         />
         {/* Main Sections: Draggable as cards */}
         <SortableContext items={orderedSectionKeys} strategy={verticalListSortingStrategy}>
@@ -86,6 +90,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                   summary={resume.summarySection.summary}
                   sectionTitle={resume.summarySection.sectionTitle}
                   hidden={resume.summarySection.hidden || false}
+                  isExpanded={expandedSection === 'summarySection'}
+                  onToggle={() => setExpandedSection(expandedSection === 'summarySection' ? null : 'summarySection')}
                 />
               );
             }
@@ -96,6 +102,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     experiences={resume.experienceSection.items}
                     sectionTitle={resume.experienceSection.sectionTitle}
                     hidden={resume.experienceSection.hidden}
+                    isExpanded={expandedSection === 'experienceSection'}
+                    onToggle={() => setExpandedSection(expandedSection === 'experienceSection' ? null : 'experienceSection')}
                   />
                 </DraggableItem>
               );
@@ -107,6 +115,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     education={resume.educationSection.items}
                     sectionTitle={resume.educationSection.sectionTitle}
                     hidden={resume.educationSection.hidden}
+                    isExpanded={expandedSection === 'educationSection'}
+                    onToggle={() => setExpandedSection(expandedSection === 'educationSection' ? null : 'educationSection')}
                   />
                 </DraggableItem>
               );
@@ -118,6 +128,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     skills={resume.skillSection.items}
                     sectionTitle={resume.skillSection.sectionTitle}
                     hidden={resume.skillSection.hidden}
+                    isExpanded={expandedSection === 'skillSection'}
+                    onToggle={() => setExpandedSection(expandedSection === 'skillSection' ? null : 'skillSection')}
                   />
                 </DraggableItem>
               );
@@ -129,6 +141,8 @@ const EditorSidebar: React.FC<EditorSidebarProps> = ({ resume }) => {
                     projects={resume.projectSection.items}
                     sectionTitle={resume.projectSection.sectionTitle}
                     hidden={resume.projectSection.hidden}
+                    isExpanded={expandedSection === 'projectSection'}
+                    onToggle={() => setExpandedSection(expandedSection === 'projectSection' ? null : 'projectSection')}
                   />
                 </DraggableItem>
               );
