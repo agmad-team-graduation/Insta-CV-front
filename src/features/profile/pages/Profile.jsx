@@ -209,15 +209,6 @@ const Profile = () => {
                 location={profileData.personalDetails?.address || ""}
                 about={profileData.personalDetails?.about || ""}
                 isEditMode={true}
-                isGithubConnected={profileData.personalDetails?.isGithubConnected || false}
-                onGithubConnect={async () => {
-                  try {
-                    const response1 = await apiClient.get("/api/github/test/authorize");
-                    window.location.href = response1.data.authLink;
-                  } catch (error) {
-                    toast.error("Failed to connect to GitHub. Please try again.");
-                  }
-                }}
                 onUpdate={async updated => {
                   const newData = {
                     ...profileData,
