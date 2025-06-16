@@ -61,11 +61,11 @@ const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about,
             <div className={labelClass}>Location</div>
             <input className="border rounded px-3 py-2 w-full" name="location" value={form.location} onChange={handleChange} />
           </div>
-          <div className="md:col-span-2 mt-2">
+          <div>
             <div className={labelClass}>About</div>
-            <textarea className="border rounded px-3 py-2 w-full" name="about" value={form.about} onChange={handleChange} />
+            <input className="border rounded px-3 py-2 w-full" name="about" value={form.about} onChange={handleChange} />
           </div>
-          <div className="md:col-span-2 flex justify-end gap-2 mt-2">
+          <div className="flex justify-end gap-2 mt-2">
             <button className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300" type="button" onClick={() => setEditing(false)}>Cancel</button>
             <button className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700" type="button" onClick={handleSave}>Save</button>
           </div>
@@ -92,22 +92,7 @@ const PersonalDetailsSection = ({ name, email, phone, jobTitle, location, about,
             <div className={labelClass}>Location</div>
             <div className={valueClass}>{location}</div>
           </div>
-          <div className="flex items-end">
-            <div>
-              <div className={labelClass}>Github</div>
-              <Button
-                variant={isGithubConnected ? "secondary" : "outline"}
-                size="sm"
-                className={`flex items-center gap-2 ${isGithubConnected ? 'cursor-not-allowed opacity-75' : 'hover:bg-gray-100'}`}
-                onClick={handleGithubConnect}
-                disabled={isGithubConnected}
-              >
-                <Github className="h-4 w-4" />
-                {isGithubConnected ? "Connected" : "Connect with GitHub"}
-              </Button>
-            </div>
-          </div>
-          <div className="md:col-span-2 mt-2">
+          <div>
             <div className={labelClass}>About</div>
             <div className={valueClass}>{about}</div>
           </div>

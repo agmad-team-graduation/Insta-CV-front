@@ -222,28 +222,6 @@ const Profile = () => {
         <>
           <Card className="mb-6">
             <CardContent>
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">Profile</h1>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    id="cv-upload"
-                    accept=".pdf"
-                    onChange={handleCVUpload}
-                    style={{ display: 'none' }}
-                    disabled={uploadingCV}
-                  />
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    disabled={uploadingCV}
-                    onClick={() => document.getElementById('cv-upload').click()}
-                  >
-                    <Upload className="h-4 w-4" />
-                    {uploadingCV ? 'Uploading...' : 'Upload CV'}
-                  </Button>
-                </div>
-              </div>
               <ProfileHeader
                 name={profileData.personalDetails?.fullName || ""}
                 title={profileData.personalDetails?.jobTitle || "Software Engineer"}
@@ -255,6 +233,25 @@ const Profile = () => {
                 jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
                 onPhotoUpdate={handlePhotoUpdate}
               />
+              <div className="flex mt-2 justify-end">
+                <input
+                  type="file"
+                  id="cv-upload"
+                  accept=".pdf"
+                  onChange={handleCVUpload}
+                  style={{ display: 'none' }}
+                  disabled={uploadingCV}
+                />
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 text-sm"
+                  disabled={uploadingCV}
+                  onClick={() => document.getElementById('cv-upload').click()}
+                >
+                  <Upload className="h-4 w-4" />
+                  {uploadingCV ? 'Uploading...' : 'Upload CV'}
+                </Button>
+              </div>
             </CardContent>
           </Card>
           <Card className="mb-6">
