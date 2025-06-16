@@ -33,6 +33,8 @@ interface SkillCardProps {
 }
 
 const getLevelColor = (level: string) => {
+  if (!level) return '';
+  
   switch (level) {
     case 'BEGINNER':
       return 'bg-amber-100';
@@ -112,7 +114,9 @@ const SkillCard: React.FC<SkillCardProps> = ({
           >
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-gray-900">{skill.skill}</h3>
-              <div className={`w-3 h-3 rounded-full ${getLevelColor(skill.level)}`} title={skill.level.charAt(0) + skill.level.slice(1).toLowerCase()} />
+              {skill.level && (
+                <div className={`w-3 h-3 rounded-full ${getLevelColor(skill.level)}`} title={skill.level.charAt(0) + skill.level.slice(1).toLowerCase()} />
+              )}
             </div>
           </div>
 

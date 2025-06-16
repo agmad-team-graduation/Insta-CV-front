@@ -129,7 +129,7 @@ const HarvardTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     {sortedItems.map((skill: any) => (
                       <div key={skill.id} className="flex justify-between items-center">
                         <span className="text-gray-800">{skill.skill}</span>
-                        <span className="text-gray-600 capitalize text-sm">{skill.level.toLowerCase()}</span>
+                        <span className="text-gray-600 capitalize text-sm">{skill.level?.toLowerCase() || ''}</span>
                       </div>
                     ))}
                   </div>

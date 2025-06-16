@@ -21,6 +21,7 @@ export interface Resume {
 
 export interface PersonalDetails {
   fullName: string;
+  jobTitle: string;
   email: string;
   phone: string;
   address: string;
