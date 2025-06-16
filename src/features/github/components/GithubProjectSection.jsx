@@ -97,25 +97,25 @@ const GithubProjectEditModal = ({ open, onClose, project, onSubmit }) => {
   // Only keep the required properties for the form
   const initialForm = project
     ? {
-        title: project.name || project.title || '',
-        startDate: project.startDate || '',
-        endDate: project.endDate || '',
-        description: project.description || '',
-        skills: Array.isArray(project.languages)
-          ? project.languages.map(l => ({ skill: typeof l === 'string' ? l : l.skill || l.name || '' }))
-          : Array.isArray(project.skills)
-            ? project.skills.map(s => ({ skill: typeof s === 'string' ? s : s.skill || s.name || '' }))
-            : [],
-        present: project.present || false,
-      }
+      title: project.name || project.title || '',
+      startDate: project.startDate || '',
+      endDate: project.endDate || '',
+      description: project.description || '',
+      skills: Array.isArray(project.languages)
+        ? project.languages.map(l => ({ skill: typeof l === 'string' ? l : l.skill || l.name || '' }))
+        : Array.isArray(project.skills)
+          ? project.skills.map(s => ({ skill: typeof s === 'string' ? s : s.skill || s.name || '' }))
+          : [],
+      present: project.present || false,
+    }
     : {
-        title: '',
-        startDate: '',
-        endDate: '',
-        description: '',
-        skills: [],
-        present: false,
-      };
+      title: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+      skills: [],
+      present: false,
+    };
   const [form, setForm] = React.useState(initialForm);
   const [error, setError] = React.useState("");
 
@@ -274,10 +274,15 @@ const GithubProjectEditModal = ({ open, onClose, project, onSubmit }) => {
 const GithubProjectSection = ({ projects }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [visibleProjects, setVisibleProjects] = useState(3);
 
   const handleAdd = (project) => {
     setSelectedProject(project);
     setModalOpen(true);
+  };
+
+  const handleLoadMore = () => {
+    setVisibleProjects(prev => prev + 3);
   };
 
   const handleSubmit = async (form) => {
@@ -291,6 +296,9 @@ const GithubProjectSection = ({ projects }) => {
       toast.error(e.response.data.message);
     }
   };
+
+  const displayedProjects = projects.slice(0, visibleProjects);
+  const hasMoreProjects = projects.length > visibleProjects;
 
   return (
     <Card>
@@ -311,9 +319,20 @@ const GithubProjectSection = ({ projects }) => {
           </div>
         ) : (
           <div>
-            {projects.map((project, index) => (
+            {displayedProjects.map((project, index) => (
               <GithubProjectItem key={project.id || index} project={project} onAdd={handleAdd} />
             ))}
+            {hasMoreProjects && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant="outline"
+                  onClick={handleLoadMore}
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  Load More
+                </Button>
+              </div>
+            )}
             <GithubProjectEditModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
