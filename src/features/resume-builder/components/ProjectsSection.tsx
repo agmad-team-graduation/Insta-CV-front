@@ -23,6 +23,8 @@ interface ProjectsSectionProps {
   projects: ProjectItem[];
   sectionTitle: string;
   hidden: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
 }
 
 interface ProjectCardProps {
@@ -185,9 +187,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 const ProjectsSection: React.FC<ProjectsSectionProps> = ({ 
   projects, 
   sectionTitle, 
-  hidden 
+  hidden,
+  isExpanded,
+  onToggle
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { 
@@ -270,7 +273,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       <div className="border-b border-gray-100">
         <div
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={onToggle}
         >
           <div className="flex items-center gap-3" onClick={handleTitleClick}>
             <div className="p-2 bg-gray-100 text-gray-600 rounded-lg">

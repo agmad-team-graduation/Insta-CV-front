@@ -25,6 +25,8 @@ interface EducationSectionProps {
   education: EducationItem[];
   sectionTitle: string;
   hidden: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
   onUpdate?: (id: number, data: Partial<EducationItem>) => void;
   onAdd?: (data: EducationItem) => void;
   onDelete?: (id: number) => void;
@@ -188,6 +190,8 @@ const EducationSection: React.FC<EducationSectionProps> = ({
   education,
   sectionTitle,
   hidden,
+  isExpanded,
+  onToggle,
   onUpdate,
   onAdd,
   onDelete,
@@ -197,7 +201,6 @@ const EducationSection: React.FC<EducationSectionProps> = ({
   onEditComplete,
   onToggleSection
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { 
@@ -286,7 +289,7 @@ const EducationSection: React.FC<EducationSectionProps> = ({
       <div className="border-b border-gray-100">
         <div
           className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200 cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={onToggle}
         >
           <div className="flex items-center gap-3" onClick={handleTitleClick}>
             <div className="p-2 bg-gray-100 text-gray-600 rounded-lg">
