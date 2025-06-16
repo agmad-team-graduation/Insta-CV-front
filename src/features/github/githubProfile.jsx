@@ -18,7 +18,7 @@ const GithubProfile = () => {
     try {
       setLoading(true);
       const response1 = await apiClient.post(`/api/github/test/profile?forceRefresh=${forceRefresh}`, {}, {
-          withCredentials: true
+        withCredentials: true
       });
       setGithubData(response1.data);
       console.log("response1", response1.data);
@@ -126,19 +126,19 @@ const GithubProfile = () => {
       )}
 
       {/* Empty state if no data */}
-      {(!githubData?.skills || githubData.skills.length === 0) && 
-       (!githubData?.projects || githubData.projects.length === 0) && (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <Github className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No GitHub Data Found</h3>
-            <p className="text-gray-600">
-              We couldn't find any skills or projects from your GitHub profile. 
-              Make sure your repositories are public and contain relevant information.
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {(!githubData?.skills || githubData.skills.length === 0) &&
+        (!githubData?.repositories || githubData.repositories.length === 0) && (
+          <Card>
+            <CardContent className="p-12 text-center">
+              <Github className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">No GitHub Data Found</h3>
+              <p className="text-gray-600">
+                We couldn't find any skills or projects from your GitHub profile.
+                Make sure your repositories are public and contain relevant information.
+              </p>
+            </CardContent>
+          </Card>
+        )}
     </div>
   );
 };
