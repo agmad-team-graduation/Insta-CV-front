@@ -3,6 +3,7 @@ import { Button } from "@/common/components/ui/button";
 import { Camera, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import apiClient from "@/common/utils/apiClient";
+import useUserStore from "@/store/userStore";
 
 interface PhotoUploadProps {
   currentPhotoUrl?: string;
@@ -13,6 +14,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ currentPhotoUrl, onPhotoUpdat
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { updateUserPhoto } = useUserStore();
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -41,7 +43,9 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ currentPhotoUrl, onPhotoUpdat
         },
       });
 
-      onPhotoUpdate(response.data.photoUrl);
+      const photoUrl = response.data.photoUrl;
+      onPhotoUpdate(photoUrl);
+      updateUserPhoto(photoUrl); // Update global store
       toast.success('Photo uploaded successfully');
     } catch (error) {
       console.error('Error uploading photo:', error);
@@ -59,6 +63,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ currentPhotoUrl, onPhotoUpdat
       setIsDeleting(true);
       await apiClient.delete('/api/users/photo');
       onPhotoUpdate('');
+      updateUserPhoto(''); // Update global store
       toast.success('Photo deleted successfully');
     } catch (error) {
       console.error('Error deleting photo:', error);

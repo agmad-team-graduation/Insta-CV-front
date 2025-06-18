@@ -3,11 +3,13 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '@/common/utils/apiClient'; 
 import { toast } from 'sonner';
+import useUserStore from '@/store/userStore';
 
 const AuthContext = createContext();
 
 export const LoginProvider = ({ children }) => {
     const navigate = useNavigate(); 
+    const { updateUserPhoto } = useUserStore();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +27,11 @@ export const LoginProvider = ({ children }) => {
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
             setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
             setUser(data.user);
+
+            // If user has a photo, update the global store
+            if (data.user.photoUrl) {
+                updateUserPhoto(data.user.photoUrl);
+            }
 
             navigate('/'); 
 
