@@ -26,7 +26,7 @@ import ResumesPage from './features/resume-builder/pages/ResumesPage';
 
 
 // Array of paths where we want to show navbar and footer
-const NavbarFooterRoutes = ['/', '/signup'];
+const NavbarFooterRoutes = ['/signup'];
 
 // Create a wrapper component to use useLocation hook
 function AppContent() {

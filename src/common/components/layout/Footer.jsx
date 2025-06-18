@@ -1,137 +1,126 @@
-import { 
-  Github, 
-  Twitter, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  MapPin,
-} from "lucide-react";
-import { Button } from "@/common/components/ui/button";
-import { Separator } from "@/common/components/ui/separator";
+import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 
 const Footer = () => {
+  const footerLinks = {
+    product: [
+      { name: "Features", href: "#features" },
+      { name: "How it Works", href: "#how-it-works" },
+      { name: "Pricing", href: "#pricing" },
+      { name: "Templates", href: "#templates" }
+    ],
+    company: [
+      { name: "About", href: "#about" },
+      { name: "Blog", href: "#blog" },
+      { name: "Careers", href: "#careers" },
+      { name: "Contact", href: "#contact" }
+    ],
+    support: [
+      { name: "Help Center", href: "#help" },
+      { name: "API Docs", href: "#docs" },
+      { name: "Status", href: "#status" },
+      { name: "Community", href: "#community" }
+    ],
+    legal: [
+      { name: "Privacy", href: "#privacy" },
+      { name: "Terms", href: "#terms" },
+      { name: "Security", href: "#security" },
+      { name: "Cookies", href: "#cookies" }
+    ]
+  };
+
   return (
-    <footer className="w-full bg-gray-50 mt-20 py-20">
-      <div className="container mx-auto">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Company Info */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <img 
-                src="/logos/InstaCV.png" 
-                alt="InstaCV Logo" 
-                className="w-30 h-30 rounded-lg p-2"
-              />
+    <footer className="bg-slate-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+          {/* Brand section */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <Github className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold">InstaCV Builder</span>
             </div>
-            <p className="text-gray-600">
-              AI-powered CV generation platform for modern job seekers.
+            <p className="text-gray-400 mb-6 max-w-md">
+              Transform your GitHub profile into professional CVs with the power of AI. 
+              Land your dream job with resumes that showcase your real coding achievements.
             </p>
-            <div className="flex gap-4">
-              <Button variant="ghost" size="icon" className="hover:text-[#7C3AED]">
-                <Github className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="hover:text-[#7C3AED]">
-                <Twitter className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="hover:text-[#7C3AED]">
-                <Linkedin className="h-5 w-5" />
-              </Button>
+            <div className="flex space-x-4">
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
+                <Github className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
+                <Linkedin className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors">
+                <Mail className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Links sections */}
           <div>
-            <h3 className="font-semibold mb-6 text-lg">Quick Links</h3>
-            <ul className="space-y-4">
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  About Us
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Features
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Pricing
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Blog
-                </Button>
-              </li>
+            <h3 className="font-semibold text-white mb-4">Product</h3>
+            <ul className="space-y-2">
+              {footerLinks.product.map((link) => (
+                <li key={link.name}>
+                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Support */}
           <div>
-            <h3 className="font-semibold mb-6 text-lg">Support</h3>
-            <ul className="space-y-4">
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Help Center
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Privacy Policy
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  Terms of Service
-                </Button>
-              </li>
-              <li>
-                <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto">
-                  FAQ
-                </Button>
-              </li>
+            <h3 className="font-semibold text-white mb-4">Company</h3>
+            <ul className="space-y-2">
+              {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Contact */}
-            <div>
-            <h3 className="font-semibold mb-6 text-lg">Contact</h3>
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-gray-600">
-                <Mail className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1">support@instacv.com</span>
-              </li>
-              <li className="flex items-center gap-3 text-gray-600">
-                <Phone className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1">+20 100-468-3576</span>
-              </li>
-              <li className="flex items-center gap-3 text-gray-600">
-                <MapPin className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1">Egypt</span>
-              </li>
+          <div>
+            <h3 className="font-semibold text-white mb-4">Support</h3>
+            <ul className="space-y-2">
+              {footerLinks.support.map((link) => (
+                <li key={link.name}>
+                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-white mb-4">Legal</h3>
+            <ul className="space-y-2">
+              {footerLinks.legal.map((link) => (
+                <li key={link.name}>
+                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                    {link.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <Separator className="my-12" />
-
-        {/* Footer Bottom */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-600">
-          <div className="mb-4 md:mb-0">
-            <span>© 2025 InstaCV. All rights reserved.</span>
-          </div>
-          <div className="flex gap-8">
-            <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto text-sm">
-              Privacy Policy
-            </Button>
-            <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto text-sm">
-              Terms of Service
-            </Button>
-            <Button variant="link" className="text-gray-600 hover:text-[#7C3AED] p-0 h-auto text-sm">
-              Cookies Policy
-            </Button>
-          </div>
+        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">
+            © 2024 InstaCV Builder. All rights reserved.
+          </p>
+          <p className="text-gray-400 text-sm mt-4 md:mt-0">
+            Made with ❤️ for developers by developers
+          </p>
         </div>
       </div>
     </footer>
