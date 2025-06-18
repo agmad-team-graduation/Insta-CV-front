@@ -1,0 +1,39 @@
+
+import React from 'react';
+import DashboardHeader from '../components/DashboardHeader';
+import StatsCards from '../components/StatsCards';
+import ProfileSkills from '../components/ProfileSkills';
+import JobsGrid from '../components/JobsGrid';
+import CVsList from '../components/CVsList';
+import QuickActions from '../components/QuickActions';
+
+const Index = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <DashboardHeader />
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
+        <StatsCards />
+        
+        {/* Quick Actions */}
+        <QuickActions />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+          {/* Profile Skills */}
+          <div className="lg:col-span-1">
+            <ProfileSkills />
+          </div>
+          
+          {/* Jobs and CVs */}
+          <div className="lg:col-span-2 space-y-8">
+            <JobsGrid />
+            <CVsList />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Index;

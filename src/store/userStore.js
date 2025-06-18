@@ -15,6 +15,7 @@ const useUserStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await apiClient.get('/api/v1/profiles/me');
+      console.log("response", response.data);
       set({ user: response.data, isLoading: false });
       return response.data;
     } catch (error) {

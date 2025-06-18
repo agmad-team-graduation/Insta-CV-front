@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut, Github } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avatar';
+import { Badge } from '@/common/components/ui/badge';
 import { cn } from '@/common/lib/utils';
 import { useCookies } from 'react-cookie';
 import { Button } from '@/common/components/ui/button';
@@ -11,10 +12,8 @@ import useUserStore from '@/store/userStore';
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: User, label: 'My Profile', href: '/profile' },
-  { icon: Github, label: 'Github Profile', href: '/github-profile' },
+  { icon: Github, label: 'Github Profile', href: '/github-profile', hasBadge: true },
   { icon: Briefcase, label: 'Active jobs', href: '/jobs' },
-  { icon: GraduationCap, label: 'AI Courses', href: '/courses' },
-  { icon: FileText, label: 'Payout & Reports', href: '/reports' },
   { icon: FileText, label: 'Resumes', href: '/resumes' },
 ];
 
@@ -119,6 +118,18 @@ const Sidebar = () => {
                     isActive ? "text-white" : "text-slate-500 group-hover:text-slate-700"
                   )} />
                   <span className="font-medium">{item.label}</span>
+                  {item.hasBadge && (
+                    <Badge 
+                      variant="secondary" 
+                      className={cn(
+                        "ml-auto text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 hover:bg-blue-200",
+                        isActive && "bg-blue-200 text-blue-800"
+                      )}
+                    >
+                      <Github className="w-2.5 h-2.5 mr-0.5" />
+                      Connected
+                    </Badge>
+                  )}
                 </div>
               </Link>
             );
