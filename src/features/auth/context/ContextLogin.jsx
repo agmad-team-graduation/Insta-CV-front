@@ -14,14 +14,23 @@ export const LoginProvider = ({ children }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken', 'user']);
 
-    const handleSubmit = async () => {
-        const newUser = { email, password };
+    const handleSubmit = async (loginData = null) => {
+        // Use provided data or fallback to state
+        const userData = loginData || { email, password };
+        
+        if (!userData.email || !userData.password) {
+            toast.error('Please enter both email and password');
+            return;
+        }
 
+        setLoading(true);
+        
         try {
-            const { data } = await apiClient.post('/api/v1/auth/login', newUser);
+            const { data } = await apiClient.post('/api/v1/auth/login', userData);
 
             // Store token and user data
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
@@ -33,13 +42,18 @@ export const LoginProvider = ({ children }) => {
                 updateUserPhoto(data.user.photoUrl);
             }
 
-            navigate('/'); 
+            toast.success('Login successful!');
+            navigate('/dashboard'); 
 
             setEmail('');
             setPassword('');
 
         } catch (err) {
-            toast.error(err.response.data.message);
+            console.error('Login error:', err);
+            const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+            toast.error(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -51,6 +65,7 @@ export const LoginProvider = ({ children }) => {
                 password,
                 setPassword,
                 user,
+                loading,
                 handleSubmit,
             }}
         >
