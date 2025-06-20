@@ -43,6 +43,23 @@ const GithubProfile = () => {
     }
   };
 
+  const handleSkillAdded = (skillName) => {
+    // Add the new skill to the current skills array
+    setSkills(prevSkills => {
+      if (!Array.isArray(prevSkills)) {
+        return [{ skill: skillName }];
+      }
+      // Check if skill already exists to avoid duplicates
+      const exists = prevSkills.some(s => 
+        (typeof s === 'string' ? s : s.name || s.skill) === skillName
+      );
+      if (!exists) {
+        return [...prevSkills, { skill: skillName }];
+      }
+      return prevSkills;
+    });
+  };
+
   const handleDisconnect = async () => {
     try {
       await apiClient.delete("/api/github/test/profile");
@@ -197,7 +214,11 @@ const GithubProfile = () => {
       {/* Skills Section */}
       {githubData?.skills && githubData.skills.length > 0 && (
         <div className="mb-6">
-          <GithubSkillsSection skills={githubData.skills} userSkills={skills} />
+          <GithubSkillsSection 
+            skills={githubData.skills} 
+            userSkills={skills} 
+            onSkillAdded={handleSkillAdded}
+          />
         </div>
       )}
 
