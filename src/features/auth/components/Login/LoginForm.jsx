@@ -16,14 +16,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export function LoginForm() {
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    user,
-    handleSubmit,
-  } = UseAuth();
+  const { user, loading, handleSubmit } = UseAuth();
 
   const form = useForm({
     defaultValues: {
@@ -34,9 +27,9 @@ export function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Login form data:", data);
-    handleSubmit();
+    await handleSubmit(data);
   };
 
   if (user) {
@@ -66,16 +59,21 @@ export function LoginForm() {
           <FormField
             control={form.control}
             name="email"
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Invalid email address"
+              }
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm">Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder=""
+                    placeholder="Enter your email"
                     {...field}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -86,6 +84,13 @@ export function LoginForm() {
           <FormField
             control={form.control}
             name="password"
+            rules={{
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters"
+              }
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm">Password</FormLabel>
@@ -93,11 +98,9 @@ export function LoginForm() {
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder=""
+                      placeholder="Enter your password"
                       {...field}
                       className="pr-20"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 cursor-pointer"
@@ -121,8 +124,9 @@ export function LoginForm() {
           <Button
             type="submit"
             className="w-36 pt-4 pb-4 rounded-2xl py-2 text-base"
+            disabled={loading}
           >
-            Log in
+            {loading ? "Logging in..." : "Log in"}
           </Button>
         </form>
       </Form>
