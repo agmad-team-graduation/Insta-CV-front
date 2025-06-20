@@ -7,7 +7,7 @@ import { Button } from "@/common/components/ui/button";
 import apiClient from "@/common/utils/apiClient";
 import { toast } from "sonner";
 
-const GithubSkillItem = ({ skill, userSkills }) => {
+const GithubSkillItem = ({ skill, userSkills, onSkillAdded }) => {
   const skillName = typeof skill === 'string' ? skill : skill.name || skill.skill;
   // Check if skill exists in userSkills
   const alreadyExists = Array.isArray(userSkills) && userSkills.some(
@@ -18,6 +18,10 @@ const GithubSkillItem = ({ skill, userSkills }) => {
       console.log(skillName);
       await apiClient.put('/api/v1/profiles/add-skill', { skill: skillName });
       toast.success('Skill has been added to your profile');
+      // Call the callback to update the parent state
+      if (onSkillAdded) {
+        onSkillAdded(skillName);
+      }
     } catch (e) {
       toast.error(e.response.data.message);
     }
@@ -65,7 +69,7 @@ const GithubSkillItem = ({ skill, userSkills }) => {
   );
 };
 
-const GithubSkillsSection = ({ skills, userSkills }) => {
+const GithubSkillsSection = ({ skills, userSkills, onSkillAdded }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -86,7 +90,12 @@ const GithubSkillsSection = ({ skills, userSkills }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {skills.map((skill, index) => (
-              <GithubSkillItem key={skill.id || index} skill={skill} userSkills={userSkills} />
+              <GithubSkillItem 
+                key={skill.id || index} 
+                skill={skill} 
+                userSkills={userSkills} 
+                onSkillAdded={onSkillAdded}
+              />
             ))}
           </div>
         )}
