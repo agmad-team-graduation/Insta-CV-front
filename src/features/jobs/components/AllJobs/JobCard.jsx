@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Calendar, MapPin, Users, Info, X } from 'lucide-react';
+import { Calendar, MapPin, Users, Info, X, Target } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import JobAnalysisDialog from './JobAnalysisDialog';
 import apiClient from "@/common/utils/apiClient";
@@ -26,6 +26,35 @@ const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
   } else {
     displayDate = 'Invalid date';
   }
+
+  // Get skill matching percentage for recommended jobs
+  const getSkillMatchPercentage = () => {
+    if (job.skillMatchingAnalysis?.matchedSkillsPercentage !== undefined) {
+      return Math.ceil(job.skillMatchingAnalysis.matchedSkillsPercentage);
+    }
+    return null;
+  };
+
+  const getMatchColor = (percentage) => {
+    if (percentage >= 90) return 'text-green-600 bg-green-50';
+    if (percentage >= 75) return 'text-yellow-600 bg-yellow-50';
+    if (percentage >= 50) return 'text-orange-600 bg-orange-50';
+    return 'text-red-600 bg-red-50';
+  };
+
+  const getMatchBarColor = (percentage) => {
+    if (percentage >= 90) return 'bg-green-500';
+    if (percentage >= 75) return 'bg-yellow-500';
+    if (percentage >= 50) return 'bg-orange-500';
+    return 'bg-red-500';
+  };
+
+  const getMatchCircleColor = (percentage) => {
+    if (percentage >= 90) return 'text-green-600';
+    if (percentage >= 75) return 'text-yellow-600';
+    if (percentage >= 50) return 'text-orange-600';
+    return 'text-red-600';
+  };
 
   useEffect(() => {
     // Clean up polling interval when component unmounts
@@ -109,8 +138,10 @@ const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
-      <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
+      <div className="absolute top-2 left-2 flex items-center gap-2 z-10">
         <span className="text-xs text-gray-400 font-mono">#{job.id}</span>
+      </div>
+      <div className="absolute top-2 right-2 flex items-center gap-2 z-10">
         {!isRecommended && <button 
           onClick={handleDeleteJob}
           className="p-1 rounded-full bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors"
@@ -122,8 +153,36 @@ const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
 
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-semibold text-gray-800">{job.title}</h3>
-          <div className="flex space-x-2">
+          <h3 className="text-xl font-semibold text-gray-800 flex-1">{job.title}</h3>
+          <div className="flex items-center space-x-2">
+            {/* Skill Match Circle for Recommended Jobs */}
+            {getSkillMatchPercentage() !== null && (
+              <div className="relative flex items-center justify-center">
+                <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    className="text-gray-200"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className={getMatchCircleColor(getSkillMatchPercentage())}
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeDasharray={`${getSkillMatchPercentage()}, 100`}
+                    strokeLinecap="round"
+                    fill="none"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className={`text-xs font-bold ${getMatchCircleColor(getSkillMatchPercentage())}`}>
+                    {getSkillMatchPercentage()}%
+                  </span>
+                </div>
+              </div>
+            )}
             {job.type && (
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                 job.type === 'Remote' ? 'bg-indigo-100 text-indigo-800' :
