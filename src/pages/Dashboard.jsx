@@ -5,24 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui
 import { Badge } from '@/common/components/ui/badge';
 import { Progress } from '@/common/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avatar';
-import { 
-  FileText, 
-  Briefcase, 
-  Target, 
-  Plus, 
-  Star, 
-  Building, 
-  MapPin, 
-  Clock, 
-  ExternalLink, 
-  Download, 
-  Eye, 
-  Edit, 
-  Bell, 
-  Settings, 
-  Github, 
+import {
+  FileText,
+  Briefcase,
+  Target,
+  Plus,
+  Star,
+  Building,
+  MapPin,
+  Clock,
+  ExternalLink,
+  Download,
+  Eye,
+  Edit,
+  Bell,
+  Settings,
+  Github,
   Sparkles,
-  Loader 
+  Loader
 } from 'lucide-react';
 import AddJobDialog from '@/features/jobs/components/AddJob/AddJobDialog';
 import { toast } from 'sonner';
@@ -34,7 +34,7 @@ const Dashboard = () => {
   const [showAddJobDialog, setShowAddJobDialog] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { generateCVForJob } = useResumeStore();
-  
+
   // State for real data
   const [skills, setSkills] = useState([]);
   const [jobs, setJobs] = useState([]);
@@ -51,7 +51,7 @@ const Dashboard = () => {
     try {
       const response = await apiClient.get('/api/v1/profiles/me/skills');
       const skillsData = response.data || [];
-      
+
       // Transform skills data to match dashboard format
       const transformedSkills = skillsData.map(skill => ({
         name: skill.skill || skill.name,
@@ -59,7 +59,7 @@ const Dashboard = () => {
         category: getSkillCategory(skill.skill || skill.name),
         inDemand: isSkillInDemand(skill.skill || skill.name)
       }));
-      
+
       setSkills(transformedSkills);
     } catch (error) {
       console.error('Error fetching skills:', error);
@@ -72,7 +72,7 @@ const Dashboard = () => {
     try {
       const response = await apiClient.get('/api/v1/jobs/all?page=0&size=3');
       const jobsData = response.data.content || response.data || [];
-      
+
       // Transform jobs data to match dashboard format
       const transformedJobs = jobsData.map(job => ({
         id: job.id,
@@ -85,7 +85,7 @@ const Dashboard = () => {
         matchedSkills: getMatchedSkills(job, skills),
         salary: job.salary || 'Salary not specified'
       }));
-      
+
       setJobs(transformedJobs);
       setStats(prev => ({ ...prev, savedJobs: response.data.totalElements || jobsData.length }));
     } catch (error) {
@@ -99,7 +99,7 @@ const Dashboard = () => {
     try {
       const response = await apiClient.get('/api/v1/cv/user');
       const cvsData = response.data || [];
-      
+
       // Transform CVs data to match dashboard format
       const transformedCVs = cvsData.map(cv => ({
         id: cv.id,
@@ -112,7 +112,7 @@ const Dashboard = () => {
         downloads: cv.downloads || 0,
         views: cv.views || 0
       }));
-      
+
       setCvs(transformedCVs);
       setStats(prev => ({ ...prev, totalCVs: cvsData.length }));
     } catch (error) {
@@ -167,7 +167,7 @@ const Dashboard = () => {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 1) return '1 day ago';
     if (diffDays < 7) return `${diffDays} days ago`;
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
@@ -176,17 +176,17 @@ const Dashboard = () => {
 
   const calculateMatchPercentage = (job, userSkills) => {
     if (!job.requiredSkills || !userSkills.length) return Math.floor(Math.random() * 30) + 70;
-    
+
     const userSkillNames = userSkills.map(s => s.name.toLowerCase());
     const requiredSkills = job.requiredSkills.map(s => s.toLowerCase());
     const matched = requiredSkills.filter(skill => userSkillNames.includes(skill));
-    
+
     return Math.round((matched.length / requiredSkills.length) * 100);
   };
 
   const getMatchedSkills = (job, userSkills) => {
     if (!job.requiredSkills || !userSkills.length) return [];
-    
+
     const userSkillNames = userSkills.map(s => s.name.toLowerCase());
     const requiredSkills = job.requiredSkills.map(s => s.toLowerCase());
     return requiredSkills.filter(skill => userSkillNames.includes(skill));
@@ -367,7 +367,7 @@ const Dashboard = () => {
             </Card>
           ))}
         </div>
-        
+
         {/* Quick Actions */}
         <Card className="mt-8 border-0 shadow-sm bg-gradient-to-r from-blue-50 to-purple-50">
           <CardContent className="p-6">
@@ -381,15 +381,15 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button 
+                <Button
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
                   onClick={handleGenerateAICV}
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
                   Generate AI CV
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="border-blue-200 hover:bg-blue-50"
                   onClick={() => setShowAddJobDialog(true)}
                 >
@@ -400,7 +400,7 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Profile Skills */}
           <div className="lg:col-span-1">
@@ -413,12 +413,12 @@ const Dashboard = () => {
                   </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 max-h-[500px] overflow-y-auto">
                 {skills.length === 0 ? (
                   <div className="text-center py-4 text-gray-500">
                     <p className="text-sm">No skills found.</p>
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className="text-blue-600"
                       onClick={handleProfileSettings}
                     >
@@ -435,8 +435,8 @@ const Dashboard = () => {
                             <Star className="w-3 h-3 text-yellow-500 fill-current" />
                           )}
                         </div>
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="text-xs bg-gray-100 text-gray-600"
                         >
                           {skill.category}
@@ -449,7 +449,7 @@ const Dashboard = () => {
                     </div>
                   ))
                 )}
-                
+
                 {skills.length > 0 && (
                   <div className="pt-4 border-t">
                     <div className="text-xs text-gray-500 mb-2">Skill Insights</div>
@@ -467,7 +467,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Jobs and CVs */}
           <div className="lg:col-span-2 space-y-8">
             {/* Jobs Grid */}
@@ -485,8 +485,8 @@ const Dashboard = () => {
                   <div className="text-center py-8 text-gray-500">
                     <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                     <p className="text-sm">No saved jobs yet.</p>
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className="text-blue-600"
                       onClick={() => setShowAddJobDialog(true)}
                     >
@@ -515,7 +515,7 @@ const Dashboard = () => {
                           </div>
                           <p className="text-sm font-medium text-gray-700 mb-2">{job.salary}</p>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 ml-4">
                           <div className="text-right">
                             <div className="flex items-center gap-1">
@@ -529,19 +529,19 @@ const Dashboard = () => {
                           </Button>
                         </div>
                       </div>
-                      
+
                       {job.requiredSkills && job.requiredSkills.length > 0 && (
                         <div className="space-y-2">
                           <div className="text-xs text-gray-500">Required Skills:</div>
                           <div className="flex flex-wrap gap-1">
                             {job.requiredSkills.map((skill) => (
-                              <Badge 
-                                key={skill} 
+                              <Badge
+                                key={skill}
                                 variant={job.matchedSkills.includes(skill) ? "default" : "secondary"}
-                                className={`text-xs ${job.matchedSkills.includes(skill) 
-                                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                                className={`text-xs ${job.matchedSkills.includes(skill)
+                                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                   : 'bg-gray-100 text-gray-600'
-                                }`}
+                                  }`}
                               >
                                 {skill}
                                 {job.matchedSkills.includes(skill) && ' ✓'}
@@ -550,17 +550,17 @@ const Dashboard = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="flex gap-2 mt-3">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                           onClick={() => handleGenerateTailoredCV(job.id)}
                         >
                           Generate Tailored CV
                         </Button>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleJobDetails(job.id)}
                         >
@@ -589,8 +589,8 @@ const Dashboard = () => {
                   <div className="text-center py-8 text-gray-500">
                     <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                     <p className="text-sm">No CVs created yet.</p>
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className="text-blue-600"
                       onClick={handleCreateNewCV}
                     >
@@ -609,7 +609,7 @@ const Dashboard = () => {
                               {cv.status}
                             </Badge>
                           </div>
-                          
+
                           <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                             <div className="flex items-center gap-1">
                               <Target className="w-3 h-3" />
@@ -620,7 +620,7 @@ const Dashboard = () => {
                               <span>Created: {new Date(cv.createdDate).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center gap-4 text-xs text-gray-500">
                             <span className="flex items-center gap-1">
                               <Eye className="w-3 h-3" />
@@ -637,26 +637,26 @@ const Dashboard = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-2">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleCVPreview(cv.id)}
                         >
                           <Eye className="w-3 h-3 mr-1" />
                           Preview
                         </Button>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleCVEdit(cv.id)}
                         >
                           <Edit className="w-3 h-3 mr-1" />
                           Edit
                         </Button>
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           variant="outline"
                           onClick={() => handleCVDownload(cv.id)}
                         >
@@ -667,13 +667,13 @@ const Dashboard = () => {
                     </div>
                   ))
                 )}
-                
+
                 {cvs.length > 0 && (
                   <div className="text-center py-4 border-t">
                     <p className="text-sm text-gray-500 mb-2">
                       AI-powered CV optimization ready when you are
                     </p>
-                    <Button 
+                    <Button
                       className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                       onClick={handleCreateNewCV}
                     >
@@ -689,7 +689,7 @@ const Dashboard = () => {
       </main>
 
       {/* Add Job Dialog */}
-      <AddJobDialog 
+      <AddJobDialog
         open={showAddJobDialog}
         onOpenChange={setShowAddJobDialog}
         onJobAdded={handleJobAdded}
