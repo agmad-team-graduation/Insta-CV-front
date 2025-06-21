@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '@/common/utils/apiClient';
+import { Badge } from '@/common/components/ui/badge';
 
 // Placeholder for the API endpoint
 const QUESTIONS_API_URL = '';
@@ -26,7 +27,16 @@ const InterviewQuestionsPage = () => {
       setError(null);
       try {
         const response = await apiClient.post(`/api/v1/jobs/interview-questions`,{jobId:jobID, numberOfQuestions:30});
+        
+        // Set the questions from the response data
+        if (response.data && response.data.questions) {
+          setQuestions(response.data.questions);
+        } else {
+          setError("No questions found for this job.");
+        }
       } catch (err) {
+        console.error("Error fetching interview questions:", err.response?.data?.message || err.message);
+        setError("Failed to load interview questions.");
         toast.error("Failed to load interview questions.");
       } finally {
         setLoading(false);
@@ -60,30 +70,46 @@ const InterviewQuestionsPage = () => {
         </div>
       </header>
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {questions.map((q) => (
-            <div key={q.id} className="group [perspective:1000px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {questions.map((q, index) => (
+            <div key={q.id || index} className="group [perspective:1000px]">
               <div
-                className={`relative w-full h-64 cursor-pointer transition-transform duration-500 [transform-style:preserve-3d] ${flippedCardId === q.id ? '[transform:rotateY(180deg)]' : ''}`}
+                className={`relative w-full h-80 cursor-pointer transition-transform duration-500 [transform-style:preserve-3d] ${flippedCardId === (q.id || index) ? '[transform:rotateY(180deg)]' : ''}`}
                 tabIndex={0}
-                onClick={() => setFlippedCardId(flippedCardId === q.id ? null : q.id)}
+                onClick={() => setFlippedCardId(flippedCardId === (q.id || index) ? null : (q.id || index))}
               >
                 {/* Front */}
-                <Card className="absolute w-full h-full [backface-visibility:hidden] flex flex-col items-center justify-center p-6 text-lg font-semibold bg-white shadow-md rounded-xl border border-gray-200 group-hover:shadow-xl transition-shadow">
-                  <span className="text-blue-700 text-xl mb-2"><Sparkles className="inline w-5 h-5 mr-1 text-blue-400" />Question</span>
-                  <span className="text-gray-900 text-center">{q.question}</span>
+                <Card className="absolute w-full h-full [backface-visibility:hidden] bg-white shadow-md rounded-xl border border-gray-200 group-hover:shadow-xl transition-shadow">
+                  <div className="absolute top-4 left-4 flex gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {q.category || "General"}
+                    </Badge>
+                    <Badge 
+                      variant={q.difficulty === 'Hard' ? 'destructive' : q.difficulty === 'Medium' ? 'default' : 'secondary'}
+                      className="text-xs"
+                    >
+                      {q.difficulty || "Unknown"}
+                    </Badge>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center p-6 pt-16">
+                    <span className="text-gray-900 text-center text-lg font-semibold">{q.question || "No question provided."}</span>
+                  </div>
                 </Card>
                 {/* Back */}
-                <Card className="absolute w-full h-full [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col justify-between items-center p-6 bg-blue-50 shadow-md rounded-xl border border-blue-200">
-                  <div>
+                <Card className="absolute w-full h-full [transform:rotateY(180deg)] [backface-visibility:hidden] bg-blue-50 shadow-md rounded-xl border border-blue-200">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
                     <span className="text-blue-700 text-xl mb-4 block"><Sparkles className="inline w-5 h-5 mr-1 text-blue-400" />Answer</span>
-                    <div className="text-base text-gray-800 text-center line-clamp-4 mb-4">{q.answer}</div>
+                    <div className="text-base text-gray-800 text-center line-clamp-4 mb-4 flex-1 flex items-center justify-center">{q.expectedAnswer || "No answer provided."}</div>
+                    {(q.expectedAnswer && q.expectedAnswer.length > 100) && (
+                      <Button className="mt-2" variant="outline" onClick={(e) => { 
+                        e.stopPropagation();
+                        setSelectedQuestion(q); 
+                        setShowDialog(true); 
+                      }}>
+                        View More
+                      </Button>
+                    )}
                   </div>
-                  {q.answer.length > 100 && (
-                    <Button className="mt-2" variant="outline" onClick={() => { setSelectedQuestion(q); setShowDialog(true); }}>
-                      View More
-                    </Button>
-                  )}
                 </Card>
               </div>
             </div>
@@ -93,9 +119,9 @@ const InterviewQuestionsPage = () => {
           <DialogContent className="max-w-lg rounded-2xl p-8 bg-white border border-blue-200 shadow-xl">
             <DialogHeader>
               <DialogTitle className="text-blue-700 text-2xl flex items-center mb-2"><Sparkles className="inline w-6 h-6 mr-2 text-blue-400" />Full Answer</DialogTitle>
-              <DialogDescription className="text-lg text-gray-700 mb-4">{selectedQuestion?.question}</DialogDescription>
+              <DialogDescription className="text-lg text-gray-700 mb-4">{selectedQuestion?.question || "No question provided."}</DialogDescription>
             </DialogHeader>
-            <div className="mt-2 text-gray-900 text-lg leading-relaxed whitespace-pre-line text-center">{selectedQuestion?.answer}</div>
+            <div className="mt-2 text-gray-900 text-lg leading-relaxed whitespace-pre-line text-center">{selectedQuestion?.expectedAnswer || "No answer provided."}</div>
           </DialogContent>
         </Dialog>
       </main>
