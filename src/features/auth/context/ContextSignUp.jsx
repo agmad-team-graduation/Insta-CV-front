@@ -4,7 +4,13 @@ import React, { createContext, useState, useContext } from 'react';
 import apiClient from "@/common/utils/apiClient";
 import { toast } from 'sonner';
 
-const AuthContext = createContext();
+const AuthContext = createContext({
+    email: '',
+    setEmail: () => {},
+    name: '',
+    setName: () => {},
+    handleSubmit: () => {},
+});
 export const SignUpProvider = ({children})=>{
     const [email,setEmail]=useState('');
     const [name,setName]=useState('');

@@ -144,7 +144,6 @@ const ResumesPage = () => {
 
   const handleDelete = async (resumeId, e) => {
     e.stopPropagation();
-    console.log("deleting resume", resumeId);
     try {
       await apiClient.delete(`/api/v1/cv/${resumeId}`);
       toast.success('Resume deleted successfully');

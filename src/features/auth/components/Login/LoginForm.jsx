@@ -16,7 +16,20 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export function LoginForm() {
-  const { user, loading, handleSubmit } = UseAuth();
+  const authContext = UseAuth();
+  
+  // Safety check for undefined context
+  if (!authContext) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="text-center">
+          <p className="text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { user, loading, handleSubmit } = authContext;
 
   const form = useForm({
     defaultValues: {
@@ -28,7 +41,6 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
-    console.log("Login form data:", data);
     await handleSubmit(data);
   };
 

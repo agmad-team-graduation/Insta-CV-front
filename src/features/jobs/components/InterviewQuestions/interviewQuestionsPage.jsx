@@ -4,6 +4,8 @@ import { Card } from '@/common/components/ui/card';
 import { Button } from '@/common/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/common/components/ui/dialog';
 import { ArrowLeft, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+import apiClient from '@/common/utils/apiClient';
 
 // Placeholder for the API endpoint
 const QUESTIONS_API_URL = '';
@@ -23,18 +25,9 @@ const InterviewQuestionsPage = () => {
       setLoading(true);
       setError(null);
       try {
-        // TODO: Replace with actual API call when URL is known
-        // const response = await apiClient.get(`${QUESTIONS_API_URL}/${jobID}`);
-        // setQuestions(response.data);
-        // Mock data for now
-        setQuestions([
-          { id: 1, question: 'What is React?', answer: 'A JavaScript library for building user interfaces.' },
-          { id: 2, question: 'Explain useState.', answer: 'A React hook for managing state in functional components.' },
-          { id: 3, question: 'What is a closure?', answer: 'A closure is a function that has access to its own scope, the outer function\'s scope, and the global scope.' },
-          { id: 4, question: 'How does prototypal inheritance work?', answer: 'Objects inherit properties and methods from other objects via the prototype chain.' },
-        ]);
+        const response = await apiClient.post(`/api/v1/jobs/interview-questions`,{jobId:jobID, numberOfQuestions:30});
       } catch (err) {
-        setError('Failed to load interview questions.');
+        toast.error("Failed to load interview questions.");
       } finally {
         setLoading(false);
       }

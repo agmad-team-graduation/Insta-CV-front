@@ -23,7 +23,6 @@ export function SignUpForm() {
   })
 
   const onSubmit = (data) => {
-    console.log("Form Data:", data)
     handleSubmit();
   }
 

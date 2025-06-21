@@ -74,7 +74,6 @@ const JobCard = ({ job, isRecommended = false, onJobDelete }) => {
         navigate(`/job-details/${job.id}`);
       } else {
         // Start polling for job analysis status
-        console.log(job);
         setCurrentJob(job);
         setIsAnalysisDialogOpen(true);
         

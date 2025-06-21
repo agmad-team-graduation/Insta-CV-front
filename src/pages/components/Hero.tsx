@@ -1,6 +1,6 @@
 import { Button } from "@/common/components/ui/button";
 import { Badge } from "@/common/components/ui/badge";
-import { Github, Sparkles, ArrowRight, Edit3, UserPlus } from "lucide-react";
+import { Github, Sparkles, ArrowRight, Edit3, UserPlus, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -8,6 +8,10 @@ const Hero = () => {
 
   const handleSignUp = () => {
     navigate('/signup');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -44,6 +48,16 @@ const Hero = () => {
             <UserPlus className="w-5 h-5 mr-2" />
             Sign Up to Get Started
             <ArrowRight className="w-5 h-5 m-2" />
+          </Button>
+          
+          <Button 
+            variant="default"
+            size="lg" 
+            onClick={handleLogin}
+            className="bg-transparent border-2 border-white/30 text-white hover:bg-white/20 hover:text-white px-8 py-4 rounded-full text-lg font-semibold shadow-2xl hover:shadow-white/25 transition-all duration-300 hover:scale-105"
+          >
+            <LogIn className="w-5 h-5 mr-2" />
+            Log In
           </Button>
         </div>
         

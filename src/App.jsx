@@ -23,6 +23,7 @@ import InterviewQuestionsPage from './features/jobs/components/InterviewQuestion
 import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
 import ResumesPage from './features/resume-builder/pages/ResumesPage';
+import ProfileFlow from './features/profile/pages/ProfileFlow';
 
 
 // Array of paths where we want to show navbar and footer
@@ -58,6 +59,7 @@ function AppContent() {
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
             <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/profile-flow' element={<ProfileFlow />} />
             <Route path='/jobs' element={<JobsPage />} />
             <Route path='/job-details/:jobID' element={<JobDetailsPage />} />
             {/* <Route path='/jobs/add' element={<AddJobPage />} /> */}

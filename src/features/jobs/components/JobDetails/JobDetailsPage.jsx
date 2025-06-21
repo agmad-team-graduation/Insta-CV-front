@@ -35,7 +35,6 @@ function JobDetailsPage() {
           setIsExternal(true);
         }
         setJob(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching job details:", error);
       } finally {

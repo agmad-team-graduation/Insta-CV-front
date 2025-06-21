@@ -15,7 +15,6 @@ const GithubSkillItem = ({ skill, userSkills, onSkillAdded }) => {
   );
   const handleAddSkill = async () => {
     try {
-      console.log(skillName);
       await apiClient.put('/api/v1/profiles/add-skill', { skill: skillName });
       toast.success('Skill has been added to your profile');
       // Call the callback to update the parent state
