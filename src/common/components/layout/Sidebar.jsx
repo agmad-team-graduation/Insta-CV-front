@@ -122,12 +122,16 @@ const Sidebar = () => {
                     <Badge 
                       variant="secondary" 
                       className={cn(
-                        "ml-auto text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 hover:bg-blue-200",
-                        isActive && "bg-blue-200 text-blue-800"
+                        "ml-auto text-[10px] px-1.5 py-0.5",
+                        displayUser.githubConnected 
+                          ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+                        isActive && displayUser.githubConnected && "bg-blue-200 text-blue-800",
+                        isActive && !displayUser.githubConnected && "bg-gray-200 text-gray-800"
                       )}
                     >
                       <Github className="w-2.5 h-2.5 mr-0.5" />
-                      Connected
+                      {displayUser.githubConnected ? "Connected" : "Disconnected"}
                     </Badge>
                   )}
                 </div>
@@ -146,7 +150,6 @@ const Sidebar = () => {
                 <AvatarImage src={userPhoto} alt={displayUser.name} className="object-cover" />
               ) : (
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold text-lg">
-                  {console.log(displayUser)}
                   {displayUser.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               )}
@@ -154,8 +157,8 @@ const Sidebar = () => {
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 border-2 border-white rounded-full shadow-sm"></div>
           </div>
           <div className="ml-3 flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800 truncate">{displayUser.name}</p>
-            <p className="text-xs text-slate-500 truncate">{displayUser.email}</p>
+            <p className="text-sm font-semibold text-slate-800 truncate text-left">{displayUser.name}</p>
+            <p className="text-xs text-slate-500 truncate text-left">{displayUser.email}</p>
           </div>
         </div>
         

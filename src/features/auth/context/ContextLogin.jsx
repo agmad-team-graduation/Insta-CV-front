@@ -5,7 +5,15 @@ import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
 import useUserStore from '@/store/userStore';
 
-const AuthContext = createContext();
+const AuthContext = createContext({
+    email: '',
+    setEmail: () => {},
+    password: '',
+    setPassword: () => {},
+    user: null,
+    loading: false,
+    handleSubmit: () => {},
+});
 
 export const LoginProvider = ({ children }) => {
     const navigate = useNavigate(); 
@@ -42,8 +50,16 @@ export const LoginProvider = ({ children }) => {
                 updateUserPhoto(data.user.photoUrl);
             }
 
-            toast.success('Login successful!');
-            navigate('/dashboard'); 
+            // Check if user has a profile using the isProfileCreated attribute
+            if (data.user.profileCreated) {
+                // Profile exists, navigate to dashboard
+                toast.success('Login successful!');
+                navigate('/dashboard');
+            } else {
+                // Profile not created, navigate to profile flow
+                toast.success('Login successful! Please complete your profile.');
+                navigate('/profile-flow');
+            }
 
             setEmail('');
             setPassword('');

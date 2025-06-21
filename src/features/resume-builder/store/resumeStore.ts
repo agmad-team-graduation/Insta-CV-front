@@ -60,7 +60,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     if (!resumeId) return;
     set({ isLoading: true, error: null });
     try {
-      console.log("fetching resume", resumeId);
       const resumeData = await fetchResume(resumeId);
       set({ resume: resumeData, isLoading: false });
     } catch (error) {
@@ -358,7 +357,6 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     
     set({ isSaving: true, error: null });
     try {
-      console.log("saving resume", resume);
       await updateResume(resume.id, resume);
       set({ isSaving: false });
     } catch (error) {

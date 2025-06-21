@@ -25,6 +25,21 @@ const useUserStore = create((set, get) => ({
     }
   },
 
+  // Force refresh user data (clears cache and fetches fresh data)
+  forceRefreshUser: async () => {
+    set({ isLoading: true });
+    try {
+      const response = await apiClient.get('/api/v1/profiles/me');
+      console.log("force refresh response", response.data);
+      set({ user: response.data, isLoading: false });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      set({ isLoading: false });
+      return null;
+    }
+  },
+
   // Fetch user photo once and store it
   fetchUserPhoto: async () => {
     const { userPhoto, isPhotoLoaded } = get();
@@ -41,7 +56,6 @@ const useUserStore = create((set, get) => ({
         return '';
       }
     } catch (error) {
-      console.log('No user photo found');
       set({ isPhotoLoaded: true });
       return '';
     }
@@ -50,6 +64,19 @@ const useUserStore = create((set, get) => ({
   // Update user photo when uploaded
   updateUserPhoto: (photoUrl) => {
     set({ userPhoto: photoUrl, isPhotoLoaded: true });
+  },
+
+  // Update user's GitHub connection status
+  updateGithubConnection: (isConnected) => {
+    const { user } = get();
+    if (user) {
+      set({ 
+        user: { 
+          ...user, 
+          githubConnected: isConnected 
+        } 
+      });
+    }
   },
 
   // Clear user data on logout

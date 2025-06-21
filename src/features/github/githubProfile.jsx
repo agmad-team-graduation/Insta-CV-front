@@ -6,6 +6,7 @@ import { Github, Loader2, RefreshCw, LogOut } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
 import GithubProjectSection from "./components/GithubProjectSection";
 import GithubSkillsSection from "./components/GithubSkillsSection";
+import useUserStore from "@/store/userStore";
 
 const GithubProfile = () => {
   const [githubData, setGithubData] = useState(null);
@@ -13,6 +14,9 @@ const GithubProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Get the updateGithubConnection method from user store
+  const { updateGithubConnection, forceRefreshUser } = useUserStore();
 
   const fetchGithubProfile = async (forceRefresh = false, accessToken = "") => {
     try {
@@ -23,10 +27,11 @@ const GithubProfile = () => {
         forceRefresh
       });
       setGithubData(response1.data);
-      console.log("response1", response1.data);
       const response2 = await apiClient.get("/api/v1/profiles/me/skills");
       setSkills(response2.data);
       setError(null);
+      // Update the user's GitHub connection status to true when data is fetched successfully
+      updateGithubConnection(true);
       if (forceRefresh) {
         toast.success("GitHub profile refreshed successfully");
       }
@@ -34,6 +39,8 @@ const GithubProfile = () => {
       // console.error("Error fetching GitHub profile data:", err);
       if (!githubData) {
         setError("Please connect your GitHub account to view your profile.");
+        // Update the user's GitHub connection status to false when no data is available
+        updateGithubConnection(false);
       } else {
         toast.error("Failed to refresh GitHub profile. Please try again.");
       }
@@ -64,6 +71,10 @@ const GithubProfile = () => {
     try {
       await apiClient.delete("/api/github/test/profile");
       setGithubData(null);
+      // Update the user's GitHub connection status to false
+      updateGithubConnection(false);
+      // Force refresh user data to ensure sidebar badge updates
+      await forceRefreshUser();
       toast.success("GitHub account disconnected successfully");
     } catch (err) {
       console.error("Error disconnecting GitHub:", err);
@@ -92,7 +103,6 @@ const GithubProfile = () => {
         async (event) => {
           if (event.origin !== window.location.origin) return;
   
-          console.log(event.data);
           const { githubToken, error } = event.data;
   
           if (error) {
@@ -102,6 +112,10 @@ const GithubProfile = () => {
   
           if (githubToken) {
             await fetchGithubProfile(true, githubToken);
+            // Update the user's GitHub connection status to true
+            updateGithubConnection(true);
+            // Force refresh user data to ensure sidebar badge updates
+            await forceRefreshUser();
           }
         },
         { once: true }

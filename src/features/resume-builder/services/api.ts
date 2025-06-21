@@ -46,7 +46,6 @@ export const updateResume = async (resumeId: number, resumeData: Resume): Promis
 export const generateCV = async (jobId: number): Promise<Resume> => {
   try {
     const response = await apiClient.post<Resume>('/api/v1/cv/generate', { jobId });
-    console.log("generated resume", response.data);
     return response.data;
   } catch (error) {
     console.error('Error generating CV:', error);
