@@ -39,7 +39,6 @@ export const LoginProvider = ({ children }) => {
         
         try {
             const { data } = await apiClient.post('/api/v1/auth/login', userData);
-
             // Store token and user data
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
             setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
