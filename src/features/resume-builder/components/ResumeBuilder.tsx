@@ -79,6 +79,19 @@ const ResumeBuilder: React.FC = () => {
     }
   }, [resume, isSaving, saveResume]);
 
+  // Listen for PDF generation complete events
+  useEffect(() => {
+    const handlePdfGenerationComplete = (event: CustomEvent) => {
+      setIsGeneratingPdf(false);
+    };
+
+    document.addEventListener('pdf-generation-complete', handlePdfGenerationComplete as EventListener);
+
+    return () => {
+      document.removeEventListener('pdf-generation-complete', handlePdfGenerationComplete as EventListener);
+    };
+  }, []);
+
   // Handle CV generation and navigation
   const handleGenerateCV = async (jobId: number) => {
     try {
@@ -103,10 +116,11 @@ const ResumeBuilder: React.FC = () => {
       if (previewElement) {
         const event = new CustomEvent('generate-pdf');
         previewElement.dispatchEvent(event);
+      } else {
+        throw new Error('Resume preview element not found');
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
-    } finally {
       setIsGeneratingPdf(false);
     }
   };

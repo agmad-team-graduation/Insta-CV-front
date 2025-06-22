@@ -1,5 +1,4 @@
-import html2canvas from 'html2canvas-pro';
-import { jsPDF } from 'jspdf';
+import html2pdf from 'html2pdf.js';
 import { Resume, TemplateName } from '../types';
 
 interface GeneratePdfOptions {
@@ -9,12 +8,12 @@ interface GeneratePdfOptions {
 }
 
 /**
- * Generate a PDF from the resume preview element
+ * Generate a PDF from the resume preview element with timeout protection
  */
 export const generatePdf = async (
   resumeElement: HTMLElement,
   options: GeneratePdfOptions = {}
-) => {
+): Promise<void> => {
   if (!resumeElement) {
     throw new Error('Resume element not found');
   }
@@ -24,7 +23,27 @@ export const generatePdf = async (
     margin: 10,
   };
 
-  const { filename } = { ...defaultOptions, ...options };
+  const pdfOptions = {
+    ...defaultOptions,
+    ...options,
+    html2canvas: {
+      scale: 1.5, // Reduced scale to improve performance
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      backgroundColor: '#ffffff'
+    },
+    jsPDF: {
+      format: 'a4' as const,
+      orientation: 'portrait' as const,
+      unit: 'mm' as const,
+    },
+  };
+
+  // Create a promise that rejects after 30 seconds
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => reject(new Error('PDF generation timed out')), 30000);
+  });
 
   try {
     // Make a clone to avoid modifying the displayed element
@@ -33,66 +52,65 @@ export const generatePdf = async (
     // Apply print-specific styles
     clonedElement.classList.add('print-mode');
     
-    // Remove border radius for PDF export
-    const style = document.createElement('style');
-    style.textContent = `
-      .print-mode {
-        border-radius: 0 !important;
-        box-shadow: none !important;
+    // Remove any interactive elements that might cause issues
+    const interactiveElements = clonedElement.querySelectorAll('button, input, select, textarea');
+    interactiveElements.forEach(el => {
+      if (el instanceof HTMLElement) {
+        el.style.display = 'none';
       }
-      .print-mode * {
-        border-radius: 0 !important;
-      }
-    `;
-    document.head.appendChild(style);
+    });
     
     // Create temporary container
     const container = document.createElement('div');
     container.appendChild(clonedElement);
     container.style.position = 'absolute';
     container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    container.style.width = '210mm'; // A4 width
+    container.style.height = '297mm'; // A4 height
     document.body.appendChild(container);
     
-    // Generate canvas using html2canvas-pro
-    const canvas = await html2canvas(clonedElement, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      allowTaint: true,
-      backgroundColor: '#ffffff'
-    });
-
-    // Create PDF using jsPDF
-    const pdf = new jsPDF({
-      format: 'a4',
-      orientation: 'portrait',
-      unit: 'mm'
-    });
-
-    const imgWidth = 210; // A4 width in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    // Generate PDF with timeout protection
+    const pdfPromise = html2pdf()
+      .set(pdfOptions)
+      .from(clonedElement)
+      .save();
     
-    pdf.addImage(
-      canvas.toDataURL('image/jpeg', 1.0),
-      'JPEG',
-      0,
-      0,
-      imgWidth,
-      imgHeight
-    );
-    
-    // Save the PDF
-    pdf.save(filename);
+    await Promise.race([pdfPromise, timeoutPromise]);
     
     // Clean up
-    document.body.removeChild(container);
-    document.head.removeChild(style);
+    if (document.body.contains(container)) {
+      document.body.removeChild(container);
+    }
     
-    return pdf;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    throw error;
+    
+    // If html2pdf fails, try the fallback method
+    try {
+      console.log('Trying fallback PDF generation method...');
+      await generatePdfFallback(resumeElement, options);
+    } catch (fallbackError) {
+      console.error('Fallback PDF generation also failed:', fallbackError);
+      throw new Error('PDF generation failed. Please try again or contact support.');
+    }
   }
+};
+
+/**
+ * Fallback PDF generation method using the working JavaScript version
+ */
+const generatePdfFallback = async (
+  resumeElement: HTMLElement,
+  options: GeneratePdfOptions = {}
+): Promise<void> => {
+  // Dynamically import the working JavaScript version
+  const { generatePdf: generatePdfJS } = await import('../../../common/services/pdfGenerator.js');
+  
+  // Convert the element to a format the JS version expects
+  const element = resumeElement as any;
+  
+  await generatePdfJS(element, options);
 };
 
 /**
