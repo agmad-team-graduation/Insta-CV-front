@@ -150,7 +150,7 @@ const Sidebar = () => {
                 <AvatarImage src={userPhoto} alt={displayUser.name} className="object-cover" />
               ) : (
                 <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold text-lg">
-                  {displayUser.name.charAt(0).toUpperCase()}
+                  {displayUser.name?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               )}
             </Avatar>
