@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/common/components/ui/button';
 import { Card } from '@/common/components/ui/card';
@@ -7,6 +7,8 @@ import EducationStep from './profile-steps/EducationStep';
 import ExperienceStep from './profile-steps/ExperienceStep';
 import SkillsStep from './profile-steps/SkillsStep';
 import { ProfileData, PersonalDetails, Education, Experience, Skill } from '@/common/utils/profile';
+import { useCookies } from 'react-cookie';
+import useUserStore from '@/store/userStore';
 
 interface ProfileSetupModalProps {
   isOpen: boolean;
@@ -14,13 +16,38 @@ interface ProfileSetupModalProps {
 }
 
 const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }) => {
+  const [cookies] = useCookies(['user']);
+  const { user } = useUserStore();
+  
+  // Get user name from either the global store or cookies
+  const getUserName = () => {
+    console.log("user", user);
+    if (user?.name) return user.name;
+    if (cookies.user?.name) return cookies.user.name;
+    return '';
+  };
+
   const [currentStep, setCurrentStep] = useState(0);
   const [profileData, setProfileData] = useState<ProfileData>({
-    personalDetails: { fullName: '', jobTitle: '', bio: '' },
+    personalDetails: { fullName: getUserName(), jobTitle: '', bio: '' },
     educationList: [],
     experienceList: [],
     userSkills: []
   });
+
+  // Update profile data when user data becomes available
+  useEffect(() => {
+    const userName = getUserName();
+    if (userName && !profileData.personalDetails.fullName) {
+      setProfileData(prev => ({
+        ...prev,
+        personalDetails: {
+          ...prev.personalDetails,
+          fullName: userName
+        }
+      }));
+    }
+  }, [user, cookies.user]);
 
   const steps = [
     { title: 'Personal Info' },
