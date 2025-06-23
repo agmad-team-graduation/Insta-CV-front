@@ -19,15 +19,6 @@ const ProfileFlow = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
 
-  // Debug useEffect to monitor state changes
-  useEffect(() => {
-    console.log('showUploadProgress changed:', showUploadProgress);
-  }, [showUploadProgress]);
-
-  useEffect(() => {
-    console.log('uploadProgress changed:', uploadProgress);
-  }, [uploadProgress]);
-
   // Function to ensure all profile data has proper default values
   const sanitizeProfileData = (data) => {
     return {
@@ -94,31 +85,22 @@ const ProfileFlow = () => {
     const fileToUpload = file || selectedCVFile;
     if (!fileToUpload) return;
 
-    console.log('Starting CV upload process...');
-    console.log('showUploadProgress before:', showUploadProgress);
-
     try {
       setUploadingCV(true);
       setShowUploadProgress(true);
       setUploadProgress(0);
       
-      console.log('showUploadProgress after set:', showUploadProgress);
-      
       const formData = new FormData();
       formData.append('file', fileToUpload);
       const sanitizedData = sanitizeProfileData({});
-      console.log("sanitizedData", sanitizedData)
       
       // Start progress simulation immediately
       const startTime = Date.now();
       const maxDuration = 20000; // 20 seconds
       
-      console.log('Starting progress simulation...');
-      
       const progressInterval = setInterval(() => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min((elapsed / maxDuration) * 100, 95); // Cap at 95% until response
-        console.log('Progress update:', progress);
         setUploadProgress(progress);
       }, 100);
       
@@ -129,8 +111,6 @@ const ProfileFlow = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      console.log('CV upload response received');
 
       // Clear interval and set progress to 100%
       clearInterval(progressInterval);
@@ -183,27 +163,6 @@ const ProfileFlow = () => {
             Create a comprehensive professional profile that showcases your skills, experience, and achievements
           </p>
         </div>
-        
-        {/* Temporary test button for debugging */}
-        <button 
-          onClick={() => {
-            console.log('Test button clicked');
-            setShowUploadProgress(true);
-            setUploadProgress(0);
-            const interval = setInterval(() => {
-              setUploadProgress(prev => {
-                if (prev >= 100) {
-                  clearInterval(interval);
-                  return 100;
-                }
-                return prev + 10;
-              });
-            }, 500);
-          }}
-          className="px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Test Loading Modal
-        </button>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto mt-12">
           <div className="bg-white/80 border border-blue-200 rounded-lg p-6 text-center shadow-sm hover:shadow-md transition-shadow">
@@ -348,7 +307,6 @@ const ProfileFlow = () => {
 
       {/* CV Upload Progress Modal */}
       <Dialog open={showUploadProgress} onOpenChange={(open) => {
-        console.log('Dialog onOpenChange called with:', open);
         if (!open) {
           setShowUploadProgress(false);
         }
