@@ -1,7 +1,7 @@
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { PieChart, Pie, Cell } from "recharts";
-import { ArrowLeft, Star, Plus, Loader2 } from "lucide-react";
+import { ArrowLeft, Star, Plus, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCookies } from 'react-cookie';
@@ -13,6 +13,7 @@ function JobDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState([]);
   const [isGeneratingCV, setIsGeneratingCV] = useState(false);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
   const { jobID } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,26 +22,46 @@ function JobDetailsPage() {
   const [isExternal, setIsExternal] = useState(false);
   const { generateCVForJob } = useResumeStore();
 
-  useEffect(() => {
-    const fetchJobDetails = async () => {
+  const fetchJobDetails = async (forceAnalyze = false) => {
+    try {
+      setLoading(true);
+      // Try regular job endpoint first
+      let response;
       try {
-        // Try regular job endpoint first
-        let response;
-        try {
-          response = await apiClient.get(`/api/v1/jobs/${jobID}`);
-          setIsExternal(false);
-        } catch (error) {
-          // If regular job not found, try scrape endpoint
-          response = await apiClient.get(`/api/v1/jobs/scrape/${jobID}`);
-          setIsExternal(true);
-        }
-        setJob(response.data);
+        const url = forceAnalyze 
+          ? `/api/v1/jobs/${jobID}?forceAnalyze=true`
+          : `/api/v1/jobs/${jobID}`;
+        response = await apiClient.get(url);
+        setIsExternal(false);
       } catch (error) {
-        console.error("Error fetching job details:", error);
-      } finally {
-        setLoading(false);
+        // If regular job not found, try scrape endpoint
+        const url = forceAnalyze 
+          ? `/api/v1/jobs/scrape/${jobID}?forceAnalyze=true`
+          : `/api/v1/jobs/scrape/${jobID}`;
+        response = await apiClient.get(url);
+        setIsExternal(true);
       }
-    };
+      setJob(response.data);
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReanalyze = async () => {
+    setIsReanalyzing(true);
+    try {
+      await fetchJobDetails(true); // Pass true to force reanalysis
+    } catch (error) {
+      console.error("Error reanalyzing job:", error);
+    } finally {
+      setIsReanalyzing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobDetails();
     
     const fetchRecommendations = async () => {
       try {
@@ -57,7 +78,6 @@ function JobDetailsPage() {
       }
     };
 
-    fetchJobDetails();
     fetchRecommendations();
   }, [jobID]);
 
@@ -184,6 +204,24 @@ function JobDetailsPage() {
                 </Button>
                 <Button className="w-full text-lg py-6 mt-2" variant="outline" onClick={() => navigate(`/interview-questions/${jobID}`)}>
                   Show Interview Questions
+                </Button>
+                <Button 
+                  className="w-full text-lg py-6 mt-2" 
+                  variant="outline" 
+                  onClick={handleReanalyze}
+                  disabled={isReanalyzing}
+                >
+                  {isReanalyzing ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                      Reanalyzing Job...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-2" />
+                      Reanalyze Job
+                    </>
+                  )}
                 </Button>
                 {isExternal && job.applyUrl && (
                   <Button
