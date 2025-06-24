@@ -4,9 +4,12 @@ import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
 import { Button } from "@/common/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Github } from "lucide-react";
+import { UseAuth } from "@/features/auth/context/ContextLogin";
 
 export function LoginLayout({ children }) {
   const navigate = useNavigate();
+  const { handleGitHubLogin } = UseAuth();
 
   return (
     <div className="h-screen w-screen m-0 p-0 overflow-hidden">
@@ -33,6 +36,16 @@ export function LoginLayout({ children }) {
           <div className="w-full flex flex-col md:flex-row">
             {/* Left Side - shifted upward */}
             <div className="w-full md:w-1/2 flex flex-col items-center justify-center px-4 py-6 -mt-4">
+              <div className="mb-4 w-full">
+                <Button
+                  variant="outline"
+                  className="w-70 pt-4 pb-4 justify-center gap-2 rounded-3xl border-gray-300 text-gray-800 hover:bg-gray-100 text-sm font-medium shadow-sm px-4 py-2"
+                  onClick={handleGitHubLogin}
+                >
+                  <Github className="w-4 h-4" />
+                  Continue with GitHub
+                </Button>
+              </div>
               <div className="mb-4 w-full">
                 <Button
                   variant="outline"
