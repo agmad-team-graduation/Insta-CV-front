@@ -12,10 +12,10 @@ import { Input } from "../../../common/components/ui/input";
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { 
-    resume, 
-    isLoading, 
-    error, 
+  const {
+    resume,
+    isLoading,
+    error,
     fetchResume,
     createNewResume,
     selectedTemplate,
@@ -25,14 +25,14 @@ const ResumeBuilder: React.FC = () => {
     isGenerating,
     updateResumeTitle
   } = useResumeStore();
-  
+
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [previewMode, setPreviewMode] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
-  
+
   // DnD sensors configuration
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -63,7 +63,7 @@ const ResumeBuilder: React.FC = () => {
 
     initializeResume();
   }, [id, fetchResume, createNewResume, navigate]);
-  
+
   // Auto-save every 5 seconds when changes are made
   useEffect(() => {
     if (resume && !isSaving) {
@@ -74,7 +74,7 @@ const ResumeBuilder: React.FC = () => {
             setTimeout(() => setShowSaveSuccess(false), 2000);
           });
       }, 5000);
-      
+
       return () => clearTimeout(timeoutId);
     }
   }, [resume, isSaving, saveResume]);
@@ -92,23 +92,29 @@ const ResumeBuilder: React.FC = () => {
     }
   };
 
-  const handleDownloadPdf = async () => {
+  // Replace handleDownloadPdf with Puppeteer backend download
+  const downloadResumePdf = async () => {
     if (!resume) return;
-    
-    setIsGeneratingPdf(true);
-    
-    try {
-      // This is handled in the ResumePreview component
-      const previewElement = document.getElementById('resume-preview-container');
-      if (previewElement) {
-        const event = new CustomEvent('generate-pdf');
-        previewElement.dispatchEvent(event);
-      }
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    } finally {
-      setIsGeneratingPdf(false);
+    // Get the cookie value dynamically
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('isLoggedIn='))
+      ?.split('=')[1];
+    const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(window.location.href)}&cookie=${cookieValue}`;
+    const response = await fetch(pdfUrl);
+    if (!response.ok) {
+      alert('Failed to generate PDF');
+      return;
     }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'resume.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   const handleTitleEdit = () => {
@@ -155,8 +161,8 @@ const ResumeBuilder: React.FC = () => {
         <div className="bg-red-100 text-red-800 p-4 rounded-lg max-w-md">
           <h2 className="font-bold text-lg mb-2">Error Loading Resume</h2>
           <p>{error}</p>
-          <button 
-            onClick={() => fetchResume()} 
+          <button
+            onClick={() => fetchResume()}
             className="mt-4 btn bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded"
           >
             Try Again
@@ -217,7 +223,7 @@ const ResumeBuilder: React.FC = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               {isSaving && (
                 <div className="flex items-center text-gray-500">
@@ -225,20 +231,19 @@ const ResumeBuilder: React.FC = () => {
                   <span className="text-sm">Saving...</span>
                 </div>
               )}
-              
+
               {showSaveSuccess && (
                 <div className="text-green-600 text-sm flex items-center">
                   <span>✓ Saved</span>
                 </div>
               )}
-              
+
               <button
                 onClick={() => setPreviewMode(!previewMode)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  previewMode 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${previewMode
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                  }`}
                 title={previewMode ? 'Exit Preview' : 'Preview Mode'}
               >
                 <EyeIcon size={18} />
@@ -246,19 +251,14 @@ const ResumeBuilder: React.FC = () => {
                   {previewMode ? 'Exit Preview' : 'Preview'}
                 </span>
               </button>
-              
+
+              {/* Download PDF (Server) Button */}
               <button
-                onClick={handleDownloadPdf}
-                disabled={isGeneratingPdf}
-                className="flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                title="Download as PDF"
+                onClick={downloadResumePdf}
+                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors"
+                title="Download PDF (Server)"
               >
-                {isGeneratingPdf ? (
-                  <Loader2Icon className="animate-spin h-4 w-4" />
-                ) : (
-                  <DownloadIcon size={18} />
-                )}
-                <span className="hidden sm:inline">Download PDF</span>
+                <DownloadIcon size={18} /> Download PDF (Server)
               </button>
             </div>
           </div>
@@ -273,11 +273,10 @@ const ResumeBuilder: React.FC = () => {
                 {/* Tabs */}
                 <div className="flex-none flex border-b border-gray-200">
                   <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                      activeTab === 'content'
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                    }`}
+                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      }`}
                     onClick={() => setActiveTab('content')}
                   >
                     <span className="flex items-center justify-center gap-2">
@@ -286,11 +285,10 @@ const ResumeBuilder: React.FC = () => {
                     </span>
                   </button>
                   <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${
-                      activeTab === 'templates'
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                    }`}
+                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      }`}
                     onClick={() => setActiveTab('templates')}
                   >
                     <span className="flex items-center justify-center gap-2">
