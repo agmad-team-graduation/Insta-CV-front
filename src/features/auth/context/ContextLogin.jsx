@@ -108,7 +108,7 @@ export const LoginProvider = ({ children }) => {
                         try {
                             // const { data: userData } = await apiClient.get('/api/v1/auth/me');
                             setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
-                            // setUser(user);
+                            setUser(user);
 
                             // If user has a photo, update the global store
                             if (user.photoUrl) {
