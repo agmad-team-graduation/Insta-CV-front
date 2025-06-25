@@ -99,10 +99,15 @@ app.get('/generate-pdf', async (req, res) => {
   const maxRetries = 2;
   
     try {
-        let { url } = req.query;
+        let { url, token } = req.query;
         if (!url) return res.status(400).send('Missing url parameter');
+        if (!token) return res.status(400).send('Missing token parameter');
+        if (typeof token !== 'string' || token.trim() === '') {
+            return res.status(400).send('Invalid token parameter');
+        }
 
         console.log(`Generating PDF for URL: ${url} (attempt ${retryCount + 1})`);
+        console.log(`Using token: ${token.substring(0, 20)}...`);
 
         const browser = await getBrowser();
         
@@ -119,15 +124,15 @@ app.get('/generate-pdf', async (req, res) => {
         // Set a more conservative user agent
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
         
-        // Set the isLoggedIn cookie to 'test' before navigating
+        // Set the isLoggedIn cookie using the token from frontend
         await page.setCookie({
         name: 'isLoggedIn',
-        value: 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIxIiwic3ViIjoieW91c3NlZi50ZXN0QGdtYWlsLmNvbSIsImlhdCI6MTc1MDgwODYwNiwiZXhwIjoxNzUwODk1MDA2fQ.mzp8hiXUvAdW41JA4ih682eNg5kVjP_4docdDfd1yW0',
+        value: token,
         domain: 'localhost',
         path: '/'
         });
         
-        console.log('Set isLoggedIn cookie to "test"');
+        console.log('Set isLoggedIn cookie with user token');
         
         // Disable images and other resources for faster loading
         await page.setRequestInterception(true);

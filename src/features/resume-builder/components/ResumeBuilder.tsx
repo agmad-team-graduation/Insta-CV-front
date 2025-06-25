@@ -22,13 +22,11 @@ const ResumeBuilder: React.FC = () => {
     isSaving,
     saveResume,
     generateCVForJob,
-    isGenerating,
     updateResumeTitle
   } = useResumeStore();
 
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
@@ -133,9 +131,13 @@ const ResumeBuilder: React.FC = () => {
         .find(row => row.startsWith('isLoggedIn='))
         ?.split('=')[1];
       
+      if (!cookieValue) {
+        throw new Error('Authentication token not found. Please log in again.');
+      }
+      
       // Use the preview page URL instead of current page
       const previewUrl = `${window.location.origin}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
-      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&cookie=${cookieValue}`;
+      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
       const controller = new AbortController();
