@@ -79,17 +79,17 @@ const ResumePreviewPage = () => {
             display: none !important;
           }
           @page {
-            margin: 0.5in;
+            margin: 0;  
             size: A4;
           }
           
-          /* Ensure resume fits on one page */
+          /* Allow multiple pages for resume */
           .resume-container {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-            max-height: 100vh !important;
-            overflow: hidden !important;
-            height: 100vh !important;
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
           }
           
           /* Prevent page breaks within sections */
@@ -98,7 +98,7 @@ const ResumePreviewPage = () => {
             break-inside: avoid !important;
           }
           
-          /* Optimize spacing for single page */
+          /* Optimize spacing for multi-page layout */
           .resume-header {
             padding: 0.5rem 1rem !important;
             margin-bottom: 0.5rem !important;
@@ -121,12 +121,48 @@ const ResumePreviewPage = () => {
             white-space: nowrap !important;
           }
           
-          /* Force single page layout */
+          /* Allow multi-page layout */
           .single-page-resume {
-            max-height: calc(100vh - 1in) !important;
-            overflow: hidden !important;
-            page-break-after: avoid !important;
-            page-break-before: avoid !important;
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+          }
+          
+          /* Remove shadows, borders, and rounded corners for clean printing */
+          .shadow-lg,
+          .shadow-md,
+          .shadow-sm,
+          .shadow,
+          .shadow-xl,
+          .shadow-2xl {
+            box-shadow: none !important;
+          }
+          
+          .rounded-lg,
+          .rounded-md,
+          .rounded-sm,
+          .rounded,
+          .rounded-xl,
+          .rounded-2xl,
+          .rounded-3xl,
+          .rounded-full {
+            border-radius: 0 !important;
+          }
+          
+          .border,
+          .border-2,
+          .border-t,
+          .border-b,
+          .border-l,
+          .border-r {
+            border: none !important;
+          }
+          
+          /* Remove any overflow hidden that might cause issues */
+          .overflow-hidden {
+            overflow: visible !important;
           }
         }
         

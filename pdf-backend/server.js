@@ -145,12 +145,12 @@ app.get('/generate-pdf', async (req, res) => {
         timeout: 30000 // Reduced timeout
         });
 
-        // Inject CSS to ensure single page layout
+        // Inject CSS to ensure proper page layout
         await page.addStyleTag({
         content: `
             @page {
             size: A4;
-            margin: 5mm;
+            margin: 10mm;
             }
             body {
             margin: 0;
@@ -158,33 +158,90 @@ app.get('/generate-pdf', async (req, res) => {
             font-size: 12px;
             line-height: 1.2;
             }
-            * {
+            
+            /* Override any single-page constraints */
+            .resume-container, 
+            .resume-preview,
+            .single-page-resume {
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+            }
+            
+            /* Ensure proper page breaks */
+            .page-break {
+            page-break-before: always;
+            }
+            
+            /* Allow page breaks between sections but not within them */
+            .resume-section,
+            .section {
             page-break-inside: avoid;
             break-inside: avoid;
             }
-            .resume-container, .resume-preview {
-            max-height: 297mm;
-            overflow: hidden;
+            
+            /* Override any print-specific constraints */
+            @media print {
+            .resume-container,
+            .resume-preview,
+            .single-page-resume {
+                max-height: none !important;
+                overflow: visible !important;
+                height: auto !important;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+            }
+            }
+            
+            /* Additional overrides for all possible containers */
+            div[class*="resume"],
+            div[class*="Resume"],
+            .bg-white,
+            .shadow-lg,
+            .rounded-lg,
+            .overflow-hidden {
+            max-height: none !important;
+            overflow: visible !important;
+            height: auto !important;
             }
         `
         });
 
-        // Check page height and adjust if needed
-        const bodyHeight = await page.evaluate(() => {
-        return document.body.scrollHeight;
+        // Inject JavaScript to remove problematic styles directly
+        await page.evaluate(() => {
+        // Remove any inline styles that might constrain height
+        const elements = document.querySelectorAll('*');
+        elements.forEach(el => {
+            const style = el.style;
+            if (style.maxHeight && (style.maxHeight.includes('100vh') || style.maxHeight.includes('297mm'))) {
+            style.removeProperty('max-height');
+            }
+            if (style.overflow && style.overflow === 'hidden') {
+            style.removeProperty('overflow');
+            }
+            if (style.height && style.height.includes('100vh')) {
+            style.removeProperty('height');
+            }
         });
         
-        console.log('Page body height:', bodyHeight, 'px');
-        
-        // If content is too tall, adjust the scale
-        let scale = 0.8;
-        if (bodyHeight > 1000) {
-        scale = Math.min(0.6, 800 / bodyHeight);
-        console.log('Content too tall, adjusting scale to:', scale);
-        }
+        // Remove any CSS classes that might be causing issues
+        const containers = document.querySelectorAll('.resume-container, .resume-preview, .single-page-resume');
+        containers.forEach(container => {
+            container.style.maxHeight = 'none';
+            container.style.overflow = 'visible';
+            container.style.height = 'auto';
+            container.style.pageBreakInside = 'auto';
+        });
+        });
 
-        // Wait for a shorter time
+        // Wait for content to fully render
         await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Use a higher scale to better utilize page width
+        const scale = 1.0;
+        console.log('Using scale:', scale);
 
         const pdfBuffer = await page.pdf({
         format: 'A4',

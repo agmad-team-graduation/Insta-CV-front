@@ -21,7 +21,7 @@ export const generatePdf = async (
 
   const defaultOptions = {
     filename: 'resume.pdf',
-    margin: 10,
+    margin: 0,
   };
 
   const { filename } = { ...defaultOptions, ...options };
@@ -39,6 +39,8 @@ export const generatePdf = async (
       .print-mode {
         border-radius: 0 !important;
         box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
       .print-mode * {
         border-radius: 0 !important;
@@ -72,6 +74,7 @@ export const generatePdf = async (
     const imgWidth = 210; // A4 width in mm
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
+    // Position image at (0,0) to eliminate margins
     pdf.addImage(
       canvas.toDataURL('image/jpeg', 1.0),
       'JPEG',
