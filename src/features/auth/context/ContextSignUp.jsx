@@ -26,7 +26,6 @@ export const SignUpProvider = ({children})=>{
 
     const handleSubmit = async ()=>{
         const newUser = {email,name};
-        
         try{
             const response = await apiClient.post('/api/v1/email/send-verification', newUser);
             toast.success(response.data.message);
