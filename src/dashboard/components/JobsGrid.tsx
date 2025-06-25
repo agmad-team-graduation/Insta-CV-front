@@ -32,6 +32,11 @@ const JobsGrid = () => {
   }, []);
 
   const calculateMatchPercentage = (job: any) => {
+    // Check if matchedSkills array exists
+    if (!job.skillMatchingAnalysis?.matchedSkills) {
+      return null; // Return null to indicate not analyzed
+    }
+    
     const totalSkills = job.hardSkills.length;
     const matchedSkills = job.skillMatchingAnalysis.matchedSkills.length;
     
@@ -44,6 +49,15 @@ const JobsGrid = () => {
     if (percentage >= 90) return 'bg-green-500';
     if (percentage >= 75) return 'bg-yellow-500';
     return 'bg-red-500';
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   const handleViewAll = () => {
@@ -125,12 +139,8 @@ const JobsGrid = () => {
                         <span>{job.company}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        <span>{job.location}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        <span>{job.posted}</span>
+                        <span>{formatDate(job.addDate)}</span>
                       </div>
                     </div>
                     <p className="text-sm font-medium text-gray-700 mb-2">{job.salary}</p>
@@ -140,9 +150,13 @@ const JobsGrid = () => {
                     <div className="text-right">
                       <div className="flex items-center gap-1">
                         <Target className="w-3 h-3 text-gray-500" />
-                        <span className="text-sm font-medium">{matchPercentage}% Match</span>
+                        <span className="text-sm font-medium">
+                          {matchPercentage !== null ? `${matchPercentage}% Match` : 'Not analyzed'}
+                        </span>
                       </div>
-                      <div className={`w-16 h-1 rounded-full mt-1 ${getMatchColor(matchPercentage)}`}></div>
+                      {matchPercentage !== null && (
+                        <div className={`w-16 h-1 rounded-full mt-1 ${getMatchColor(matchPercentage)}`}></div>
+                      )}
                     </div>
                     <Button 
                       variant="ghost" 
@@ -155,24 +169,27 @@ const JobsGrid = () => {
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="text-xs text-gray-500 text-left">Required Skills:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {job.hardSkills.map((skillObj: any) => (
-                      <Badge 
-                        key={skillObj.id} 
-                        variant={job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) ? "default" : "secondary"}
-                        className={`text-xs ${job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                          : 'bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        {skillObj.skill}
-                        {job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) && ' ✓'}
-                      </Badge>
-                    ))}
+                {/* Only show skills section if matchedSkills array exists */}
+                {job.skillMatchingAnalysis?.matchedSkills && (
+                  <div className="space-y-2">
+                    <div className="text-xs text-gray-500 text-left">Required Skills:</div>
+                    <div className="flex flex-wrap gap-1">
+                      {job.hardSkills.map((skillObj: any) => (
+                        <Badge 
+                          key={skillObj.id} 
+                          variant={job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) ? "default" : "secondary"}
+                          className={`text-xs ${job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) 
+                            ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                            : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {skillObj.skill}
+                          {job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) && ' ✓'}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
                 
                 <div className="flex gap-2 mt-3">
                   <Button 
