@@ -23,6 +23,7 @@ import InterviewQuestionsPage from './features/jobs/components/InterviewQuestion
 import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
 import ResumesPage from './features/resume-builder/pages/ResumesPage';
+import ResumePreviewPage from './features/resume-builder/pages/ResumePreviewPage';
 import ProfileFlow from './features/profile/pages/ProfileFlow';
 
 
@@ -72,6 +73,7 @@ function AppContent() {
           </Route>
           <Route path='/resumes' element={<ResumeBuilderLayout />}>
             <Route path=':id' element={<ResumeBuilder />} />
+            <Route path=':id/preview' element={<ResumePreviewPage />} />
           </Route>
         </Routes>
       </div>

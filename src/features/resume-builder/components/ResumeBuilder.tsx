@@ -133,7 +133,9 @@ const ResumeBuilder: React.FC = () => {
         .find(row => row.startsWith('isLoggedIn='))
         ?.split('=')[1];
       
-      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(window.location.href)}&cookie=${cookieValue}`;
+      // Use the preview page URL instead of current page
+      const previewUrl = `${window.location.origin}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
+      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&cookie=${cookieValue}`;
       
       // Add timeout to the fetch request
       const controller = new AbortController();
@@ -312,6 +314,16 @@ const ResumeBuilder: React.FC = () => {
                 <span className="hidden sm:inline">
                   {previewMode ? 'Exit Preview' : 'Preview'}
                 </span>
+              </button>
+
+              {/* View Preview Page Button */}
+              <button
+                onClick={() => window.open(`/resumes/${resume.id}/preview?template=${selectedTemplate}`, '_blank')}
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-green-600 hover:text-green-900 hover:bg-green-50 transition-colors"
+                title="View Preview Page"
+              >
+                <EyeIcon size={18} />
+                <span className="hidden sm:inline">View Preview</span>
               </button>
 
               {/* Download PDF (Server) Button */}

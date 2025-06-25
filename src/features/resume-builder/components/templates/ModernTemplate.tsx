@@ -24,7 +24,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
     const orderA = resume.sectionsOrder[a[0]] || a[1].orderIndex;
     const orderB = resume.sectionsOrder[b[0]] || b[1].orderIndex;
     return orderA - orderB;
-  });
+  }); 
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
