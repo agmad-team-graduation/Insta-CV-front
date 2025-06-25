@@ -3,6 +3,7 @@ import { Input } from '@/common/components/ui/input';
 import { Label } from '@/common/components/ui/label';
 import { Card, CardContent } from '@/common/components/ui/card';
 import { UseAuth } from '../../context/ContextSignUp';
+import { toast } from 'sonner';
 
 const Signup = () => {
   const {
@@ -23,9 +24,14 @@ const Signup = () => {
     }
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit();
+    const result = await handleSubmit() as { success: boolean; message: string } | undefined;
+    if (result?.success) {
+      toast.success(result.message || 'Signup successful!');
+    } else {
+      toast.error(result?.message || 'Signup failed!');
+    }
   };
 
   return (
