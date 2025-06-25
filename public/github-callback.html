@@ -14,11 +14,15 @@
             .then(data => {
               // Send token response back to main window
               window.opener.postMessage({ githubToken: data.access_token }, window.origin);
-              window.close();
+              setTimeout(() => {
+                window.close();
+              }, 250);
             })
             .catch(() => {
               window.opener.postMessage({ error: "GitHub callback failed" }, window.origin);
-              window.close();
+              setTimeout(() => {
+                window.close();
+              }, 250);
             });
         }
         else {
@@ -31,16 +35,22 @@
               token: data.token,
               expiresIn: data.expiresIn
             }, window.origin);
-            window.close();
+            setTimeout(() => {
+              window.close();
+            }, 250);
           })
           .catch(() => {
             window.opener.postMessage({ error: "GitHub login failed" }, window.origin);
-            window.close();
+            setTimeout(() => {
+              window.close();
+            }, 250);
           });
         }
       } else {
         window.opener.postMessage({ error: "Missing code in callback" }, window.origin);
-        window.close();
+        setTimeout(() => {
+          window.close();
+        }, 250);
       }
     </script>
   </body>
