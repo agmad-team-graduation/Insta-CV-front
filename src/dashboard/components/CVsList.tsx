@@ -88,7 +88,95 @@ const CVsList = () => {
   };
 
   const handleDownload = async (cvId: string) => {
-    toast.info('Download functionality coming soon!');
+    try {
+      // Show loading state
+      const downloadButton = document.querySelector(`[data-cv-id="${cvId}"] .download-button`) as HTMLButtonElement;
+      if (downloadButton) {
+        downloadButton.disabled = true;
+        downloadButton.innerHTML = '<div class="animate-spin h-3 w-3 mr-1">⏳</div> Generating...';
+      }
+
+      // Check server health first
+      try {
+        const healthController = new AbortController();
+        const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
+        
+        const healthResponse = await fetch('http://localhost:3001/health', { 
+          signal: healthController.signal 
+        });
+        
+        clearTimeout(healthTimeoutId);
+        
+        if (!healthResponse.ok) {
+          throw new Error('PDF server is not responding');
+        }
+        const healthData = await healthResponse.json();
+        console.log('PDF server health:', healthData);
+      } catch (healthError) {
+        if (healthError instanceof Error && healthError.name === 'AbortError') {
+          throw new Error('PDF server health check timed out. Please ensure the PDF backend server is running on port 3001.');
+        }
+        throw new Error('PDF server is not available. Please ensure the PDF backend server is running on port 3001.');
+      }
+
+      // Get the cookie value dynamically
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('isLoggedIn='))
+        ?.split('=')[1];
+      
+      if (!cookieValue) {
+        throw new Error('Authentication token not found. Please log in again.');
+      }
+      
+      // Use the preview page URL with the selected template
+      const previewUrl = `${window.location.origin}/resumes/${cvId}/preview?template=${selectedTemplate}`;
+      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
+      
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      
+      const response = await fetch(pdfUrl, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to generate PDF: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resume_${cvId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('PDF downloaded successfully!');
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        toast.error('PDF generation timed out. Please try again.');
+      } else {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        toast.error(`Failed to generate PDF: ${errorMessage}`);
+      }
+    } finally {
+      // Reset button state
+      const downloadButton = document.querySelector(`[data-cv-id="${cvId}"] .download-button`) as HTMLButtonElement;
+      if (downloadButton) {
+        downloadButton.disabled = false;
+        downloadButton.innerHTML = '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Download';
+      }
+    }
   };
 
   const handleCreateFirstCV = () => {
@@ -154,7 +242,7 @@ const CVsList = () => {
           </div>
         ) : (
           displayedCVs.map((cv) => (
-            <div key={cv.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+            <div key={cv.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow duration-200" data-cv-id={cv.id}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -219,7 +307,7 @@ const CVsList = () => {
                   size="sm" 
                   variant="outline"
                   onClick={() => handleDownload(cv.id)}
-                  className="hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+                  className="download-button hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Download
