@@ -41,6 +41,8 @@ const GithubProfile = () => {
         setError("Please connect your GitHub account to view your profile.");
         // Update the user's GitHub connection status to false when no data is available
         updateGithubConnection(false);
+        console.error("Error fetching GitHub profile data:", err);
+        toast.error(err.response.data.message);
       } else {
         toast.error("Failed to refresh GitHub profile. Please try again.");
       }
