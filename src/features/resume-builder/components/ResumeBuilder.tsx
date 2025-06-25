@@ -95,26 +95,88 @@ const ResumeBuilder: React.FC = () => {
   // Replace handleDownloadPdf with Puppeteer backend download
   const downloadResumePdf = async () => {
     if (!resume) return;
-    // Get the cookie value dynamically
-    const cookieValue = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('isLoggedIn='))
-      ?.split('=')[1];
-    const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(window.location.href)}&cookie=${cookieValue}`;
-    const response = await fetch(pdfUrl);
-    if (!response.ok) {
-      alert('Failed to generate PDF');
-      return;
+    
+    try {
+      // Show loading state
+      const downloadButton = document.querySelector('[title="Download PDF (Server)"]') as HTMLButtonElement;
+      if (downloadButton) {
+        downloadButton.disabled = true;
+        downloadButton.innerHTML = '<div class="animate-spin h-4 w-4 mr-2">⏳</div> Generating...';
+      }
+
+      // Check server health first
+      try {
+        const healthController = new AbortController();
+        const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
+        
+        const healthResponse = await fetch('http://localhost:3001/health', { 
+          signal: healthController.signal 
+        });
+        
+        clearTimeout(healthTimeoutId);
+        
+        if (!healthResponse.ok) {
+          throw new Error('PDF server is not responding');
+        }
+        const healthData = await healthResponse.json();
+        console.log('PDF server health:', healthData);
+      } catch (healthError) {
+        if (healthError instanceof Error && healthError.name === 'AbortError') {
+          throw new Error('PDF server health check timed out. Please ensure the PDF backend server is running on port 3001.');
+        }
+        throw new Error('PDF server is not available. Please ensure the PDF backend server is running on port 3001.');
+      }
+
+      // Get the cookie value dynamically
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('isLoggedIn='))
+        ?.split('=')[1];
+      
+      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(window.location.href)}&cookie=${cookieValue}`;
+      
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+      
+      const response = await fetch(pdfUrl, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to generate PDF: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resume_${resume.id || 'download'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        alert('PDF generation timed out. Please try again.');
+      } else {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        alert(`Failed to generate PDF: ${errorMessage}`);
+      }
+    } finally {
+      // Reset button state
+      const downloadButton = document.querySelector('[title="Download PDF (Server)"]') as HTMLButtonElement;
+      if (downloadButton) {
+        downloadButton.disabled = false;
+        downloadButton.innerHTML = '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Download PDF (Server)';
+      }
     }
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'resume.pdf';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
   };
 
   const handleTitleEdit = () => {
