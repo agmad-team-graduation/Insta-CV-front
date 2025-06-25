@@ -5,22 +5,52 @@
     <script>
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
+      const isLogin = urlParams.get("isLogin");
 
       if (code) {
-        fetch(`http://localhost:8080/api/github/test/callback?code=${code}`)
+        if (!isLogin){
+          fetch(`http://localhost:8080/api/github/test/callback?code=${code}`)
+            .then(res => res.json())
+            .then(data => {
+              // Send token response back to main window
+              window.opener.postMessage({ githubToken: data.access_token }, window.origin);
+              setTimeout(() => {
+                window.close();
+              }, 250);
+            })
+            .catch(() => {
+              window.opener.postMessage({ error: "GitHub callback failed" }, window.origin);
+              setTimeout(() => {
+                window.close();
+              }, 250);
+            });
+        }
+        else {
+           fetch(`http://localhost:8080/api/github/test/login-callback?code=${code}`)
           .then(res => res.json())
           .then(data => {
-            // Send token response back to main window
-            window.opener.postMessage({ githubToken: data.access_token }, window.origin);
-            window.close();
+            // Send login response back to main window
+            window.opener.postMessage({ 
+              user: data.user,
+              token: data.token,
+              expiresIn: data.expiresIn
+            }, window.origin);
+            setTimeout(() => {
+              window.close();
+            }, 250);
           })
           .catch(() => {
-            window.opener.postMessage({ error: "GitHub callback failed" }, window.origin);
-            window.close();
+            window.opener.postMessage({ error: "GitHub login failed" }, window.origin);
+            setTimeout(() => {
+              window.close();
+            }, 250);
           });
+        }
       } else {
         window.opener.postMessage({ error: "Missing code in callback" }, window.origin);
-        window.close();
+        setTimeout(() => {
+          window.close();
+        }, 250);
       }
     </script>
   </body>

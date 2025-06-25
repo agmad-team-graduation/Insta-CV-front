@@ -12,7 +12,7 @@ import PersonalDetailsSection from "@/features/profile/components/PersonalDetail
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/common/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { useBlocker } from "../../../useBlocker";
-import { Upload } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -27,6 +27,8 @@ const Profile = () => {
   const [uploadingCV, setUploadingCV] = useState(false);
   const [selectedCVFile, setSelectedCVFile] = useState(null);
   const [showCVUploadDialog, setShowCVUploadDialog] = useState(false);
+  const [showUploadProgress, setShowUploadProgress] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -147,8 +149,21 @@ const Profile = () => {
 
     try {
       setUploadingCV(true);
+      setShowUploadProgress(true);
+      setUploadProgress(0);
+      
       const formData = new FormData();
       formData.append('file', selectedCVFile);
+
+      // Start progress simulation immediately
+      const startTime = Date.now();
+      const maxDuration = 20000; // 20 seconds
+      
+      const progressInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min((elapsed / maxDuration) * 100, 95); // Cap at 95% until response
+        setUploadProgress(progress);
+      }, 100);
 
       const response = await apiClient.post(`/api/v1/profiles/upload-cv?overwrite=${shouldOverwrite}`, formData, {
         headers: {
@@ -156,14 +171,24 @@ const Profile = () => {
         },
       });
 
-      // Refresh profile data after successful upload
-      const profileResponse = await apiClient.get("/api/v1/profiles/me");
-      setProfileData(profileResponse.data);
+      // Clear interval and set progress to 100%
+      clearInterval(progressInterval);
+      setUploadProgress(100);
       
-      toast.success('CV uploaded successfully! Profile updated.');
+      // Small delay to show 100% completion
+      setTimeout(async () => {
+        // Refresh profile data after successful upload
+        const profileResponse = await apiClient.get("/api/v1/profiles/me");
+        setProfileData(profileResponse.data);
+        
+        toast.success('CV uploaded successfully! Profile updated.');
+        setShowUploadProgress(false);
+      }, 500);
+      
     } catch (error) {
       console.error('Error uploading CV:', error);
       toast.error('Failed to upload CV. Please try again.');
+      setShowUploadProgress(false);
     } finally {
       setUploadingCV(false);
       setSelectedCVFile(null);
@@ -443,6 +468,61 @@ const Profile = () => {
               Overwrite Current Profile
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* CV Upload Progress Modal */}
+      <Dialog open={showUploadProgress} onOpenChange={(open) => {
+        if (!open) {
+          setShowUploadProgress(false);
+        }
+      }}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <div className="relative">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50" />
+            
+            {/* Content */}
+            <div className="relative p-8">
+              <div className="text-center">
+                {/* Animated Icon */}
+                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                  <Loader2 className="h-10 w-10 text-white animate-spin" />
+                </div>
+                
+                {/* Title and Description */}
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Processing Your CV
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  We're analyzing your CV and extracting your professional information...
+                </p>
+                
+                {/* Progress Bar */}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Progress</span>
+                    <span>{Math.round(uploadProgress)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Status Messages */}
+                <div className="mt-6 text-sm text-gray-500">
+                  {uploadProgress < 30 && "Uploading CV file..."}
+                  {uploadProgress >= 30 && uploadProgress < 60 && "Parsing document content..."}
+                  {uploadProgress >= 60 && uploadProgress < 90 && "Extracting professional information..."}
+                  {uploadProgress >= 90 && uploadProgress < 100 && "Finalizing your profile..."}
+                  {uploadProgress >= 100 && "Profile updated successfully!"}
+                </div>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

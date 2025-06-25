@@ -13,6 +13,7 @@ const AuthContext = createContext({
     user: null,
     loading: false,
     handleSubmit: () => {},
+    handleGitHubLogin: () => {},
 });
 
 export const LoginProvider = ({ children }) => {
@@ -39,7 +40,6 @@ export const LoginProvider = ({ children }) => {
         
         try {
             const { data } = await apiClient.post('/api/v1/auth/login', userData);
-
             // Store token and user data
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
             setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
@@ -73,6 +73,69 @@ export const LoginProvider = ({ children }) => {
         }
     };
 
+    const handleGitHubLogin = async () => {
+        try {
+            const response = await apiClient.get("/api/github/test/authorize?isLogin=true");
+            const authUrl = response.data.authLink;
+      
+            const popup = window.open(authUrl, "_blank", "width=500,height=600");
+      
+            if (!popup) {
+                toast.error("Popup blocked! Please allow popups for this site.");
+                return;
+            }
+      
+            window.addEventListener(
+                "message",
+                async (event) => {
+                    if (event.origin !== window.location.origin) return;
+      
+                    const { token, expiresIn, user, error } = event.data;
+                    console.log("token", token);
+                    console.log("expiresIn", expiresIn);
+                    console.log("user", user);
+      
+                    if (error) {
+                        toast.error(error);
+                        return;
+                    }
+      
+                    if (user && token) {
+                        // Store token and user data
+                        setCookie('isLoggedIn', token, { path: '/', maxAge: parseInt(expiresIn, 10) });
+                        
+                        // Fetch user data
+                        try {
+                            // const { data: userData } = await apiClient.get('/api/v1/auth/me');
+                            setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
+                            setUser(user);
+
+                            // If user has a photo, update the global store
+                            if (user.photoUrl) {
+                                updateUserPhoto(user.photoUrl);
+                            }
+
+                            // Check if user has a profile
+                            if (user.profileCreated) {
+                                toast.success('GitHub login successful!');
+                                navigate('/dashboard');
+                            } else {
+                                toast.success('GitHub login successful! Please complete your profile.');
+                                navigate('/profile-flow');
+                            }
+                        } catch (err) {
+                            console.error('Error fetching user data:', err);
+                            toast.error('Login successful but failed to fetch user data.');
+                        }
+                    }
+                },
+                { once: true }
+            );
+        } catch (error) {
+            toast.error("Failed to connect to GitHub. Please try again.");
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -83,6 +146,7 @@ export const LoginProvider = ({ children }) => {
                 user,
                 loading,
                 handleSubmit,
+                handleGitHubLogin,
             }}
         >
             {children}

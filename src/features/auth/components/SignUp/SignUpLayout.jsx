@@ -2,8 +2,12 @@
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/common/components/ui/button";
+import { Github } from "lucide-react";
+import { UseAuth } from "../../context/ContextSignUp";
 
 export function SignUpLayout({ children }) {
+  const { handleGitHubSignup } = UseAuth();
+
   return (
     <div className="w-full flex flex-col md:flex-row min-h-screen bg-white overflow-hidden">
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8">
@@ -23,9 +27,18 @@ export function SignUpLayout({ children }) {
             <div className="w-full h-px bg-gray-300" />
           </div>
           
-          <div>
+          <div className="space-y-3">
             <Button
-              className="w-90 justify-center gap-3 rounded-xl text-white hover:bg-[#4750a0] text-base font-medium shadow-sm"
+              className="w-full justify-center gap-3 rounded-xl text-white hover:bg-gray-800 text-base font-medium shadow-sm"
+              style={{ background: "#24292e" }}
+              onClick={handleGitHubSignup}
+            >
+              <Github className="w-5 h-5" />
+              Sign up with GitHub
+            </Button>
+            
+            <Button
+              className="w-full justify-center gap-3 rounded-xl text-white hover:bg-[#4750a0] text-base font-medium shadow-sm"
               style={{ background: "#505ABB" }}
               onClick={() => window.location.href = "http://localhost:8080/api/auth/oauth2/authorize/google"}
             >
