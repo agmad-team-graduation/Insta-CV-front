@@ -22,7 +22,7 @@
             });
         }
         else {
-           fetch(`https://instacv-backend-production.up.railway.app/github/test/login-callback?code=${code}`)
+           fetch(`https://instacv-backend-production.up.railway.app/api/github/test/login-callback?code=${code}`)
           .then(res => res.json())
           .then(data => {
             // Send login response back to main window
