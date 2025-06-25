@@ -6,10 +6,24 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import apiClient from '@/common/utils/apiClient';
+import useResumeStore from '@/features/resume-builder/store/resumeStore';
+
+interface CV {
+  id: string;
+  name: string;
+  createdDate: string;
+  tailoredFor: string;
+  company: string;
+  matchScore: number;
+  status: string;
+  downloads: number;
+  views: number;
+}
 
 const CVsList = () => {
   const navigate = useNavigate();
-  const [cvs, setCvs] = useState([]);
+  const { selectedTemplate } = useResumeStore();
+  const [cvs, setCvs] = useState<CV[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch CVs from API (same as Dashboard.jsx)
@@ -19,7 +33,7 @@ const CVsList = () => {
       const cvsData = response.data || [];
       
       // Transform CVs data to match dashboard format (same as Dashboard.jsx)
-      const transformedCVs = cvsData.map(cv => ({
+      const transformedCVs: CV[] = cvsData.map((cv: any) => ({
         id: cv.id,
         name: cv.cvTitle || `Resume #${cv.id}`,
         createdDate: cv.createdAt || cv.createdDate,
@@ -60,12 +74,13 @@ const CVsList = () => {
     return 'text-red-600';
   };
 
-  const handleCreateNew = () => {
+  const handleShowMore = () => {
     navigate('/resumes');
   };
 
   const handlePreview = (cvId: string) => {
-    navigate(`/resumes/${cvId}`);
+    // Open preview in new tab with template parameter
+    window.open(`/resumes/${cvId}/preview?template=${selectedTemplate}`, '_blank');
   };
 
   const handleEdit = (cvId: string) => {
@@ -77,23 +92,25 @@ const CVsList = () => {
   };
 
   const handleCreateFirstCV = () => {
-    navigate('/resumes');
+    navigate('/resumes?create=true');
   };
+
+  // Show only first 3 CVs
+  const displayedCVs = cvs.slice(0, 3);
 
   if (loading) {
     return (
       <Card className="border-0 shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle className="flex items-center justify-between">
             <span className="text-lg font-semibold">Your CVs</span>
             <Button 
               variant="outline" 
               size="sm"
-              onClick={handleCreateNew}
+              onClick={handleShowMore}
               className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              Create New
+              Show More
             </Button>
           </CardTitle>
         </CardHeader>
@@ -108,17 +125,16 @@ const CVsList = () => {
 
   return (
     <Card className="border-0 shadow-sm">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="flex items-center justify-between">
           <span className="text-lg font-semibold">Your CVs</span>
           <Button 
             variant="outline" 
             size="sm"
-            onClick={handleCreateNew}
+            onClick={handleShowMore}
             className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
           >
-            <FileText className="w-4 h-4 mr-2" />
-            Create New
+            Show More
           </Button>
         </CardTitle>
       </CardHeader>
@@ -131,13 +147,13 @@ const CVsList = () => {
               variant="link" 
               size="default"
               className="text-blue-600"
-              onClick={handleCreateNew}
+              onClick={handleCreateFirstCV}
             >
               Create your first CV
             </Button>
           </div>
         ) : (
-          cvs.map((cv) => (
+          displayedCVs.map((cv) => (
             <div key={cv.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
@@ -213,7 +229,24 @@ const CVsList = () => {
           ))
         )}
         
-        {cvs.length > 0 && (
+        {cvs.length > 3 && (
+          <div className="text-center py-4 border-t">
+            <p className="text-sm text-gray-500 mb-2">
+              Showing 3 of {cvs.length} CVs
+            </p>
+            <Button 
+              onClick={handleCreateFirstCV}
+              variant="default"
+              size="default"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Create a new resume
+            </Button>
+          </div>
+        )}
+        
+        {cvs.length > 0 && cvs.length <= 3 && (
           <div className="text-center py-4 border-t">
             <p className="text-sm text-gray-500 mb-2">
               AI-powered CV optimization ready when you are

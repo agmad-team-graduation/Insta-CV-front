@@ -11,7 +11,7 @@ const QuickActions = () => {
   const [showAddJobDialog, setShowAddJobDialog] = useState(false);
 
   const handleGenerateAICV = () => {
-    navigate('/resumes');
+    navigate('/resumes?create=true');
     toast.info('Redirecting to CV builder...');
   };
 

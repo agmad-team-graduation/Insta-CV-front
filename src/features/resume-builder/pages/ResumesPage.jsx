@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
 import { Card, CardContent } from "@/common/components/ui/card";
 import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType, FileUp, User, Briefcase, Pencil } from 'lucide-react';
@@ -79,6 +79,7 @@ const ResumesPage = () => {
   const [editingTitleId, setEditingTitleId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { createNewResume } = useResumeStore();
 
   // Calculate pagination values
@@ -98,6 +99,16 @@ const ResumesPage = () => {
   useEffect(() => {
     fetchResumes();
   }, []); // Only fetch once since we have all data
+
+  // Check for create query parameter and open dialog automatically
+  useEffect(() => {
+    const shouldCreate = searchParams.get('create');
+    if (shouldCreate === 'true') {
+      setShowCreateDialog(true);
+      // Remove the query parameter from URL
+      navigate('/resumes', { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   const fetchResumes = async () => {
     try {
