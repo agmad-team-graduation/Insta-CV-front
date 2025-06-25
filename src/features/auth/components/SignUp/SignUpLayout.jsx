@@ -40,7 +40,7 @@ export function SignUpLayout({ children }) {
             <Button
               className="w-full justify-center gap-3 rounded-xl text-white hover:bg-[#4750a0] text-base font-medium shadow-sm"
               style={{ background: "#505ABB" }}
-              onClick={() => window.location.href = "http://localhost:8080/api/auth/oauth2/authorize/google"}
+              onClick={() => window.location.href = "https://instacv-backend-production.up.railway.app/api/auth/oauth2/authorize/google"}
             >
               <FcGoogle className="w-5 h-5" />
               Sign up with your Google account
