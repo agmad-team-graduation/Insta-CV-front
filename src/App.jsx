@@ -1,13 +1,11 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import { SignUp } from './features/auth/components/SignUp';
 import { SignUpProvider } from './features/auth/context/ContextSignUp';
 import { LoginProvider } from './features/auth/context/ContextLogin';
 import { Login } from './features/auth/components/Login';
 import "@/common/styles/App.css";
-import Navbar from "@/common/components/layout/Navbar";
 import LandingPage from "./pages/LandingPage"
 import Footer from '@/common/components/layout/Footer';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './dashboard/pages/Index';
 import JobDetailsPage from './features/jobs/components/JobDetails/JobDetailsPage';
 import { useCookies } from 'react-cookie';
 import JobsPage from './features/jobs/components/AllJobs/JobsPage';
@@ -25,21 +23,18 @@ import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
 import ResumesPage from './features/resume-builder/pages/ResumesPage';
 import ResumePreviewPage from './features/resume-builder/pages/ResumePreviewPage';
 import ProfileFlow from './features/profile/pages/ProfileFlow';
+import SignUp from './features/auth/components/SignUp/signup';
 
 
-// Array of paths where we want to show navbar and footer
-const NavbarFooterRoutes = ['/signup'];
 
 // Create a wrapper component to use useLocation hook
 function AppContent() {
   const location = useLocation();
-  const shouldShowNavbarFooter = NavbarFooterRoutes.includes(location.pathname);
   const [cookies] = useCookies(['isLoggedIn']);
   
   return (
     <>
       <Toaster />
-      {shouldShowNavbarFooter && <Navbar />}
       <div className="content">
         <Routes>
           <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />
@@ -77,7 +72,6 @@ function AppContent() {
           </Route>
         </Routes>
       </div>
-      {shouldShowNavbarFooter && <Footer />}
     </>
   );
 }

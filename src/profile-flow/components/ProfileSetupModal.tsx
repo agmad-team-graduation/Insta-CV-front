@@ -21,7 +21,6 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
   
   // Get user name from either the global store or cookies
   const getUserName = () => {
-    console.log("user", user);
     if (user?.name) return user.name;
     if (cookies.user?.name) return cookies.user.name;
     return '';
