@@ -4,6 +4,8 @@ import JobsGrid from '../components/JobsGrid';
 import CVsList from '../components/CVsList';
 import QuickActions from '../components/QuickActions';
 
+console.log("A&aaa")
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">

@@ -4,28 +4,32 @@ import { Button } from '@/common/components/ui/button';
 import { Building, MapPin, Clock, Target, ExternalLink, Briefcase, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
-
-const response = await apiClient.get('/api/v1/jobs/all');
-const jobs: Array<{
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  posted: string;
-  salary: string;
-  matchPercentage: number;
-  hardSkills: Array<{ id: string; skill: string }>;
-  skillMatchingAnalysis: { matchedSkills: string[] };
-}> = response.data.content;
-console.log(jobs[0]);
 
 const JobsGrid = () => {
   const navigate = useNavigate();
   const { generateCVForJob, isGenerating } = useResumeStore();
   const [generatingJobId, setGeneratingJobId] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      try {
+        const response = await apiClient.get('/api/v1/jobs/all');
+        setJobs(response.data.content || []);
+      } catch (error) {
+        setJobs([]);
+        toast.error('Failed to load jobs.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
 
   const calculateMatchPercentage = (job: any) => {
     const totalSkills = job.hardSkills.length;
@@ -89,7 +93,12 @@ const JobsGrid = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {jobs.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-64">
+            <Loader className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+            <p className="text-gray-600">Loading jobs...</p>
+          </div>
+        ) : jobs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-400" />
             <p className="text-sm">No saved jobs yet.</p>
@@ -149,7 +158,7 @@ const JobsGrid = () => {
                 <div className="space-y-2">
                   <div className="text-xs text-gray-500 text-left">Required Skills:</div>
                   <div className="flex flex-wrap gap-1">
-                    {job.hardSkills.map((skillObj) => (
+                    {job.hardSkills.map((skillObj: any) => (
                       <Badge 
                         key={skillObj.id} 
                         variant={job.skillMatchingAnalysis.matchedSkills.includes(skillObj.skill) ? "default" : "secondary"}

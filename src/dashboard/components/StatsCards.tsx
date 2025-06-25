@@ -2,27 +2,39 @@ import { Card, CardContent } from '@/common/components/ui/card';
 import apiClient from '@/common/utils/apiClient';
 import { FileText , Briefcase, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-let stats = [];
-
-try {
-  const response = await apiClient.get('/api/dashboard/stats');
-  stats = response.data.stats;
-  stats[0].icon = FileText;
-  stats[0].color = 'from-blue-500 to-blue-600';
-  stats[0].bgColor = 'bg-blue-50';
-  stats[1].icon = Briefcase;
-  stats[1].color = 'from-green-500 to-green-600';
-  stats[1].bgColor = 'bg-green-50';
-  stats[2].icon = Target;
-  stats[2].color = 'from-purple-500 to-purple-600';
-  stats[2].bgColor = 'bg-purple-50';
-} catch (error) {
-  console.error(error);
-}
+import { useEffect, useState } from 'react';
 
 const StatsCards = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      try {
+        const response = await apiClient.get('/api/dashboard/stats');
+        const statsData = response.data.stats || [];
+        if (statsData[0]) {
+          statsData[0].icon = FileText;
+          statsData[0].color = 'from-blue-500 to-blue-600';
+          statsData[0].bgColor = 'bg-blue-50';
+        }
+        if (statsData[1]) {
+          statsData[1].icon = Briefcase;
+          statsData[1].color = 'from-green-500 to-green-600';
+          statsData[1].bgColor = 'bg-green-50';
+        }
+        setStats(statsData);
+      } catch (error) {
+        setStats([]);
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const handleCardClick = (statTitle: string) => {
     switch (statTitle.toLowerCase()) {
@@ -41,9 +53,13 @@ const StatsCards = () => {
     }
   };
 
+  if (loading) {
+    return <div className="text-center py-8 text-gray-500">Loading stats...</div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {stats.slice(0, 2).map((stat, index) => (
+      {stats.slice(0, 2).map((stat: any, index: number) => (
         <Card 
           key={index} 
           className="hover:shadow-lg transition-all duration-200 border-0 shadow-sm cursor-pointer transform hover:scale-105"
