@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon } from 'lucide-react';
+import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
@@ -27,7 +27,7 @@ const ResumeBuilder: React.FC = () => {
   } = useResumeStore();
 
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
-  const [previewMode, setPreviewMode] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -302,28 +302,15 @@ const ResumeBuilder: React.FC = () => {
                 </div>
               )}
 
-              <button
-                onClick={() => setPreviewMode(!previewMode)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${previewMode
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                  }`}
-                title={previewMode ? 'Exit Preview' : 'Preview Mode'}
-              >
-                <EyeIcon size={18} />
-                <span className="hidden sm:inline">
-                  {previewMode ? 'Exit Preview' : 'Preview'}
-                </span>
-              </button>
-
-              {/* View Preview Page Button */}
+              {/* Preview Button */}
               <button
                 onClick={() => window.open(`/resumes/${resume.id}/preview?template=${selectedTemplate}`, '_blank')}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-green-600 hover:text-green-900 hover:bg-green-50 transition-colors"
-                title="View Preview Page"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                title="Preview resume in new tab (Use Ctrl+P for custom print)"
               >
                 <EyeIcon size={18} />
-                <span className="hidden sm:inline">View Preview</span>
+                <span className="hidden sm:inline">Preview Page</span>
+                <InfoIcon size={14} className="text-gray-500" />
               </button>
 
               {/* Download PDF (Server) Button */}
@@ -332,7 +319,7 @@ const ResumeBuilder: React.FC = () => {
                 className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors"
                 title="Download PDF (Server)"
               >
-                <DownloadIcon size={18} /> Download PDF (Server)
+                <DownloadIcon size={18} /> Download PDF
               </button>
             </div>
           </div>
@@ -340,10 +327,19 @@ const ResumeBuilder: React.FC = () => {
 
         {/* Main content area */}
         <main className="flex-1 flex justify-center items-start py-8 px-80">
-          <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden">
+          <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden relative">
+            {/* Sidebar toggle button - always in the same position */}
+            <button
+              onClick={() => setSidebarVisible(!sidebarVisible)}
+              className="absolute -top-2 -left-2 z-20 flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
+              title={sidebarVisible ? 'Hide Sidebar' : 'Show Sidebar'}
+            >
+              {sidebarVisible ? <ChevronLeftIcon size={16} className="text-gray-600" /> : <ChevronRightIcon size={16} className="text-gray-600" />}
+            </button>
+
             {/* Left sidebar */}
-            {!previewMode && (
-              <aside className="w-full lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
+            {sidebarVisible && (
+              <aside className="w-full mt-8 lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
                 {/* Tabs */}
                 <div className="flex-none flex border-b border-gray-200">
                   <button
@@ -386,7 +382,7 @@ const ResumeBuilder: React.FC = () => {
             )}
 
             {/* Preview area */}
-            <div className={`flex-1 p-4 md:p-8 overflow-auto bg-white ${previewMode ? 'flex justify-center' : ''}`}>
+            <div className={`flex-1 p-4 mt-8 md:p-8 overflow-auto bg-white relative ${!sidebarVisible ? 'flex justify-center' : ''}`}>
               <ResumePreview resume={resume} />
             </div>
           </div>
