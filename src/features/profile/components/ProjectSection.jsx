@@ -39,12 +39,14 @@ const ProjectItem = ({ title, duration, present, description, skills, url }) => 
             )}
           </div>
         </div>
-        {/* Right: Date range badge */}
-        <div className="flex-shrink-0">
-          <span className="bg-gray-100 text-gray-700 rounded-lg px-4 py-2 text-base font-medium">
-            {duration.startDate} - {duration.endDate}
-          </span>
-        </div>
+        {/* Right: Date range badge - only show if there are dates */}
+        {duration?.displayText && (
+          <div className="flex-shrink-0">
+            <span className="bg-gray-100 text-gray-700 rounded-lg px-4 py-2 text-base font-medium">
+              {duration.displayText}
+            </span>
+          </div>
+        )}
       </div>
     </CardContent>
   </Card>
