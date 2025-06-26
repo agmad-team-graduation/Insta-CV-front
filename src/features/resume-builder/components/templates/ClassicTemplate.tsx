@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatInstitutionLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
@@ -89,7 +89,7 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </span>
                     </div>
-                    <p className="text-gray-700">{education.school}, {education.city}, {education.country}</p>
+                    <p className="text-gray-700">{formatInstitutionLocation(education.school, education.city, education.country)}</p>
                     {education.description && (
                       <p className="text-gray-600 mt-2">{education.description}</p>
                     )}
@@ -106,7 +106,7 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
                           {formatDateRange(experience.startDate, experience.endDate, experience.present)}
                         </span>
                       </div>
-                      <p className="text-gray-700">{experience.company}, {experience.city}, {experience.country}</p>
+                      <p className="text-gray-700">{formatInstitutionLocation(experience.company, experience.city, experience.country)}</p>
                       {experience.description && (
                         <p className="text-gray-600 mt-2">{experience.description}</p>
                       )}

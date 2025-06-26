@@ -65,4 +65,34 @@ export const toTitleCase = (str: string) => {
     .replace(/([a-z])([A-Z])/g, '$1 $2') // Convert camelCase to spaces
     .replace(/_/g, ' ') // Convert snake_case to spaces
     .replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+};
+
+/**
+ * Format location string, handling missing city or country
+ */
+export const formatLocation = (city: string, country: string): string => {
+  const hasCity = city && city.trim() !== '';
+  const hasCountry = country && country.trim() !== '';
+  
+  if (hasCity && hasCountry) {
+    return `${city}, ${country}`;
+  } else if (hasCity) {
+    return city;
+  } else if (hasCountry) {
+    return country;
+  } else {
+    return '';
+  }
+};
+
+/**
+ * Format education/experience location with institution/company
+ */
+export const formatInstitutionLocation = (institution: string, city: string, country: string): string => {
+  const location = formatLocation(city, country);
+  if (location) {
+    return `${institution}, ${location}`;
+  } else {
+    return institution;
+  }
 }; 

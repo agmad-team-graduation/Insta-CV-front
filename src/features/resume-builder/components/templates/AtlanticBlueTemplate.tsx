@@ -1,7 +1,7 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
-import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, GlobeIcon, AwardIcon, UserIcon } from 'lucide-react';
+import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
 import apiClient from '@/common/utils/apiClient';
 
@@ -16,6 +16,7 @@ type SummarySection = {
 const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
   const [photoUrl, setPhotoUrl] = React.useState<string | null>(null);
   const [hasPhoto, setHasPhoto] = React.useState(false);
+  const [photoDataUrl, setPhotoDataUrl] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchPhoto = async () => {
@@ -25,12 +26,56 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
           const photoResponse = await apiClient.get('/api/users/photo');
           setPhotoUrl(photoResponse.data.photoUrl);
           setHasPhoto(true);
+          
+          // Convert image to base64 for PDF compatibility
+          try {
+            const response = await fetch(photoResponse.data.photoUrl);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setPhotoDataUrl(reader.result as string);
+            };
+            reader.readAsDataURL(blob);
+          } catch (error) {
+            console.error('Error converting image to base64:', error);
+          }
         }
       } catch (error) {
         console.error('Error fetching photo:', error);
       }
     };
     fetchPhoto();
+  }, []);
+
+  // Add CSS for PDF printing
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @media print {
+        .pdf-image {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          print-color-adjust: exact !important;
+          -webkit-print-color-adjust: exact !important;
+          border-radius: 50% !important;
+          overflow: hidden !important;
+          border: none !important;
+          outline: none !important;
+        }
+        .pdf-image-container {
+          border-radius: 50% !important;
+          overflow: hidden !important;
+          border: none !important;
+          outline: none !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   // Sort sections by their orderIndex
@@ -52,12 +97,36 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
       <div className="w-1/3 bg-slate-800 text-white p-8">
         {/* Header with name and title */}
         <div className="text-center mb-8">
-          <div className="w-32 h-32 bg-slate-600 rounded-full mx-auto mb-4 overflow-hidden">
-            {hasPhoto && photoUrl ? (
+          <div className="w-32 h-32 bg-slate-800 rounded-full mx-auto mb-4 overflow-hidden pdf-image-container">
+            {hasPhoto && (photoDataUrl || photoUrl) ? (
               <img 
-                src={photoUrl} 
+                src={photoDataUrl || photoUrl || ''} 
                 alt={resume.personalDetails.fullName}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover pdf-image"
+                style={{ 
+                  printColorAdjust: 'exact',
+                  WebkitPrintColorAdjust: 'exact',
+                  colorAdjust: 'exact',
+                  display: 'block',
+                  visibility: 'visible',
+                  border: 'none',
+                  outline: 'none',
+                  borderRadius: '50%',
+                  overflow: 'hidden'
+                }}
+                crossOrigin="anonymous"
+                onLoad={() => {
+                  // Force re-render after image loads
+                  setTimeout(() => {
+                    const img = document.querySelector('.pdf-image') as HTMLImageElement;
+                    if (img) {
+                      img.style.display = 'block';
+                      img.style.visibility = 'visible';
+                      img.style.border = 'none';
+                      img.style.outline = 'none';
+                    }
+                  }, 100);
+                }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -100,55 +169,6 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
             </div>
           );
         })}
-
-        {/* Languages Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <GlobeIcon size={20} className="mr-3 text-slate-300" />
-            <h2 className="text-lg font-bold text-white">LANGUAGES</h2>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-slate-300 text-sm">English</span>
-              </div>
-              <div className="flex space-x-1">
-                {[1, 2, 3, 4, 5].map((dot) => (
-                  <div key={dot} className="w-2 h-2 rounded-full bg-slate-300"></div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-slate-300 text-sm">Spanish</span>
-              </div>
-              <div className="flex space-x-1">
-                {[1, 2, 3, 4].map((dot) => (
-                  <div key={dot} className="w-2 h-2 rounded-full bg-slate-300"></div>
-                ))}
-                <div className="w-2 h-2 rounded-full bg-slate-600"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Awards Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <AwardIcon size={20} className="mr-3 text-slate-300" />
-            <h2 className="text-lg font-bold text-white">AWARDS</h2>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-slate-300 font-semibold text-sm">Outstanding Business Student Award</h3>
-              <p className="text-slate-400 text-xs">University of Southern California, 2014</p>
-            </div>
-            <div>
-              <h3 className="text-slate-300 font-semibold text-sm">Dean's List</h3>
-              <p className="text-slate-400 text-xs">University of California, Los Angeles, 2015-2016</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Main Content */}
@@ -201,7 +221,7 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                       </span>
                     </div>
                     <p className="text-slate-700 font-medium">{education.school}</p>
-                    <p className="text-slate-600 text-sm">{education.city}, {education.country}</p>
+                    <p className="text-slate-600 text-sm">{formatLocation(education.city, education.country)}</p>
                     {education.description && (
                       <p className="text-slate-600 mt-2 text-sm">{education.description}</p>
                     )}
@@ -218,7 +238,7 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                       </span>
                     </div>
                     <p className="text-slate-700 font-medium">{experience.company}</p>
-                    <p className="text-slate-600 text-sm mb-3">{experience.city}, {experience.country}</p>
+                    <p className="text-slate-600 text-sm mb-3">{formatLocation(experience.city, experience.country)}</p>
                     {experience.description && (
                       <div className="text-slate-600 text-sm">
                         {experience.description.split('\n').map((line: string, index: number) => (
@@ -264,13 +284,11 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 })}
                 
                 {key === 'skill' && (
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3">
                     {sortedItems.map((skill: any) => (
-                      <div key={skill.id} className="flex items-start">
+                      <div key={skill.id} className="flex items-center">
                         <span className="text-slate-400 mr-2">•</span>
-                        <div>
-                          <span className="text-slate-800 font-medium">{skill.skill}</span>
-                        </div>
+                        <span className="text-slate-800 font-medium">{skill.skill}</span>
                       </div>
                     ))}
                   </div>

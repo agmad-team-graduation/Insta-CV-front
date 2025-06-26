@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
@@ -35,7 +35,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <h1 className="text-4xl font-bold mb-2">{resume.personalDetails.fullName}</h1>
             <div className="flex items-center text-green-100">
               <MapPinIcon size={16} className="mr-2" />
-              <span className="text-lg">{resume.personalDetails.address}</span>
+              <span className="text-lg">{formatLocation(resume.personalDetails.address)}</span>
             </div>
           </div>
           <div className="text-right">
@@ -101,7 +101,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     <div key={education.id} className="bg-green-50 rounded-lg p-3">
                       <h3 className="font-semibold text-gray-800 text-sm">{education.degree}</h3>
                       <p className="text-gray-600 text-sm">{education.school}</p>
-                      <p className="text-gray-500 text-xs">{education.city}, {education.country}</p>
+                      <p className="text-gray-500 text-xs">{formatLocation(education.city, education.country)}</p>
                       <p className="text-green-700 text-xs font-medium mt-1">
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </p>
@@ -169,7 +169,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                         </span>
                       </div>
                       <p className="text-gray-700 font-medium">{experience.company}</p>
-                      <p className="text-gray-500 text-sm">{experience.city}, {experience.country}</p>
+                      <p className="text-gray-500 text-sm">{formatLocation(experience.city, experience.country)}</p>
                       {experience.description && (
                         <p className="text-gray-600 mt-2 leading-relaxed">{experience.description}</p>
                       )}

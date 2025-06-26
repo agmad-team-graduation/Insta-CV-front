@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateRange } from '../../utils/formatters';
+import { formatDateRange, formatInstitutionLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
 
@@ -80,7 +80,7 @@ const Harvard2Template: React.FC<TemplateProps> = ({ resume }) => {
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </span>
                     </div>
-                    <p className="text-gray-800 font-medium">{education.school}, {education.city}, {education.country}</p>
+                    <p className="text-gray-800 font-medium">{formatInstitutionLocation(education.school, education.city, education.country)}</p>
                     {education.description && (
                       <p className="text-gray-700 mt-2 leading-relaxed">{education.description}</p>
                     )}
@@ -95,7 +95,7 @@ const Harvard2Template: React.FC<TemplateProps> = ({ resume }) => {
                         {formatDateRange(experience.startDate, experience.endDate, experience.present)}
                       </span>
                     </div>
-                    <p className="text-gray-800 font-medium italic">{experience.company}, {experience.city}, {experience.country}</p>
+                    <p className="text-gray-800 font-medium italic">{formatInstitutionLocation(experience.company, experience.city, experience.country)}</p>
                     {experience.description && (
                       <p className="text-gray-700 mt-2 leading-relaxed">{experience.description}</p>
                     )}

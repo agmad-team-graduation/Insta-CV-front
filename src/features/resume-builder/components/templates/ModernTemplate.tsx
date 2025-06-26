@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatInstitutionLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon, MapPinIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
@@ -109,7 +109,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </span>
                     </div>
-                    <p className="text-gray-700 mt-1">{education.school}, {education.city}, {education.country}</p>
+                    <p className="text-gray-700 mt-1">{formatInstitutionLocation(education.school, education.city, education.country)}</p>
                     {education.description && (
                       <p className="text-gray-600 mt-2 leading-relaxed">{education.description}</p>
                     )}
@@ -126,7 +126,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                           {formatDateRange(experience.startDate, experience.endDate, experience.present)}
                         </span>
                       </div>
-                      <p className="text-gray-700 mt-1">{experience.company}, {experience.city}, {experience.country}</p>
+                      <p className="text-gray-700 mt-1">{formatInstitutionLocation(experience.company, experience.city, experience.country)}</p>
                       {experience.description && (
                         <p className="text-gray-600 mt-2 leading-relaxed">{experience.description}</p>
                       )}
