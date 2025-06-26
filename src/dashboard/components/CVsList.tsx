@@ -19,6 +19,7 @@ interface CV {
   status: string;
   downloads: number;
   views: number;
+  jobId?: number;
 }
 
 const CVsList = () => {
@@ -43,7 +44,8 @@ const CVsList = () => {
         matchScore: cv.matchScore || Math.floor(Math.random() * 30) + 70, // Fallback score
         status: cv.status || 'Active',
         downloads: cv.downloads || 0,
-        views: cv.views || 0
+        views: cv.views || 0,
+        jobId: cv.jobId
       }));
       
       setCvs(transformedCVs);
@@ -256,7 +258,21 @@ const CVsList = () => {
                   <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                     <div className="flex items-center gap-1">
                       <Target className="w-3 h-3" />
-                      <span>Tailored for: {cv.tailoredFor}</span>
+                      <span>
+                        {cv.jobId ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/job-details/${cv.jobId}`);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                          >
+                            Generated for Job #{cv.jobId}
+                          </button>
+                        ) : (
+                          'General CV'
+                        )}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
@@ -272,10 +288,6 @@ const CVsList = () => {
                     <span className="flex items-center gap-1">
                       <Download className="w-3 h-3" />
                       {cv.downloads} downloads
-                    </span>
-                    <span className={`flex items-center gap-1 font-medium ${getMatchColor(cv.matchScore)}`}>
-                      <Target className="w-3 h-3" />
-                      {cv.matchScore}% match score
                     </span>
                   </div>
                 </div>
