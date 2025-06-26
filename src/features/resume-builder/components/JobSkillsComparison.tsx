@@ -82,7 +82,7 @@ const JobSkillsComparison: React.FC = () => {
       // Add the skill to the resume's skill section
       await addItem('skillSection', {
         skill: skill.skill,
-        level: 'INTERMEDIATE' // Default level, user can change later
+        level: skill.level?.toUpperCase() || 'INTERMEDIATE' // Use specified level or default
       });
 
       toast.success(`Added "${skill.skill}" to your resume`);
@@ -323,7 +323,7 @@ const JobSkillsComparison: React.FC = () => {
                         for (const match of matchedSkills) {
                           await addItem('skillSection', {
                             skill: match.userSkill.skill,
-                            level: 'INTERMEDIATE'
+                            level: match.userSkill.level?.toUpperCase() || 'INTERMEDIATE'
                           });
                         }
                         
@@ -391,7 +391,7 @@ const JobSkillsComparison: React.FC = () => {
                         for (const skill of missingJobSkills) {
                           await addItem('skillSection', {
                             skill: skill.skill,
-                            level: 'INTERMEDIATE'
+                            level: skill.level?.toUpperCase() || 'INTERMEDIATE'
                           });
                         }
                         
@@ -459,7 +459,7 @@ const JobSkillsComparison: React.FC = () => {
                         for (const skill of unmatchedUserSkills) {
                           await addItem('skillSection', {
                             skill: skill.skill,
-                            level: 'INTERMEDIATE'
+                            level: skill.level?.toUpperCase() || 'INTERMEDIATE'
                           });
                         }
                         
