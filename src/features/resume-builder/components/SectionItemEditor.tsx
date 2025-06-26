@@ -542,7 +542,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               >
                 <option value="BEGINNER">Beginner</option>
                 <option value="INTERMEDIATE">Intermediate</option>
-                <option value="PROFICIENT">Proficient</option>
+                <option value="ADVANCED">Advanced</option>
                 <option value="EXPERT">Expert</option>
               </select>
             </div>

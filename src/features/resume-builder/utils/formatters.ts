@@ -35,7 +35,7 @@ export const getSkillLevelBars = (level: string) => {
   const levels = {
     'BEGINNER': 1,
     'INTERMEDIATE': 2,
-    'PROFICIENT': 3,
+    'ADVANCED': 3,
     'EXPERT': 4
   };
   
@@ -50,7 +50,7 @@ export const getSkillLevelClass = (level: string) => {
   const levels = {
     'BEGINNER': 'bg-blue-100 text-blue-800',
     'INTERMEDIATE': 'bg-green-100 text-green-800',
-    'PROFICIENT': 'bg-purple-100 text-purple-800',
+    'ADVANCED': 'bg-purple-100 text-purple-800',
     'EXPERT': 'bg-orange-100 text-orange-800'
   };
   

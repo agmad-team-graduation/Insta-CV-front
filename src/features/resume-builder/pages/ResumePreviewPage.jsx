@@ -164,15 +164,24 @@ const ResumePreviewPage = () => {
             box-shadow: none !important;
           }
           
+          /* Remove border radius for most elements but preserve it for skill badges */
           .rounded-lg,
           .rounded-md,
           .rounded-sm,
-          .rounded,
           .rounded-xl,
           .rounded-2xl,
-          .rounded-3xl,
-          .rounded-full {
+          .rounded-3xl {
             border-radius: 0 !important;
+          }
+          
+          /* Keep border radius for skill badges */
+          .rounded-full {
+            border-radius: 9999px !important;
+          }
+          
+          /* Keep border radius for skill badges with rounded class */
+          .rounded {
+            border-radius: 0.375rem !important;
           }
           
           .border,
@@ -220,21 +229,21 @@ const ResumePreviewPage = () => {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transform-origin: top center;
             /* Scale up slightly for better readability on screen */
-            transform: scale(1.05);
+            transform: scale(0.945);
             margin-bottom: 2rem;
           }
           
           /* Responsive scaling for different screen sizes */
           @media (max-width: 1200px) {
             .single-page-resume {
-              transform: scale(1);
+              transform: scale(0.9);
               max-width: 95%;
             }
           }
           
           @media (max-width: 768px) {
             .single-page-resume {
-              transform: scale(0.95);
+              transform: scale(0.855);
               max-width: 98%;
               margin: 0 1rem;
             }

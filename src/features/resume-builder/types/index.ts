@@ -66,7 +66,7 @@ export interface ExperienceItem extends BaseItem {
 
 export interface SkillItem extends BaseItem {
   skill: string;
-  level: 'BEGINNER' | 'INTERMEDIATE' | 'PROFICIENT' | 'EXPERT';
+  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
 }
 
 export interface ProjectItem extends BaseItem {
