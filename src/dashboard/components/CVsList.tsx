@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import apiClient from '@/common/utils/apiClient';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
+import PageLoader from "@/common/components/ui/PageLoader";
 
 interface CV {
   id: string;
@@ -199,26 +200,11 @@ const CVsList = () => {
 
   if (loading) {
     return (
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="">
-          <CardTitle className="flex items-center justify-between">
-            <span className="text-lg font-semibold">Your CVs</span>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleShowMore}
-              className="hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
-            >
-              Show More
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center py-8 text-gray-500">
-            <p className="text-sm">Loading CVs...</p>
-          </div>
-        </CardContent>
-      </Card>
+      <PageLoader 
+        title="Loading CVs" 
+        subtitle="We're fetching your professional resumes..."
+        size="small"
+      />
     );
   }
 

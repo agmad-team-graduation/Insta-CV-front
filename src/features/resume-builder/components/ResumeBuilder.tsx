@@ -8,6 +8,7 @@ import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
 import { Input } from "../../../common/components/ui/input";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -214,10 +215,10 @@ const ResumeBuilder: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <Loader2Icon className="animate-spin h-12 w-12 text-blue-600 mb-4" />
-        <h2 className="text-xl font-medium text-gray-700">Loading your resume...</h2>
-      </div>
+      <PageLoader 
+        title="Loading Resume Builder" 
+        subtitle="We're preparing your resume editor..."
+      />
     );
   }
 

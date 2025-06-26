@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card } from '@/common/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
 import { Button } from '@/common/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/common/components/ui/dialog';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '@/common/utils/apiClient';
 import { Badge } from '@/common/components/ui/badge';
+import PageLoader from "@/common/components/ui/PageLoader";
 
 // Placeholder for the API endpoint
 const QUESTIONS_API_URL = '';
@@ -46,7 +47,12 @@ const InterviewQuestionsPage = () => {
   }, [jobID]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <PageLoader 
+        title="Loading Interview Questions" 
+        subtitle="We're preparing personalized questions for you..."
+      />
+    );
   }
   if (error) {
     return <div className="min-h-screen flex items-center justify-center text-red-500">{error}</div>;

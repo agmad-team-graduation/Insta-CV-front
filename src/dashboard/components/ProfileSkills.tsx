@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import apiClient from '@/common/utils/apiClient';
+import ComponentLoader from '@/common/components/ui/ComponentLoader';
 
 const ProfileSkills = () => {
   const navigate = useNavigate();
@@ -103,9 +104,7 @@ const ProfileSkills = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="text-center py-4 text-gray-500">
-            <p className="text-sm">Loading skills...</p>
-          </div>
+          <ComponentLoader message="Loading skills..." size="small" />
         </CardContent>
       </Card>
     );

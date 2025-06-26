@@ -4,6 +4,7 @@ import JobCard from './JobCard';
 import { Briefcase, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/common/components/ui/button";
 import { useCookies } from 'react-cookie';
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const PAGE_SIZE = 9;
 
@@ -68,10 +69,11 @@ const JobsList = ({ isRecommended = false, refreshTrigger = 0 }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <Loader className="w-10 h-10 text-blue-500 animate-spin mb-4" />
-        <p className="text-gray-600">Loading jobs...</p>
-      </div>
+      <PageLoader 
+        title="Loading Jobs" 
+        subtitle="We're fetching your job opportunities..."
+        size="small"
+      />
     );
   }
 

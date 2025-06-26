@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import ResumePreview from '../components/ResumePreview';
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const ResumePreviewPage = () => {
   const { id } = useParams();
@@ -31,10 +32,10 @@ const ResumePreviewPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <Loader2Icon className="animate-spin h-12 w-12 text-blue-600 mb-4" />
-        <h2 className="text-xl font-medium text-gray-700">Loading your resume...</h2>
-      </div>
+      <PageLoader 
+        title="Loading Resume" 
+        subtitle="We're preparing your professional resume..."
+      />
     );
   }
 

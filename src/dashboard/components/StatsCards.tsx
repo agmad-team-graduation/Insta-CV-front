@@ -3,6 +3,7 @@ import apiClient from '@/common/utils/apiClient';
 import { FileText , Briefcase, Target, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import ComponentLoader from '@/common/components/ui/ComponentLoader';
 
 const StatsCards = () => {
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ const StatsCards = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8 text-gray-500">Loading stats...</div>;
+    return <ComponentLoader message="Loading dashboard stats..." size="small" />;
   }
 
   console.log('Rendering stats:', stats); // Debug log

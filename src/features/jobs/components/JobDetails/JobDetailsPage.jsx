@@ -7,6 +7,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import apiClient from "@/common/utils/apiClient";
 import useResumeStore from "@/features/resume-builder/store/resumeStore";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 function JobDetailsPage() {
   const [job, setJob] = useState(null);
@@ -97,7 +98,12 @@ function JobDetailsPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <PageLoader 
+        title="Loading Job Details" 
+        subtitle="We're analyzing this job opportunity for you..."
+      />
+    );
   }
 
   if (!job) {

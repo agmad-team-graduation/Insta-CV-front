@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogD
 import { useNavigate } from "react-router-dom";
 import { useBlocker } from "../../../useBlocker";
 import { Upload, Loader2 } from "lucide-react";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -196,7 +197,12 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="container mx-auto py-6 px-4 text-center">Loading profile...</div>;
+    return (
+      <PageLoader 
+        title="Loading Profile" 
+        subtitle="We're fetching your professional information..."
+      />
+    );
   }
 
   if (error) {
