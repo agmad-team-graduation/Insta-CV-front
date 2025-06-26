@@ -1,7 +1,7 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
-import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, GlobeIcon, AwardIcon, UserIcon } from 'lucide-react';
+import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
 import apiClient from '@/common/utils/apiClient';
 
@@ -16,6 +16,7 @@ type SummarySection = {
 const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
   const [photoUrl, setPhotoUrl] = React.useState<string | null>(null);
   const [hasPhoto, setHasPhoto] = React.useState(false);
+  const [photoDataUrl, setPhotoDataUrl] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchPhoto = async () => {
@@ -25,6 +26,19 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
           const photoResponse = await apiClient.get('/api/users/photo');
           setPhotoUrl(photoResponse.data.photoUrl);
           setHasPhoto(true);
+          
+          // Convert image to base64 for PDF compatibility
+          try {
+            const response = await fetch(photoResponse.data.photoUrl);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setPhotoDataUrl(reader.result as string);
+            };
+            reader.readAsDataURL(blob);
+          } catch (error) {
+            console.error('Error converting image to base64:', error);
+          }
         }
       } catch (error) {
         console.error('Error fetching photo:', error);
@@ -47,41 +61,42 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
   });
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-5xl mx-auto flex">
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto flex">
       {/* Left Sidebar */}
-      <div className="w-1/3 bg-slate-800 text-white p-8">
+      <div className="w-1/3 bg-white text-slate-800 p-8 border-r border-slate-200">
         {/* Header with name and title */}
         <div className="text-center mb-8">
-          <div className="w-32 h-32 bg-slate-600 rounded-full mx-auto mb-4 overflow-hidden">
-            {hasPhoto && photoUrl ? (
+          <div className="w-32 h-32 bg-slate-100 rounded-full mx-auto mb-4 overflow-hidden">
+            {hasPhoto && (photoDataUrl || photoUrl) ? (
               <img 
-                src={photoUrl} 
+                src={photoDataUrl || photoUrl || ''} 
                 alt={resume.personalDetails.fullName}
                 className="w-full h-full object-cover"
+                crossOrigin="anonymous"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <UserIcon size={48} className="text-slate-300" />
+                <UserIcon size={48} className="text-slate-400" />
               </div>
             )}
           </div>
-          <h1 className="text-2xl font-bold mb-2">{resume.personalDetails.fullName}</h1>
-          <p className="text-slate-300 text-lg">{resume.personalDetails.jobTitle || 'Job Title?'}</p>
+          <h1 className="text-2xl font-bold mb-2 text-slate-800">{resume.personalDetails.fullName}</h1>
+          <p className="text-slate-600 text-lg">{resume.personalDetails.jobTitle || 'Job Title?'}</p>
         </div>
 
         {/* Contact Information */}
         <div className="mb-8">
           <div className="flex items-center mb-3">
-            <MailIcon size={16} className="mr-3 text-slate-300" />
-            <span className="text-sm">{resume.personalDetails.email}</span>
+            <MailIcon size={16} className="mr-3 text-slate-500" />
+            <span className="text-xs text-slate-700">{resume.personalDetails.email}</span>
           </div>
           <div className="flex items-center mb-3">
-            <PhoneIcon size={16} className="mr-3 text-slate-300" />
-            <span className="text-sm">{resume.personalDetails.phone}</span>
+            <PhoneIcon size={16} className="mr-3 text-slate-500" />
+            <span className="text-sm text-slate-700">{resume.personalDetails.phone}</span>
           </div>
           <div className="flex items-center mb-3">
-            <MapPinIcon size={16} className="mr-3 text-slate-300" />
-            <span className="text-sm">{resume.personalDetails.address}</span>
+            <MapPinIcon size={16} className="mr-3 text-slate-500" />
+            <span className="text-sm text-slate-700">{resume.personalDetails.address}</span>
           </div>
         </div>
 
@@ -93,62 +108,13 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
           return (
             <div key={key} className="mb-8">
               <div className="flex items-center mb-4">
-                <UserIcon size={20} className="mr-3 text-slate-300" />
-                <h2 className="text-lg font-bold text-white">{summarySection.sectionTitle}</h2>
+                <UserIcon size={20} className="mr-3 text-slate-500" />
+                <h2 className="text-lg font-bold text-slate-800">{summarySection.sectionTitle}</h2>
               </div>
-              <p className="text-slate-300 text-sm leading-relaxed">{summarySection.summary}</p>
+              <p className="text-slate-600 text-sm leading-relaxed">{summarySection.summary}</p>
             </div>
           );
         })}
-
-        {/* Languages Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <GlobeIcon size={20} className="mr-3 text-slate-300" />
-            <h2 className="text-lg font-bold text-white">LANGUAGES</h2>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-slate-300 text-sm">English</span>
-              </div>
-              <div className="flex space-x-1">
-                {[1, 2, 3, 4, 5].map((dot) => (
-                  <div key={dot} className="w-2 h-2 rounded-full bg-slate-300"></div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-slate-300 text-sm">Spanish</span>
-              </div>
-              <div className="flex space-x-1">
-                {[1, 2, 3, 4].map((dot) => (
-                  <div key={dot} className="w-2 h-2 rounded-full bg-slate-300"></div>
-                ))}
-                <div className="w-2 h-2 rounded-full bg-slate-600"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Awards Section */}
-        <div className="mb-8">
-          <div className="flex items-center mb-4">
-            <AwardIcon size={20} className="mr-3 text-slate-300" />
-            <h2 className="text-lg font-bold text-white">AWARDS</h2>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-slate-300 font-semibold text-sm">Outstanding Business Student Award</h3>
-              <p className="text-slate-400 text-xs">University of Southern California, 2014</p>
-            </div>
-            <div>
-              <h3 className="text-slate-300 font-semibold text-sm">Dean's List</h3>
-              <p className="text-slate-400 text-xs">University of California, Los Angeles, 2015-2016</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Main Content */}
@@ -201,7 +167,7 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                       </span>
                     </div>
                     <p className="text-slate-700 font-medium">{education.school}</p>
-                    <p className="text-slate-600 text-sm">{education.city}, {education.country}</p>
+                    <p className="text-slate-600 text-sm">{formatLocation(education.city, education.country)}</p>
                     {education.description && (
                       <p className="text-slate-600 mt-2 text-sm">{education.description}</p>
                     )}
@@ -218,7 +184,7 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                       </span>
                     </div>
                     <p className="text-slate-700 font-medium">{experience.company}</p>
-                    <p className="text-slate-600 text-sm mb-3">{experience.city}, {experience.country}</p>
+                    <p className="text-slate-600 text-sm mb-3">{formatLocation(experience.city, experience.country)}</p>
                     {experience.description && (
                       <div className="text-slate-600 text-sm">
                         {experience.description.split('\n').map((line: string, index: number) => (
@@ -232,38 +198,43 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   </div>
                 ))}
                 
-                {key === 'project' && sortedItems.map((project: any) => (
-                  <div key={project.id} className="border-l-2 border-slate-300 pl-6 relative">
-                    <div className="absolute w-3 h-3 bg-slate-600 rounded-full -left-2 top-1"></div>
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-slate-800">{project.title}</h3>
-                      <span className="text-sm text-slate-600 font-medium">
-                        {formatDateRange(project.startDate, project.endDate, project.present)}
-                      </span>
-                    </div>
-                    {project.description && (
-                      <p className="text-slate-600 text-sm mb-3">{project.description}</p>
-                    )}
-                    {project.skills && project.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {project.skills.map((skill: any) => (
-                          <span key={skill.id} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
-                            {skill.skill}
+                {key === 'project' && sortedItems.map((project: any) => {
+                  // Only show date if both start and end dates (or present) are available
+                  const hasValidDates = project.startDate && (project.endDate || project.present);
+                  
+                  return (
+                    <div key={project.id} className="border-l-2 border-slate-300 pl-6 relative">
+                      <div className="absolute w-3 h-3 bg-slate-600 rounded-full -left-2 top-1"></div>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-semibold text-slate-800">{project.title}</h3>
+                        {hasValidDates && (
+                          <span className="text-sm text-slate-600 font-medium">
+                            {formatDateRange(project.startDate, project.endDate, project.present)}
                           </span>
-                        ))}
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {project.description && (
+                        <p className="text-slate-600 text-sm mb-3">{project.description}</p>
+                      )}
+                      {project.skills && project.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {project.skills.map((skill: any) => (
+                            <span key={skill.id} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
+                              {skill.skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
                 {key === 'skill' && (
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3">
                     {sortedItems.map((skill: any) => (
-                      <div key={skill.id} className="flex items-start">
+                      <div key={skill.id} className="flex items-center">
                         <span className="text-slate-400 mr-2">•</span>
-                        <div>
-                          <span className="text-slate-800 font-medium">{skill.skill}</span>
-                        </div>
+                        <span className="text-slate-800 font-medium">{skill.skill}</span>
                       </div>
                     ))}
                   </div>

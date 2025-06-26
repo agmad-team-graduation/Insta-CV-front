@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDateRange, getSkillLevelBars } from '../../utils/formatters';
+import { formatDateRange, getSkillLevelBars, formatLocation } from '../../utils/formatters';
 import { TemplateProps } from './index';
 import { MailIcon, PhoneIcon, MapPinIcon, BriefcaseIcon, BookOpenIcon, CodeIcon, WrenchIcon, UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
@@ -35,7 +35,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <h1 className="text-4xl font-bold mb-2">{resume.personalDetails.fullName}</h1>
             <div className="flex items-center text-green-100">
               <MapPinIcon size={16} className="mr-2" />
-              <span className="text-lg">{resume.personalDetails.address}</span>
+              <span className="text-lg">{formatLocation(resume.personalDetails.address)}</span>
             </div>
           </div>
           <div className="text-right">
@@ -101,7 +101,7 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     <div key={education.id} className="bg-green-50 rounded-lg p-3">
                       <h3 className="font-semibold text-gray-800 text-sm">{education.degree}</h3>
                       <p className="text-gray-600 text-sm">{education.school}</p>
-                      <p className="text-gray-500 text-xs">{education.city}, {education.country}</p>
+                      <p className="text-gray-500 text-xs">{formatLocation(education.city, education.country)}</p>
                       <p className="text-green-700 text-xs font-medium mt-1">
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </p>
@@ -113,14 +113,32 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   
                   {key === 'skill' && (
                     <div className="space-y-2">
-                      {sortedItems.map((skill: any) => (
-                        <div key={skill.id} className="bg-green-50 rounded-lg p-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-800 text-sm font-medium">{skill.skill}</span>
-                            <span className="text-green-700 text-xs">{getSkillLevelBars(skill.level)}</span>
+                      {sortedItems.map((skill: any) => {
+                        const levelValue = {
+                          'BEGINNER': 1,
+                          'INTERMEDIATE': 2,
+                          'ADVANCED': 3,
+                          'EXPERT': 4
+                        }[skill.level] || 0;
+                        
+                        return (
+                          <div key={skill.id} className="bg-green-50 rounded-lg p-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-800 text-sm font-medium">{skill.skill}</span>
+                              <div className="flex gap-0.5">
+                                {[...Array(4)].map((_, index) => (
+                                  <span 
+                                    key={index} 
+                                    className={`text-xs ${index < levelValue ? 'text-green-700' : 'text-green-300'}`}
+                                  >
+                                    ●
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -169,35 +187,42 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                         </span>
                       </div>
                       <p className="text-gray-700 font-medium">{experience.company}</p>
-                      <p className="text-gray-500 text-sm">{experience.city}, {experience.country}</p>
+                      <p className="text-gray-500 text-sm">{formatLocation(experience.city, experience.country)}</p>
                       {experience.description && (
                         <p className="text-gray-600 mt-2 leading-relaxed">{experience.description}</p>
                       )}
                     </div>
                   ))}
                   
-                  {key === 'project' && sortedItems.map((project: any) => (
-                    <div key={project.id} className="border-l-4 border-green-600 pl-4 py-2 bg-green-50 rounded-r-lg">
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="text-lg font-semibold text-green-800">{project.title}</h3>
-                        <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded">
-                          {formatDateRange(project.startDate, project.endDate, project.present)}
-                        </span>
-                      </div>
-                      {project.description && (
-                        <p className="text-gray-600 mt-2 leading-relaxed">{project.description}</p>
-                      )}
-                      {project.skills && project.skills.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {project.skills.map((skill: any) => (
-                            <span key={skill.id} className="px-2 py-1 bg-green-700 text-white text-xs rounded-full">
-                              {skill.skill}
+                  {key === 'project' && sortedItems.map((project: any) => {
+                    // Only show date if both start and end dates (or present) are available
+                    const hasValidDates = project.startDate && (project.endDate || project.present);
+                    
+                    return (
+                      <div key={project.id} className="border-l-4 border-green-600 pl-4 py-2 bg-green-50 rounded-r-lg">
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 className="text-lg font-semibold text-green-800">{project.title}</h3>
+                          {hasValidDates && (
+                            <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded">
+                              {formatDateRange(project.startDate, project.endDate, project.present)}
                             </span>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {project.description && (
+                          <p className="text-gray-600 mt-2 leading-relaxed">{project.description}</p>
+                        )}
+                        {project.skills && project.skills.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {project.skills.map((skill: any) => (
+                              <span key={skill.id} className="px-2 py-1 bg-green-700 text-white text-xs rounded-full">
+                                {skill.skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

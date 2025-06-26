@@ -213,7 +213,7 @@ const Profile = () => {
   const mappedSkills = profileData?.userSkills?.map(skill => ({
     id: skill.id || `skill-${skill.skill.replace(/\s+/g, '-').toLowerCase()}`,
     name: skill.skill,
-    level: skill.level?.toLowerCase() ?? ''
+    level: skill.level ?? ''
   })) || [];
 
   // Map experiences to the format expected by ExperienceSection component

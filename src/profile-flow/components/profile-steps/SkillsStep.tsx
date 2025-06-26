@@ -103,7 +103,7 @@ const SkillsStep: React.FC<SkillsStepProps> = ({ data, onUpdate }) => {
                   >
                     {skill.skill}
                     <span className="ml-2 text-xs opacity-70">
-                      {skill.level.charAt(0).toUpperCase() + skill.level.slice(1).toLowerCase()}
+                      {skill.level}
                     </span>
                   </Badge>
                   <Button

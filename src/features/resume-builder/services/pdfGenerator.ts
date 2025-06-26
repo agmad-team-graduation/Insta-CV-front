@@ -57,7 +57,7 @@ export const generatePdf = async (
     
     // Generate canvas using html2canvas-pro
     const canvas = await html2canvas(clonedElement, {
-      scale: 2,
+      scale: 1.8,
       useCORS: true,
       logging: false,
       allowTaint: true,
