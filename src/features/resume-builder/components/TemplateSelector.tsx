@@ -37,13 +37,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       thumbnail: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Monospace', 'Technical', 'Developer-friendly']
     },
-    {
-      id: 'harvard',
-      name: 'Harvard',
-      description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
-      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Academic', 'Professional', 'Research-focused']
-    },
+    // {
+    //   id: 'harvard',
+    //   name: 'Harvard',
+    //   description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
+    //   thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    //   features: ['Academic', 'Professional', 'Research-focused']
+    // },
     {
       id: 'harvardclassic',
       name: 'Harvard Classic',
