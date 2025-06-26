@@ -113,14 +113,32 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   
                   {key === 'skill' && (
                     <div className="space-y-2">
-                      {sortedItems.map((skill: any) => (
-                        <div key={skill.id} className="bg-green-50 rounded-lg p-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-800 text-sm font-medium">{skill.skill}</span>
-                            <span className="text-green-700 text-xs">{getSkillLevelBars(skill.level)}</span>
+                      {sortedItems.map((skill: any) => {
+                        const levelValue = {
+                          'BEGINNER': 1,
+                          'INTERMEDIATE': 2,
+                          'ADVANCED': 3,
+                          'EXPERT': 4
+                        }[skill.level] || 0;
+                        
+                        return (
+                          <div key={skill.id} className="bg-green-50 rounded-lg p-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-800 text-sm font-medium">{skill.skill}</span>
+                              <div className="flex gap-0.5">
+                                {[...Array(4)].map((_, index) => (
+                                  <span 
+                                    key={index} 
+                                    className={`text-xs ${index < levelValue ? 'text-green-700' : 'text-green-300'}`}
+                                  >
+                                    ●
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

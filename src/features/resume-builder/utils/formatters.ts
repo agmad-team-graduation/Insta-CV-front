@@ -29,7 +29,7 @@ export const formatDateRange = (startDate: string, endDate: string, isPresent: b
 };
 
 /**
- * Get skill level as visual representation
+ * Get skill level as visual representation using consistent-sized dots
  */
 export const getSkillLevelBars = (level: string) => {
   const levels = {
@@ -40,7 +40,7 @@ export const getSkillLevelBars = (level: string) => {
   };
   
   const levelValue = levels[level as keyof typeof levels] || 0;
-  return '●'.repeat(levelValue) + '○'.repeat(4 - levelValue);
+  return '●'.repeat(levelValue) + '●'.repeat(4 - levelValue);
 };
 
 /**

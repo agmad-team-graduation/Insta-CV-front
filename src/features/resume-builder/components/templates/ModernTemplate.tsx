@@ -166,12 +166,30 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 
                 {key === 'skill' && (
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3">
-                    {sortedItems.map((skill: any) => (
-                      <div key={skill.id} className="flex justify-between items-center">
-                        <span className="text-gray-800">{skill.skill}</span>
-                        <span className="text-blue-600">{getSkillLevelBars(skill.level)}</span>
-                      </div>
-                    ))}
+                    {sortedItems.map((skill: any) => {
+                      const levelValue = {
+                        'BEGINNER': 1,
+                        'INTERMEDIATE': 2,
+                        'ADVANCED': 3,
+                        'EXPERT': 4
+                      }[skill.level] || 0;
+                      
+                      return (
+                        <div key={skill.id} className="flex justify-between items-center">
+                          <span className="text-gray-800">{skill.skill}</span>
+                          <div className="flex gap-0.5">
+                            {[...Array(4)].map((_, index) => (
+                              <span 
+                                key={index} 
+                                className={`text-xs ${index < levelValue ? 'text-blue-600' : 'text-gray-300'}`}
+                              >
+                                ●
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
