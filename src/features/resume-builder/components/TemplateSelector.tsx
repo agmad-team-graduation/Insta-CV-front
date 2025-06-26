@@ -45,11 +45,11 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       features: ['Academic', 'Professional', 'Research-focused']
     },
     {
-      id: 'harvard2',
-      name: 'Harvard 2',
-      description: 'A variation of the Harvard template with modern skill badges and no proficiency levels.',
-      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Academic', 'Skill badges', 'Clean design']
+      id: 'harvardclassic',
+      name: 'Harvard Classic',
+      description: 'A refined Harvard-style template with elegant typography and clean section dividers.',
+      thumbnail: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Academic', 'Elegant', 'Traditional']
     },
     {
       id: 'huntergreen',

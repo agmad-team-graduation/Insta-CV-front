@@ -11,7 +11,7 @@ type SummarySection = {
   orderIndex: number;
 };
 
-const Harvard2Template: React.FC<TemplateProps> = ({ resume }) => {
+const HarvardClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     summary: resume.summarySection,
@@ -149,4 +149,4 @@ const Harvard2Template: React.FC<TemplateProps> = ({ resume }) => {
   );
 };
 
-export default Harvard2Template; 
+export default HarvardClassicTemplate; 

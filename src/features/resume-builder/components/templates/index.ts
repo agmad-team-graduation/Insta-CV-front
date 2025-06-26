@@ -4,7 +4,7 @@ import ModernTemplate from './ModernTemplate';
 import ClassicTemplate from './ClassicTemplate';
 import TechnicalTemplate from './TechnicalTemplate';
 import HarvardTemplate from './HarvardTemplate';
-import Harvard2Template from './Harvard2Template';
+import HarvardClassicTemplate from './HarvardClassicTemplate';
 import HunterGreenTemplate from './HunterGreenTemplate';
 import AtlanticBlueTemplate from './AtlanticBlueTemplate';
 
@@ -20,7 +20,7 @@ export const templateRegistry: Record<TemplateName, TemplateComponent> = {
   classic: ClassicTemplate,
   technical: TechnicalTemplate,
   harvard: HarvardTemplate,
-  harvard2: Harvard2Template,
+  harvardclassic: HarvardClassicTemplate,
   huntergreen: HunterGreenTemplate,
   atlanticblue: AtlanticBlueTemplate,
 };
@@ -36,7 +36,7 @@ export {
   ClassicTemplate,
   TechnicalTemplate,
   HarvardTemplate,
-  Harvard2Template,
+  HarvardClassicTemplate,
   HunterGreenTemplate,
   AtlanticBlueTemplate,
 }; 
