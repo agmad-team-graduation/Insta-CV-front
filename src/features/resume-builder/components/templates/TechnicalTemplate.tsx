@@ -31,7 +31,7 @@ const TechnicalTemplate: React.FC<TemplateProps> = ({ resume }) => {
       {/* Header with personal details */}
       <div className="p-8 bg-gray-900 text-white text-center">
         <h1 className="text-3xl font-bold font-mono">{resume.personalDetails.fullName}</h1>
-        <p className="text-xl text-gray-300 mt-2 font-mono">{resume.personalDetails.jobTitle}</p>
+        <p className="text-lg text-gray-300 mt-2 font-mono">{resume.personalDetails.jobTitle}</p>
         
         <div className="mt-4 flex justify-center flex-wrap gap-6 text-gray-300">
           <div className="flex items-center">

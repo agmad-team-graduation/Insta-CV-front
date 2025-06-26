@@ -33,7 +33,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
         <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-wide">
           {resume.personalDetails.fullName}
         </h1>
-        <p className="text-xl text-gray-700 mb-4 font-medium">
+        <p className="text-lg text-gray-700 mb-4 font-medium">
           {resume.personalDetails.jobTitle}
         </p>
         
@@ -196,7 +196,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
                           'INTERMEDIATE': 2,
                           'ADVANCED': 3,
                           'EXPERT': 4
-                        }[skill.level] || 0;
+                        }[skill.level as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT'] || 0;
                         
                         return (
                           <div key={skill.id} className="flex justify-between items-center">

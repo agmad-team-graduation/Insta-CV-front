@@ -31,7 +31,7 @@ const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       {/* Header with personal details */}
       <div className="p-8 bg-gray-800 text-white text-center">
         <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
-        <p className="text-xl text-gray-300 mt-2">{resume.personalDetails.jobTitle}</p>
+        <p className="text-lg text-gray-300 mt-2">{resume.personalDetails.jobTitle}</p>
         
         <div className="mt-4 flex justify-center flex-wrap gap-6">
           <div className="flex items-center">

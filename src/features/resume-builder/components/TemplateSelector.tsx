@@ -65,6 +65,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Academic', 'LaTeX-inspired', 'Precise typography']
     },
+    {
+      id: 'skillcategorized',
+      name: 'Skill Categorized',
+      description: 'Organizes skills by proficiency level with color-coded categories for clear skill progression.',
+      thumbnail: 'https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Skill categories', 'Color-coded', 'Proficiency levels']
+    },
     // {
     //   id: 'atlanticblue',
     //   name: 'Atlantic Blue',

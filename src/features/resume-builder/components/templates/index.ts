@@ -8,6 +8,7 @@ import HarvardClassicTemplate from './HarvardClassicTemplate';
 import HunterGreenTemplate from './HunterGreenTemplate';
 import AtlanticBlueTemplate from './AtlanticBlueTemplate';
 import LaTeXTemplate from './LaTeXTemplate';
+import SkillCategorizedTemplate from './SkillCategorizedTemplate';
 
 export interface TemplateProps {
   resume: Resume;
@@ -25,6 +26,7 @@ export const templateRegistry: Record<TemplateName, TemplateComponent> = {
   huntergreen: HunterGreenTemplate,
   atlanticblue: AtlanticBlueTemplate,
   latex: LaTeXTemplate,
+  skillcategorized: SkillCategorizedTemplate,
 };
 
 // Helper function to get template component by name
@@ -42,4 +44,5 @@ export {
   HunterGreenTemplate,
   AtlanticBlueTemplate,
   LaTeXTemplate,
+  SkillCategorizedTemplate,
 }; 

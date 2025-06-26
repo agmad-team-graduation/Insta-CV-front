@@ -79,7 +79,7 @@ export interface ProjectItem extends BaseItem {
 }
 
 // Template Types
-export type TemplateName = 'modern' | 'classic' | 'technical' | 'harvard' | 'harvardclassic' | 'huntergreen' | 'atlanticblue' | 'latex';
+export type TemplateName = 'modern' | 'classic' | 'technical' | 'harvard' | 'harvardclassic' | 'huntergreen' | 'atlanticblue' | 'latex' | 'skillcategorized';
 
 export interface Template {
   id: TemplateName;
