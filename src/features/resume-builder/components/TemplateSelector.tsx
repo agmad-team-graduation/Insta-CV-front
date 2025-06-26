@@ -58,6 +58,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Elegant', 'Hunter green', 'Business']
     },
+    {
+      id: 'latex',
+      name: 'LaTeX',
+      description: 'Academic-style template inspired by LaTeX documents with precise typography and clean formatting.',
+      thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Academic', 'LaTeX-inspired', 'Precise typography']
+    },
     // {
     //   id: 'atlanticblue',
     //   name: 'Atlantic Blue',

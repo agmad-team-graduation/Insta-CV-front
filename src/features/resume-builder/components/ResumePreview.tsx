@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Resume } from '../types';
 import useResumeStore from '../store/resumeStore';
 // import { generatePdf, generateFilename } from '../services/pdfGenerator';
-import { getTemplate } from './templates';
+import { getTemplateComponent } from './templates';
 
 interface ResumePreviewProps {
   resume: Resume;
@@ -38,7 +38,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ resume }) => {
   // }, [resume, selectedTemplate]);
 
   // Get the selected template component and render it
-  const TemplateComponent = getTemplate(selectedTemplate);
+  const TemplateComponent = getTemplateComponent(selectedTemplate);
   
   return (
     <div id="resume-preview-container" ref={previewRef}>
