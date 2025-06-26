@@ -1,7 +1,6 @@
 import React from 'react';
 import { formatDateRange } from '../../utils/formatters';
 import { TemplateProps } from './index';
-import { UserIcon } from 'lucide-react';
 import { Section, EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../../types';
 
 type SectionType = Section<EducationItem> | Section<ExperienceItem> | Section<ProjectItem> | Section<SkillItem>;
@@ -12,7 +11,7 @@ type SummarySection = {
   orderIndex: number;
 };
 
-const HarvardTemplate: React.FC<TemplateProps> = ({ resume }) => {
+const Harvard2Template: React.FC<TemplateProps> = ({ resume }) => {
   // Sort sections by their orderIndex
   const sortedSections = Object.entries({
     summary: resume.summarySection,
@@ -133,11 +132,10 @@ const HarvardTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 })}
                 
                 {key === 'skill' && (
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                  <div className="grid grid-cols-3 gap-x-6 gap-y-2">
                     {sortedItems.map((skill: any) => (
-                      <div key={skill.id} className="flex justify-between items-center">
-                        <span className="text-gray-800">{skill.skill}</span>
-                        <span className="text-gray-600 capitalize text-sm">{skill.level?.toLowerCase() || ''}</span>
+                      <div key={skill.id} className="flex items-center">
+                        <span className="text-gray-800 font-medium">• {skill.skill}</span>
                       </div>
                     ))}
                   </div>
@@ -151,4 +149,4 @@ const HarvardTemplate: React.FC<TemplateProps> = ({ resume }) => {
   );
 };
 
-export default HarvardTemplate; 
+export default Harvard2Template; 

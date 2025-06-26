@@ -176,28 +176,35 @@ const HunterGreenTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     </div>
                   ))}
                   
-                  {key === 'project' && sortedItems.map((project: any) => (
-                    <div key={project.id} className="border-l-4 border-green-600 pl-4 py-2 bg-green-50 rounded-r-lg">
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="text-lg font-semibold text-green-800">{project.title}</h3>
-                        <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded">
-                          {formatDateRange(project.startDate, project.endDate, project.present)}
-                        </span>
-                      </div>
-                      {project.description && (
-                        <p className="text-gray-600 mt-2 leading-relaxed">{project.description}</p>
-                      )}
-                      {project.skills && project.skills.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {project.skills.map((skill: any) => (
-                            <span key={skill.id} className="px-2 py-1 bg-green-700 text-white text-xs rounded-full">
-                              {skill.skill}
+                  {key === 'project' && sortedItems.map((project: any) => {
+                    // Only show date if both start and end dates (or present) are available
+                    const hasValidDates = project.startDate && (project.endDate || project.present);
+                    
+                    return (
+                      <div key={project.id} className="border-l-4 border-green-600 pl-4 py-2 bg-green-50 rounded-r-lg">
+                        <div className="flex justify-between items-start mb-1">
+                          <h3 className="text-lg font-semibold text-green-800">{project.title}</h3>
+                          {hasValidDates && (
+                            <span className="text-sm text-gray-600 bg-white px-2 py-1 rounded">
+                              {formatDateRange(project.startDate, project.endDate, project.present)}
                             </span>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        {project.description && (
+                          <p className="text-gray-600 mt-2 leading-relaxed">{project.description}</p>
+                        )}
+                        {project.skills && project.skills.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {project.skills.map((skill: any) => (
+                              <span key={skill.id} className="px-2 py-1 bg-green-700 text-white text-xs rounded-full">
+                                {skill.skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

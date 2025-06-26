@@ -232,29 +232,36 @@ const AtlanticBlueTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   </div>
                 ))}
                 
-                {key === 'project' && sortedItems.map((project: any) => (
-                  <div key={project.id} className="border-l-2 border-slate-300 pl-6 relative">
-                    <div className="absolute w-3 h-3 bg-slate-600 rounded-full -left-2 top-1"></div>
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-slate-800">{project.title}</h3>
-                      <span className="text-sm text-slate-600 font-medium">
-                        {formatDateRange(project.startDate, project.endDate, project.present)}
-                      </span>
-                    </div>
-                    {project.description && (
-                      <p className="text-slate-600 text-sm mb-3">{project.description}</p>
-                    )}
-                    {project.skills && project.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {project.skills.map((skill: any) => (
-                          <span key={skill.id} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
-                            {skill.skill}
+                {key === 'project' && sortedItems.map((project: any) => {
+                  // Only show date if both start and end dates (or present) are available
+                  const hasValidDates = project.startDate && (project.endDate || project.present);
+                  
+                  return (
+                    <div key={project.id} className="border-l-2 border-slate-300 pl-6 relative">
+                      <div className="absolute w-3 h-3 bg-slate-600 rounded-full -left-2 top-1"></div>
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-semibold text-slate-800">{project.title}</h3>
+                        {hasValidDates && (
+                          <span className="text-sm text-slate-600 font-medium">
+                            {formatDateRange(project.startDate, project.endDate, project.present)}
                           </span>
-                        ))}
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {project.description && (
+                        <p className="text-slate-600 text-sm mb-3">{project.description}</p>
+                      )}
+                      {project.skills && project.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {project.skills.map((skill: any) => (
+                            <span key={skill.id} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
+                              {skill.skill}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
                 {key === 'skill' && (
                   <div className="grid grid-cols-1 gap-4">

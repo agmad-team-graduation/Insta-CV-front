@@ -29,11 +29,11 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
       {/* Header with personal details */}
-      <div className="p-6 bg-blue-700 text-white">
+      <div className="p-6 bg-blue-700 text-white text-center">
         <h1 className="text-3xl font-bold">{resume.personalDetails.fullName}</h1>
         <p className="text-xl text-blue-100 mt-1">{resume.personalDetails.jobTitle}</p>
         
-        <div className="mt-4 flex flex-wrap gap-4">
+        <div className="mt-4 flex justify-center flex-wrap gap-4">
           <div className="flex items-center">
             <MailIcon size={16} className="mr-2" />
             <span>{resume.personalDetails.email}</span>

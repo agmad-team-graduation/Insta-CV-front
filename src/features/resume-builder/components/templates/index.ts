@@ -2,9 +2,9 @@ import React from 'react';
 import { Resume, TemplateName } from '../../types';
 import ModernTemplate from './ModernTemplate';
 import ClassicTemplate from './ClassicTemplate';
-import MinimalTemplate from './MinimalTemplate';
 import TechnicalTemplate from './TechnicalTemplate';
 import HarvardTemplate from './HarvardTemplate';
+import Harvard2Template from './Harvard2Template';
 import HunterGreenTemplate from './HunterGreenTemplate';
 import AtlanticBlueTemplate from './AtlanticBlueTemplate';
 
@@ -18,9 +18,9 @@ export type TemplateComponent = React.FC<TemplateProps>;
 export const templateRegistry: Record<TemplateName, TemplateComponent> = {
   modern: ModernTemplate,
   classic: ClassicTemplate,
-  minimal: MinimalTemplate,
   technical: TechnicalTemplate,
   harvard: HarvardTemplate,
+  harvard2: Harvard2Template,
   huntergreen: HunterGreenTemplate,
   atlanticblue: AtlanticBlueTemplate,
 };
@@ -34,9 +34,9 @@ export const getTemplate = (templateName: TemplateName): TemplateComponent => {
 export {
   ModernTemplate,
   ClassicTemplate,
-  MinimalTemplate,
   TechnicalTemplate,
   HarvardTemplate,
+  Harvard2Template,
   HunterGreenTemplate,
   AtlanticBlueTemplate,
 }; 

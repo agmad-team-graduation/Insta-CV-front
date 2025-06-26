@@ -31,13 +31,6 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       features: ['Professional', 'Traditional', 'Corporate']
     },
     {
-      id: 'minimal',
-      name: 'Minimal',
-      description: 'A clean, minimalist design that puts focus on your content. Great for creative professionals.',
-      thumbnail: 'https://images.pexels.com/photos/7319303/pexels-photo-7319303.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Minimalist', 'Content-focused', 'Elegant']
-    },
-    {
       id: 'technical',
       name: 'Technical',
       description: 'Specifically designed for technical roles with a monospace font and structured layout.',
@@ -50,6 +43,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
       thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Academic', 'Professional', 'Research-focused']
+    },
+    {
+      id: 'harvard2',
+      name: 'Harvard 2',
+      description: 'A variation of the Harvard template with modern skill badges and no proficiency levels.',
+      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Academic', 'Skill badges', 'Clean design']
     },
     {
       id: 'huntergreen',
