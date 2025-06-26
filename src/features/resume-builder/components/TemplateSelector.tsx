@@ -58,13 +58,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Elegant', 'Hunter green', 'Business']
     },
-    {
-      id: 'atlanticblue',
-      name: 'Atlantic Blue',
-      description: 'A modern template with a deep blue color scheme and sidebar layout.',
-      thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Sidebar', 'Deep blue', 'Modern']
-    }
+    // {
+    //   id: 'atlanticblue',
+    //   name: 'Atlantic Blue',
+    //   description: 'A modern template with a deep blue color scheme and sidebar layout.',
+    //   thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    //   features: ['Sidebar', 'Deep blue', 'Modern']
+    // }
   ];
 
   return (
