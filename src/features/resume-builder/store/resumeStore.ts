@@ -35,7 +35,7 @@ interface ResumeState {
   addItem: <T>(
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
     newItem: Omit<T, 'id' | 'orderIndex'>
-  ) => void;
+  ) => Promise<void>;
   deleteItem: (
     sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
     itemId: number
@@ -267,33 +267,45 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     });
   },
 
-  addItem: (sectionKey, newItem) => {
-    set((state) => {
-      if (!state.resume) return state;
-      
-      const section = state.resume[sectionKey];
-      const newId = Math.max(0, ...section.items.map(item => item.id)) + 1;
-      const newOrderIndex = section.items.length + 1;
-      
-      const updatedSection = {
-        ...section,
-        items: [
-          ...section.items,
-          {
-            ...newItem,
-            id: newId,
-            orderIndex: newOrderIndex
-          }
-        ]
-      };
-      
-      return {
-        resume: {
-          ...state.resume,
-          [sectionKey]: updatedSection
+  addItem: async <T>(
+    sectionKey: keyof Pick<Resume, 'educationSection' | 'experienceSection' | 'skillSection' | 'projectSection'>,
+    newItem: Omit<T, 'id' | 'orderIndex'>
+  ) => {
+    const { resume } = get();
+    if (!resume) return;
+    
+    const section = resume[sectionKey];
+    const newId = Math.max(0, ...section.items.map(item => item.id)) + 1;
+    const newOrderIndex = section.items.length + 1;
+    
+    const updatedSection = {
+      ...section,
+      items: [
+        ...section.items,
+        {
+          ...newItem,
+          id: newId,
+          orderIndex: newOrderIndex
         }
-      };
-    });
+      ]
+    };
+    
+    const updatedResume = {
+      ...resume,
+      [sectionKey]: updatedSection
+    };
+
+    // Update local state immediately
+    set({ resume: updatedResume });
+
+    // Save the changes to the backend
+    try {
+      await updateResume(updatedResume.id, updatedResume);
+    } catch (error) {
+      console.error('Error saving new item:', error);
+      toast.error('Failed to save new item');
+      throw error;
+    }
   },
 
   deleteItem: (sectionKey, itemId) => {

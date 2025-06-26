@@ -7,6 +7,7 @@ import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
+import JobSkillsComparison from './JobSkillsComparison';
 import { Input } from "../../../common/components/ui/input";
 import PageLoader from "@/common/components/ui/PageLoader";
 
@@ -335,65 +336,76 @@ const ResumeBuilder: React.FC = () => {
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 flex justify-center items-start py-8 px-80">
+        <main className="flex-1 flex justify-center items-start py-8 px-60">
           <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden relative">
-            {/* Sidebar toggle button - always in the same position */}
-            <button
-              onClick={() => setSidebarVisible(!sidebarVisible)}
-              className="absolute -top-2 -left-2 z-20 flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
-              title={sidebarVisible ? 'Hide Sidebar' : 'Show Sidebar'}
-            >
-              {sidebarVisible ? <ChevronLeftIcon size={16} className="text-gray-600" /> : <ChevronRightIcon size={16} className="text-gray-600" />}
-            </button>
-
             {/* Left sidebar */}
-            {sidebarVisible && (
-              <aside className="w-full mt-8 lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
-                {/* Tabs */}
-                <div className="flex-none flex border-b border-gray-200">
-                  <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                      }`}
-                    onClick={() => setActiveTab('content')}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <FileEditIcon size={18} />
-                      Content
-                    </span>
-                  </button>
-                  <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                      }`}
-                    onClick={() => setActiveTab('templates')}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <LayoutIcon size={18} />
-                      Templates
-                    </span>
-                  </button>
-                </div>
+            <div className={`bg-white border-r border-gray-200 transition-all duration-300 ${
+              sidebarVisible ? 'lg:w-2/5 xl:w-1/3' : 'w-16'
+            }`}>
+              {/* Left sidebar toggle button */}
+              <button
+                onClick={() => setSidebarVisible(!sidebarVisible)}
+                className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
+                title={sidebarVisible ? 'Hide Left Sidebar' : 'Show Left Sidebar'}
+              >
+                {sidebarVisible ? (
+                  <ChevronLeftIcon size={20} className="text-blue-600" />
+                ) : (
+                  <ChevronRightIcon size={20} className="text-blue-600" />
+                )}
+              </button>
 
-                {/* Tab content */}
-                <div className="flex-1 overflow-auto">
-                  {activeTab === 'content' ? (
-                    <EditorSidebar resume={resume} />
-                  ) : (
-                    <TemplateSelector
-                      selectedTemplate={selectedTemplate}
-                    />
-                  )}
+              {sidebarVisible && (
+                <div className="flex flex-col h-full">
+                  {/* Tabs */}
+                  <div className="flex-none flex border-b border-gray-200">
+                    <button
+                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
+                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        }`}
+                      onClick={() => setActiveTab('content')}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <FileEditIcon size={18} />
+                        Content
+                      </span>
+                    </button>
+                    <button
+                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
+                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        }`}
+                      onClick={() => setActiveTab('templates')}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <LayoutIcon size={18} />
+                        Templates
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Tab content */}
+                  <div className="flex-1 overflow-auto">
+                    {activeTab === 'content' ? (
+                      <EditorSidebar resume={resume} />
+                    ) : (
+                      <TemplateSelector
+                        selectedTemplate={selectedTemplate}
+                      />
+                    )}
+                  </div>
                 </div>
-              </aside>
-            )}
+              )}
+            </div>
 
             {/* Preview area */}
             <div className={`flex-1 p-4 mt-8 md:p-8 overflow-auto bg-white relative ${!sidebarVisible ? 'flex justify-center' : ''}`}>
               <ResumePreview resume={resume} />
             </div>
+
+            {/* Right sidebar - Job Skills Comparison */}
+            <JobSkillsComparison />
           </div>
         </main>
       </div>
