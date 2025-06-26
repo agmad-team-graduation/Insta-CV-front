@@ -62,7 +62,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div key={key} className="mb-6">
                 <div className="flex items-center mb-3">
                   <UserIcon size={20} className="text-blue-600" />
-                  <h2 className="text-xl font-bold ml-2 text-gray-800">{summarySection.sectionTitle}</h2>
+                  <h2 className="text-lg font-bold ml-2 text-gray-800">{summarySection.sectionTitle}</h2>
                 </div>
                 <p className="text-gray-700 leading-relaxed">{summarySection.summary}</p>
               </div>
@@ -97,14 +97,14 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div key={key} className="mb-6">
               <div className="flex items-center mb-4">
                 {icon}
-                <h2 className="text-xl font-bold ml-2 text-gray-800">{typedSection.sectionTitle}</h2>
+                <h2 className="text-lg font-bold ml-2 text-gray-800">{typedSection.sectionTitle}</h2>
               </div>
               
               <div className="space-y-4">
                 {key === 'education' && sortedItems.map((education: any) => (
                   <div key={education.id} className="border-l-4 border-blue-600 pl-4 py-2">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold">{education.degree}</h3>
+                      <h3 className="text-base font-semibold">{education.degree}</h3>
                       <span className="text-sm text-gray-600">
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </span>
@@ -121,7 +121,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   return (
                     <div key={experience.id} className="border-l-4 border-blue-600 pl-4 py-2">
                       <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-semibold">{experience.jobTitle}</h3>
+                        <h3 className="text-base font-semibold">{experience.jobTitle}</h3>
                         <span className="text-sm text-gray-600">
                           {formatDateRange(experience.startDate, experience.endDate, experience.present)}
                         </span>
@@ -141,7 +141,7 @@ const ModernTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   return (
                     <div key={project.id} className="border-l-4 border-blue-600 pl-4 py-2">
                       <div className="flex justify-between items-start">
-                        <h3 className="text-lg font-semibold">{project.title}</h3>
+                        <h3 className="text-base font-semibold">{project.title}</h3>
                         {hasValidDates && (
                           <span className="text-sm text-gray-600">
                             {formatDateRange(project.startDate, project.endDate, project.present)}

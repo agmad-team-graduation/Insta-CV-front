@@ -67,7 +67,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div key={key} className="mb-8">
                 <div className="flex items-center mb-4">
                   <div className="w-1 h-6 bg-gray-800 mr-3"></div>
-                  <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wider">
+                  <h2 className="text-lg font-bold text-gray-900 uppercase tracking-wider">
                     {summarySection.sectionTitle}
                   </h2>
                 </div>
@@ -108,7 +108,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div key={key} className="mb-8">
               <div className="flex items-center mb-4">
                 <div className="w-1 h-6 bg-gray-800 mr-3"></div>
-                <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wider">
+                <h2 className="text-lg font-bold text-gray-900 uppercase tracking-wider">
                   {typedSection.sectionTitle}
                 </h2>
               </div>
@@ -117,7 +117,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 {key === 'education' && sortedItems.map((education: any) => (
                   <div key={education.id} className="pl-4 border-l-2 border-gray-200">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-bold text-gray-900">{education.degree}</h3>
+                      <h3 className="text-base font-bold text-gray-900">{education.degree}</h3>
                       <span className="text-sm text-gray-600 font-mono">
                         {formatDateRange(education.startDate, education.endDate, education.present)}
                       </span>
@@ -136,7 +136,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 {key === 'experience' && sortedItems.map((experience: any) => (
                   <div key={experience.id} className="pl-4 border-l-2 border-gray-200">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-bold text-gray-900">{experience.jobTitle}</h3>
+                      <h3 className="text-base font-bold text-gray-900">{experience.jobTitle}</h3>
                       <span className="text-sm text-gray-600 font-mono">
                         {formatDateRange(experience.startDate, experience.endDate, experience.present)}
                       </span>
@@ -163,7 +163,7 @@ const LaTeXTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   return (
                     <div key={project.id} className="pl-4 border-l-2 border-gray-200">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-gray-900">{project.title}</h3>
+                        <h3 className="text-base font-bold text-gray-900">{project.title}</h3>
                         {hasValidDates && (
                           <span className="text-sm text-gray-600 font-mono">
                             {formatDateRange(project.startDate, project.endDate, project.present)}
