@@ -79,8 +79,12 @@ const ResumePreviewPage = () => {
             display: none !important;
           }
           @page {
-            margin: 0;  
+            margin: 1cm 0 1.5cm 0;  
             size: A4;
+          }
+          
+          @page :first {
+            margin: 0 0 1.5cm 0;
           }
           
           /* Allow multiple pages for resume */
@@ -90,12 +94,26 @@ const ResumePreviewPage = () => {
             height: auto !important;
             page-break-inside: auto !important;
             break-inside: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           
           /* Prevent page breaks within sections */
           .resume-section {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
+          }
+          
+          /* Add margin at end of first page */
+          .resume-container > *:first-child {
+            margin-bottom: 1cm !important;
+            padding-bottom: 0.5cm !important;
+          }
+          
+          /* Add margin at start of subsequent pages */
+          .resume-container > *:not(:first-child) {
+            margin-top: 1cm !important;
+            padding-top: 0.5cm !important;
           }
           
           /* Optimize spacing for multi-page layout */
@@ -128,6 +146,12 @@ const ResumePreviewPage = () => {
             height: auto !important;
             page-break-inside: auto !important;
             break-inside: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            transform: none !important;
           }
           
           /* Remove shadows, borders, and rounded corners for clean printing */
@@ -171,22 +195,68 @@ const ResumePreviewPage = () => {
           body {
             margin: 0;
             padding: 0;
-            background: white;
+            background: #f5f5f5;
           }
           
           /* Show scrollbar for screen preview */
           .resume-container {
             max-height: 100vh;
             overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
           }
           
-          /* Add a subtle border to show A4 boundaries */
+          /* Optimize A4 boundaries for screen viewing */
           .single-page-resume {
-            border: 1px solid #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             max-width: 21cm;
+            width: 100%;
             margin: 0 auto;
             min-height: 29.7cm;
             background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform-origin: top center;
+            /* Scale up slightly for better readability on screen */
+            transform: scale(1.05);
+            margin-bottom: 2rem;
+          }
+          
+          /* Responsive scaling for different screen sizes */
+          @media (max-width: 1200px) {
+            .single-page-resume {
+              transform: scale(1);
+              max-width: 95%;
+            }
+          }
+          
+          @media (max-width: 768px) {
+            .single-page-resume {
+              transform: scale(0.95);
+              max-width: 98%;
+              margin: 0 1rem;
+            }
+            .resume-container {
+              padding: 1rem;
+            }
+          }
+          
+          /* Ensure content is properly sized within the scaled container */
+          .single-page-resume * {
+            box-sizing: border-box;
+          }
+          
+          /* Improve text readability on screen */
+          .single-page-resume h1,
+          .single-page-resume h2,
+          .single-page-resume h3 {
+            line-height: 1.2;
+          }
+          
+          .single-page-resume p {
+            line-height: 1.5;
           }
         }
       `}</style>
