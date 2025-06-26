@@ -66,7 +66,7 @@ export interface ExperienceItem extends BaseItem {
 
 export interface SkillItem extends BaseItem {
   skill: string;
-  level: 'BEGINNER' | 'INTERMEDIATE' | 'PROFICIENT' | 'EXPERT';
+  level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
 }
 
 export interface ProjectItem extends BaseItem {
@@ -79,7 +79,7 @@ export interface ProjectItem extends BaseItem {
 }
 
 // Template Types
-export type TemplateName = 'modern' | 'classic' | 'technical' | 'minimal' | 'harvard' | 'huntergreen' | 'atlanticblue';
+export type TemplateName = 'modern' | 'classic' | 'technical' | 'harvard' | 'harvardclassic' | 'huntergreen' | 'atlanticblue' | 'latex' | 'skillcategorized';
 
 export interface Template {
   id: TemplateName;

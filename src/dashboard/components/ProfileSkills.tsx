@@ -43,7 +43,7 @@ const ProfileSkills = () => {
     const levelMap = {
       'BEGINNER': 25,
       'INTERMEDIATE': 50,
-      'PROFICIENT': 75,
+      'ADVANCED': 75,
       'EXPERT': 90,
       'beginner': 25,
       'intermediate': 50,
