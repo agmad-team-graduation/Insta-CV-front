@@ -11,6 +11,7 @@ interface ResumeState {
   selectedTemplate: TemplateName;
   isSaving: boolean;
   isGenerating: boolean;
+  hasUnsavedChanges: boolean;
   
   // Actions
   fetchResume: (resumeId?: number) => Promise<void>;
@@ -46,6 +47,7 @@ interface ResumeState {
   ) => void;
   setSelectedTemplate: (template: TemplateName) => void;
   saveResume: () => Promise<void>;
+  markAsSaved: () => void;
 }
 
 const useResumeStore = create<ResumeState>((set, get) => ({
@@ -55,13 +57,14 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   selectedTemplate: 'modern',
   isSaving: false,
   isGenerating: false,
+  hasUnsavedChanges: false,
 
   fetchResume: async (resumeId?: number) => {
     if (!resumeId) return;
     set({ isLoading: true, error: null });
     try {
       const resumeData = await fetchResume(resumeId);
-      set({ resume: resumeData, isLoading: false });
+      set({ resume: resumeData, isLoading: false, hasUnsavedChanges: false });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to fetch resume data', 
@@ -74,7 +77,7 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const resumeData = await createCV(createEmpty);
-      set({ resume: resumeData, isLoading: false });
+      set({ resume: resumeData, isLoading: false, hasUnsavedChanges: false });
       return resumeData.id;
     } catch (error) {
       set({ 
@@ -95,7 +98,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...state.resume.personalDetails,
             ...details
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -110,7 +114,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...state.resume.summarySection,
             summary
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -125,7 +130,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...state.resume.summarySection,
             sectionTitle: newTitle
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -140,7 +146,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...state.resume[sectionKey],
             sectionTitle: newTitle
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -156,7 +163,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
               ...state.resume.personalDetails,
               hidden: !state.resume.personalDetails.hidden
             }
-          }
+          },
+          hasUnsavedChanges: true
         };
       }
       return {
@@ -166,7 +174,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...state.resume[sectionKey],
             hidden: !state.resume[sectionKey].hidden
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -262,7 +271,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...section,
             items: updatedItems
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -327,7 +337,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
             ...section,
             items: reorderedItems
           }
-        }
+        },
+        hasUnsavedChanges: true
       };
     });
   },
@@ -370,7 +381,7 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     set({ isSaving: true, error: null });
     try {
       await updateResume(resume.id, resume);
-      set({ isSaving: false });
+      set({ isSaving: false, hasUnsavedChanges: false });
     } catch (error) {
       console.log("error saving resume", error);
       set({ 
@@ -386,7 +397,8 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       const resumeData = await generateCV(jobId);
       set({ 
         resume: resumeData, 
-        isGenerating: false
+        isGenerating: false,
+        hasUnsavedChanges: false
       });
       return resumeData.id;
     } catch (error) {
@@ -416,6 +428,10 @@ const useResumeStore = create<ResumeState>((set, get) => ({
       toast.error('Failed to update title');
       throw error;
     }
+  },
+
+  markAsSaved: () => {
+    set({ hasUnsavedChanges: false });
   },
 }));
 
