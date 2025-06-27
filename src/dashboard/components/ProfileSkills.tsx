@@ -29,19 +29,36 @@ const ProfileSkills = () => {
   const [skills, setSkills] = useState<TransformedSkill[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to convert skill level to percentage
+  const getSkillLevelPercentage = (level: string): number => {
+    const levelMap: Record<string, number> = {
+      'BEGINNER': 25,
+      'INTERMEDIATE': 50,
+      'ADVANCED': 75,
+      'EXPERT': 100,
+      'beginner': 25,
+      'intermediate': 50,
+      'advanced': 75,
+      'expert': 100
+    };
+    return levelMap[level] || 50;
+  };
+
   // Fetch skills from API
   const fetchSkills = async () => {
     try {
       const response = await apiClient.get('/api/v1/profiles/me/skills');
       const skillsData: UserSkillResponse[] = response.data || [];
       
-      // Transform skills data to use marketDemandPercentage from backend
-      const transformedSkills: TransformedSkill[] = skillsData.map((skill: UserSkillResponse) => ({
-        name: skill.skill,
-        level: skill.marketDemandPercentage, // Use marketDemandPercentage from backend
-        category: getSkillCategory(skill.skill),
-        inDemand: isSkillInDemand(skill.skill)
-      }));
+      // Transform skills data to use skill level percentage
+      const transformedSkills: TransformedSkill[] = skillsData
+        .map((skill: UserSkillResponse) => ({
+          name: skill.skill,
+          level: getSkillLevelPercentage(skill.level), // Use skill level percentage
+          category: getSkillCategory(skill.skill),
+          inDemand: isSkillInDemand(skill.skill)
+        }))
+        .filter(skill => skill.level > 0); // Filter out skills with 0% level
       
       setSkills(transformedSkills);
     } catch (error) {
@@ -59,19 +76,19 @@ const ProfileSkills = () => {
       'React': 'Frontend',
       'Vue': 'Frontend',
       'Angular': 'Frontend',
-      'JavaScript': 'Language',
-      'TypeScript': 'Language',
-      'Python': 'Language',
-      'Java': 'Language',
+      'JavaScript': 'Frontend',
+      'TypeScript': 'Frontend',
+      'Python': 'Backend',
+      'Java': 'Backend',
       'Node.js': 'Backend',
       'Express': 'Backend',
       'Spring': 'Backend',
       'AWS': 'Cloud',
       'Azure': 'Cloud',
-      'Docker': 'DevOps',
-      'Kubernetes': 'DevOps'
+      'Docker': 'Cloud',
+      'Kubernetes': 'Cloud'
     };
-    return categories[skillName] || 'Other';
+    return categories[skillName] || 'Frontend';
   };
 
   const isSkillInDemand = (skillName: string): boolean => {
@@ -91,7 +108,7 @@ const ProfileSkills = () => {
   if (loading) {
     return (
       <Card className="border-0 shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle className="flex items-center justify-between">
             <span className="text-lg font-semibold">Your Skills</span>
             <Button 
@@ -113,7 +130,7 @@ const ProfileSkills = () => {
 
   return (
     <Card className="border-0 shadow-sm">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="flex items-center justify-between">
           <span className="text-lg font-semibold">Your Skills</span>
           <Button 
@@ -140,40 +157,42 @@ const ProfileSkills = () => {
             </Button>
           </div>
         ) : (
-          skills.map((skill, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">{skill.name}</span>
-                  {skill.inDemand && (
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                  )}
+          <div className="max-h-64 overflow-y-auto pr-2 space-y-3">
+            {skills.map((skill, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">{skill.name}</span>
+                    {(skill.inDemand || skill.level > 75) && (
+                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                    )}
+                  </div>
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs bg-gray-100 text-gray-600"
+                  >
+                    {skill.category}
+                  </Badge>
                 </div>
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs bg-gray-100 text-gray-600"
-                >
-                  {skill.category}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Progress className="flex-1 h-2" value={skill.level} {...({} as any)} />
+                  <span className="text-xs text-gray-500 min-w-[30px]">{Math.round(skill.level)}%</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Progress value={skill.level} className="flex-1 h-2" {...({} as any)} />
-                <span className="text-xs text-gray-500 min-w-[30px]">{Math.round(skill.level)}%</span>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
         
         {skills.length > 0 && (
           <div className="pt-4 border-t">
-            <div className="text-xs text-gray-500 mb-2">Market Demand Insights</div>
+            <div className="text-xs text-gray-500 mb-2">Skill Level Insights</div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                <span className="text-xs text-gray-600">High demand skills</span>
+                <span className="text-xs text-gray-600">High demand skills & advanced/expert level skills</span>
               </div>
               <p className="text-xs text-gray-500">
-                Percentages show market demand for each skill.
+                Percentages show your skill proficiency level.
               </p>
             </div>
           </div>
