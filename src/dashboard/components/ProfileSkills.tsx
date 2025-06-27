@@ -36,12 +36,14 @@ const ProfileSkills = () => {
       const skillsData: UserSkillResponse[] = response.data || [];
       
       // Transform skills data to use marketDemandPercentage from backend
-      const transformedSkills: TransformedSkill[] = skillsData.map((skill: UserSkillResponse) => ({
-        name: skill.skill,
-        level: skill.marketDemandPercentage, // Use marketDemandPercentage from backend
-        category: getSkillCategory(skill.skill),
-        inDemand: isSkillInDemand(skill.skill)
-      }));
+      const transformedSkills: TransformedSkill[] = skillsData
+        .map((skill: UserSkillResponse) => ({
+          name: skill.skill,
+          level: skill.marketDemandPercentage, // Use marketDemandPercentage from backend
+          category: getSkillCategory(skill.skill),
+          inDemand: isSkillInDemand(skill.skill)
+        }))
+        .filter(skill => skill.level > 0); // Filter out skills with 0% level
       
       setSkills(transformedSkills);
     } catch (error) {
@@ -59,19 +61,19 @@ const ProfileSkills = () => {
       'React': 'Frontend',
       'Vue': 'Frontend',
       'Angular': 'Frontend',
-      'JavaScript': 'Language',
-      'TypeScript': 'Language',
-      'Python': 'Language',
-      'Java': 'Language',
+      'JavaScript': 'Frontend',
+      'TypeScript': 'Frontend',
+      'Python': 'Backend',
+      'Java': 'Backend',
       'Node.js': 'Backend',
       'Express': 'Backend',
       'Spring': 'Backend',
       'AWS': 'Cloud',
       'Azure': 'Cloud',
-      'Docker': 'DevOps',
-      'Kubernetes': 'DevOps'
+      'Docker': 'Cloud',
+      'Kubernetes': 'Cloud'
     };
-    return categories[skillName] || 'Other';
+    return categories[skillName] || 'Frontend';
   };
 
   const isSkillInDemand = (skillName: string): boolean => {
@@ -140,28 +142,30 @@ const ProfileSkills = () => {
             </Button>
           </div>
         ) : (
-          skills.map((skill, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">{skill.name}</span>
-                  {skill.inDemand && (
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                  )}
+          <div className="max-h-64 overflow-y-auto pr-2 space-y-3">
+            {skills.map((skill, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">{skill.name}</span>
+                    {(skill.inDemand || skill.level > 90) && (
+                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                    )}
+                  </div>
+                  <Badge 
+                    variant="secondary" 
+                    className="text-xs bg-gray-100 text-gray-600"
+                  >
+                    {skill.category}
+                  </Badge>
                 </div>
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs bg-gray-100 text-gray-600"
-                >
-                  {skill.category}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Progress className="flex-1 h-2" value={skill.level} {...({} as any)} />
+                  <span className="text-xs text-gray-500 min-w-[30px]">{Math.round(skill.level)}%</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Progress value={skill.level} className="flex-1 h-2" {...({} as any)} />
-                <span className="text-xs text-gray-500 min-w-[30px]">{Math.round(skill.level)}%</span>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
         
         {skills.length > 0 && (
@@ -170,7 +174,7 @@ const ProfileSkills = () => {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                <span className="text-xs text-gray-600">High demand skills</span>
+                <span className="text-xs text-gray-600">High demand skills & skills above 90%</span>
               </div>
               <p className="text-xs text-gray-500">
                 Percentages show market demand for each skill.
