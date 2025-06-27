@@ -28,6 +28,20 @@ function JobDetailsPage() {
   const [isExternal, setIsExternal] = useState(false);
   const { generateCVForJob } = useResumeStore();
 
+  // Helper function to generate company initials
+  const generateCompanyInitials = (companyName) => {
+    if (!companyName) return 'IC'; // Fallback to InstaCV initials
+    
+    const words = companyName.trim().split(/\s+/);
+    if (words.length === 1) {
+      // Single word: take first two letters
+      return words[0].substring(0, 2).toUpperCase();
+    } else {
+      // Multiple words: take first letter of first two words
+      return words.slice(0, 2).map(word => word.charAt(0)).join('').toUpperCase();
+    }
+  };
+
   const fetchJobDetails = async (forceAnalyze = false) => {
     try {
       setLoading(true);
@@ -139,6 +153,9 @@ function JobDetailsPage() {
   const matchedSkills = job.skillMatchingAnalysis.matchedSkills?.map(skill => skill.jobSkill.skill) || [];
   const missingSkills = job.skillMatchingAnalysis.unmatchedJobSkills?.map(skill => skill.skill) || [];
 
+  // Generate company initials for the header
+  const companyInitials = generateCompanyInitials(job.company);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -158,7 +175,7 @@ function JobDetailsPage() {
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-400 font-mono">Job ID: #{jobID}</span>
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">IC</span>
+                <span className="text-white font-bold text-sm">{companyInitials}</span>
               </div>
             </div>
           </div>

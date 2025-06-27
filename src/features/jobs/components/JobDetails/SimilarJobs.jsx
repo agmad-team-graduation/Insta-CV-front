@@ -2,6 +2,14 @@ import React from 'react';
 import { Briefcase, MapPin, DollarSign, ExternalLink } from 'lucide-react';
 
 const SimilarJobs = ({ jobs, onJobClick }) => {
+  // Helper function to generate a unique key for each job
+  const generateJobKey = (job, index) => {
+    if (job.id) return `job-${job.id}`;
+    if (job.title && job.company) return `job-${job.title}-${job.company}-${index}`;
+    if (job.title) return `job-${job.title}-${index}`;
+    return `job-unknown-${index}`;
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
       <div className="flex items-center gap-3 mb-6">
@@ -13,7 +21,7 @@ const SimilarJobs = ({ jobs, onJobClick }) => {
         {jobs && jobs.length > 0 ? (
           jobs.slice(0, 6).map((job, idx) => (
             <div
-              key={job.id || idx}
+              key={generateJobKey(job, idx)}
               className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-pointer group"
               onClick={() => onJobClick(job.id)}
             >
