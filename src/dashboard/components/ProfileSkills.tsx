@@ -29,17 +29,32 @@ const ProfileSkills = () => {
   const [skills, setSkills] = useState<TransformedSkill[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to convert skill level to percentage
+  const getSkillLevelPercentage = (level: string): number => {
+    const levelMap: Record<string, number> = {
+      'BEGINNER': 25,
+      'INTERMEDIATE': 50,
+      'ADVANCED': 75,
+      'EXPERT': 100,
+      'beginner': 25,
+      'intermediate': 50,
+      'advanced': 75,
+      'expert': 100
+    };
+    return levelMap[level] || 50;
+  };
+
   // Fetch skills from API
   const fetchSkills = async () => {
     try {
       const response = await apiClient.get('/api/v1/profiles/me/skills');
       const skillsData: UserSkillResponse[] = response.data || [];
       
-      // Transform skills data to use marketDemandPercentage from backend
+      // Transform skills data to use skill level percentage
       const transformedSkills: TransformedSkill[] = skillsData
         .map((skill: UserSkillResponse) => ({
           name: skill.skill,
-          level: skill.marketDemandPercentage, // Use marketDemandPercentage from backend
+          level: getSkillLevelPercentage(skill.level), // Use skill level percentage
           category: getSkillCategory(skill.skill),
           inDemand: isSkillInDemand(skill.skill)
         }))
@@ -93,7 +108,7 @@ const ProfileSkills = () => {
   if (loading) {
     return (
       <Card className="border-0 shadow-sm">
-        <CardHeader>
+        <CardHeader className="">
           <CardTitle className="flex items-center justify-between">
             <span className="text-lg font-semibold">Your Skills</span>
             <Button 
@@ -115,7 +130,7 @@ const ProfileSkills = () => {
 
   return (
     <Card className="border-0 shadow-sm">
-      <CardHeader>
+      <CardHeader className="">
         <CardTitle className="flex items-center justify-between">
           <span className="text-lg font-semibold">Your Skills</span>
           <Button 
@@ -148,7 +163,7 @@ const ProfileSkills = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{skill.name}</span>
-                    {(skill.inDemand || skill.level > 90) && (
+                    {(skill.inDemand || skill.level > 75) && (
                       <Star className="w-3 h-3 text-yellow-500 fill-current" />
                     )}
                   </div>
@@ -170,14 +185,14 @@ const ProfileSkills = () => {
         
         {skills.length > 0 && (
           <div className="pt-4 border-t">
-            <div className="text-xs text-gray-500 mb-2">Market Demand Insights</div>
+            <div className="text-xs text-gray-500 mb-2">Skill Level Insights</div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                <span className="text-xs text-gray-600">High demand skills & skills above 90%</span>
+                <span className="text-xs text-gray-600">High demand skills & advanced/expert level skills</span>
               </div>
               <p className="text-xs text-gray-500">
-                Percentages show market demand for each skill.
+                Percentages show your skill proficiency level.
               </p>
             </div>
           </div>
