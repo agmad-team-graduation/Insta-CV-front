@@ -15,18 +15,18 @@ const Signup = () => {
     handleGitHubSignup,
   } = UseAuth();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     const { name: fieldName, value } = e.target;
     if (fieldName === 'name') {
-      (setName as (value: string) => void)(value);
+      setName(value);
     } else if (fieldName === 'email') {
-      (setEmail as (value: string) => void)(value);
+      setEmail(value);
     }
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    const result = await handleSubmit() as { success: boolean; message: string } | undefined;
+    const result = await handleSubmit();
     if (result?.success) {
       toast.success(result.message || 'Signup successful!');
     } else {
