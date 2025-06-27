@@ -26,9 +26,13 @@ const JobsList = ({ isRecommended = false, refreshTrigger = 0 }) => {
       const response = await apiClient.get(endpoint);
       
       // Handle both response formats (content array or direct array)
-      const jobsData = response.data.content || response.data;
+      let jobsData = response.data.content || response.data;
+      // if (isRecommended) {
+      //   jobsData = jobsData.filter(job => job.skillMatchingAnalysis?.matchedSkillsPercentage > 0);
+      // }
       const totalPagesData = response.data.totalPages || 1;
       
+
       if (Array.isArray(jobsData)) {
         setJobs(jobsData);
         setTotalPages(totalPagesData);
@@ -88,11 +92,37 @@ const JobsList = ({ isRecommended = false, refreshTrigger = 0 }) => {
   return (
     <div>
       {jobs.length === 0 && !loading && (
-        <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg border border-gray-200">
-          <Briefcase className="w-12 h-12 text-gray-400 mb-3" />
-          <h3 className="text-lg font-medium text-gray-700 mb-1">No jobs found</h3>
-          <p className="text-gray-500">Check back later for new opportunities, or try a different page.</p>
-        </div>
+          <>  
+            <div className="text-center py-8 px-4">
+              <div className="max-w-md mx-auto">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <div className="flex items-center justify-center mb-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  {isRecommended && (
+                    <>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No New Recommendations Yet</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      We're continuously analyzing new opportunities for you. Check back later for fresh job recommendations.
+                    </p>
+                    <div className="mt-4 pt-4 border-t border-blue-100">
+                      <p className="text-xs text-gray-500">
+                        💡 <strong>Tip:</strong> If you recently updated your profile, try searching for recommendations again to get the latest matches.
+                      </p>
+                    </div>
+                    </>
+                  )}
+                  {!isRecommended && (
+                    <p className="text-gray-500">No jobs found. Please add a job to your profile to get started.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
       )}
 
       {jobs.length > 0 && (

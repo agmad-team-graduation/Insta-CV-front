@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui
 import { Button } from "@/common/components/ui/button";
 import { Badge } from "@/common/components/ui/badge";
 import { ChevronRight, ChevronLeft, Plus, CheckCircle, XCircle, Target, User, Loader2, Info } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '@/common/utils/apiClient';
 import useResumeStore from '../store/resumeStore';
 import { toast } from 'sonner';
@@ -39,6 +39,7 @@ const JobSkillsComparison: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [addingSkills, setAddingSkills] = useState<string[]>([]);
   const [addingAllSkills, setAddingAllSkills] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -177,7 +178,7 @@ const JobSkillsComparison: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.open(`/job-details/${resume?.jobId}`, '_blank')}
+              onClick={() => navigate(`/job-details/${resume?.jobId}`)}
               className="text-xs"
             >
               View Job Details
@@ -251,7 +252,12 @@ const JobSkillsComparison: React.FC = () => {
           <div className="text-center pb-4 border-b border-gray-200">
             <h3 className="font-semibold text-gray-900 mb-1">{jobData.title}</h3>
             <p className="text-sm text-gray-600">@ {jobData.company}</p>
-            <Badge variant="outline" className="mt-2">
+            <Badge 
+              variant="outline" 
+              className="mt-2 cursor-pointer hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              onClick={() => navigate(`/job-details/${jobData.id}`)}
+              title="Click to view job details"
+            >
               Job #{jobData.id}
             </Badge>
           </div>
