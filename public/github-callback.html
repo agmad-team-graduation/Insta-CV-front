@@ -9,7 +9,7 @@
 
       if (code) {
         if (!isLogin){
-          fetch(`http://localhost:8080/api/github/test/callback?code=${code}`)
+          fetch(`https://instacv-backend-production.up.railway.app/api/github/test/callback?code=${code}`)
             .then(res => res.json())
             .then(data => {
               // Send token response back to main window
@@ -26,7 +26,7 @@
             });
         }
         else {
-           fetch(`http://localhost:8080/api/github/test/login-callback?code=${code}`)
+           fetch(`https://instacv-backend-production.up.railway.app/api/github/test/login-callback?code=${code}`)
           .then(res => res.json())
           .then(data => {
             // Send login response back to main window

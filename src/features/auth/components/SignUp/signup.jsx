@@ -57,7 +57,7 @@ const Signup = () => {
                     variant="outline"
                     size="lg"
                     className="w-full py-6 text-gray-700 border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
-                    onClick={() => window.location.href = "http://localhost:8080/api/auth/oauth2/authorize/google"}
+                    onClick={() => window.location.href = "https://instacv-backend-production.up.railway.app/api/auth/oauth2/authorize/google"}
                   >
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                       <path

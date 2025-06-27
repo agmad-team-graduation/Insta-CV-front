@@ -88,6 +88,8 @@ export const LoginProvider = ({ children }) => {
             window.addEventListener(
                 "message",
                 async (event) => {
+                    console.log("event.origin", event.origin);
+                    console.log("window.location.origin", window.location.origin);
                     if (event.origin !== window.location.origin) return;
       
                     const { token, expiresIn, user, error } = event.data;
