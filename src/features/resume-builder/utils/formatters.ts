@@ -29,18 +29,18 @@ export const formatDateRange = (startDate: string, endDate: string, isPresent: b
 };
 
 /**
- * Get skill level as visual representation
+ * Get skill level as visual representation using consistent-sized dots
  */
 export const getSkillLevelBars = (level: string) => {
   const levels = {
     'BEGINNER': 1,
     'INTERMEDIATE': 2,
-    'PROFICIENT': 3,
+    'ADVANCED': 3,
     'EXPERT': 4
   };
   
   const levelValue = levels[level as keyof typeof levels] || 0;
-  return '●'.repeat(levelValue) + '○'.repeat(4 - levelValue);
+  return '●'.repeat(levelValue) + '●'.repeat(4 - levelValue);
 };
 
 /**
@@ -50,7 +50,7 @@ export const getSkillLevelClass = (level: string) => {
   const levels = {
     'BEGINNER': 'bg-blue-100 text-blue-800',
     'INTERMEDIATE': 'bg-green-100 text-green-800',
-    'PROFICIENT': 'bg-purple-100 text-purple-800',
+    'ADVANCED': 'bg-purple-100 text-purple-800',
     'EXPERT': 'bg-orange-100 text-orange-800'
   };
   
@@ -65,4 +65,34 @@ export const toTitleCase = (str: string) => {
     .replace(/([a-z])([A-Z])/g, '$1 $2') // Convert camelCase to spaces
     .replace(/_/g, ' ') // Convert snake_case to spaces
     .replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
+};
+
+/**
+ * Format location string, handling missing city or country
+ */
+export const formatLocation = (city: string, country: string): string => {
+  const hasCity = city && city.trim() !== '';
+  const hasCountry = country && country.trim() !== '';
+  
+  if (hasCity && hasCountry) {
+    return `${city}, ${country}`;
+  } else if (hasCity) {
+    return city;
+  } else if (hasCountry) {
+    return country;
+  } else {
+    return '';
+  }
+};
+
+/**
+ * Format education/experience location with institution/company
+ */
+export const formatInstitutionLocation = (institution: string, city: string, country: string): string => {
+  const location = formatLocation(city, country);
+  if (location) {
+    return `${institution}, ${location}`;
+  } else {
+    return institution;
+  }
 }; 

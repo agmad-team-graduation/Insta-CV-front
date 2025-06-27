@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { SignUpProvider } from './features/auth/context/ContextSignUp';
 import { LoginProvider } from './features/auth/context/ContextLogin';
-import { Login } from './features/auth/components/Login';
+import Login from './features/auth/components/Login/login';
 import "@/common/styles/App.css";
 import LandingPage from "./pages/LandingPage"
 import Footer from '@/common/components/layout/Footer';
@@ -14,9 +14,9 @@ import { Toaster } from 'sonner';
 import OAuth2Success from './features/auth/components/OAuth2Success';
 import Profile from './features/profile/pages/Profile';
 import GithubProfile from './features/github/githubProfile';
-import { ForgotPassword } from './features/auth/components/ForgotPassword';
+import ForgotPassword from './features/auth/components/ForgotPassword/forgotPassword';
 import RecommendedJobs from './features/jobs/components/RecommendedJobs/recommendedJobs';
-import { SetPassword } from './features/auth/components/SetPasswordForm';
+import SetPassword from './features/auth/components/SetPasswordForm/setPassword';
 import InterviewQuestionsPage from './features/jobs/components/InterviewQuestions/interviewQuestionsPage';
 import ResumeBuilder from './features/resume-builder/components/ResumeBuilder';
 import ResumeBuilderLayout from './features/resume-builder/ResumeBuilderLayout';
@@ -26,8 +26,6 @@ import ProfileFlow from './features/profile/pages/ProfileFlow';
 import SignUp from './features/auth/components/SignUp/signup';
 
 
-
-// Create a wrapper component to use useLocation hook
 function AppContent() {
   const location = useLocation();
   const [cookies] = useCookies(['isLoggedIn']);

@@ -7,6 +7,7 @@ import { Button } from "@/common/components/ui/button";
 import GithubProjectSection from "./components/GithubProjectSection";
 import GithubSkillsSection from "./components/GithubSkillsSection";
 import useUserStore from "@/store/userStore";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const GithubProfile = () => {
   const [githubData, setGithubData] = useState(null);
@@ -129,14 +130,10 @@ const GithubProfile = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-6 px-4 max-w-5xl mt-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <p className="text-gray-600">Loading GitHub profile... Please don't leave this page</p>
-          </div>
-        </div>
-      </div>
+      <PageLoader 
+        title="Loading GitHub Profile" 
+        subtitle="We're analyzing your repositories and skills..."
+      />
     );
   }
 

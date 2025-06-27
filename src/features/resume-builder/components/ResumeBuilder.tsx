@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon } from 'lucide-react';
@@ -7,7 +7,9 @@ import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
+import JobSkillsComparison from './JobSkillsComparison';
 import { Input } from "../../../common/components/ui/input";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -22,7 +24,8 @@ const ResumeBuilder: React.FC = () => {
     isSaving,
     saveResume,
     generateCVForJob,
-    updateResumeTitle
+    updateResumeTitle,
+    hasUnsavedChanges
   } = useResumeStore();
 
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
@@ -30,6 +33,9 @@ const ResumeBuilder: React.FC = () => {
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
+  
+  // Add ref for debouncing
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // DnD sensors configuration
   const sensors = useSensors(
@@ -62,33 +68,49 @@ const ResumeBuilder: React.FC = () => {
     initializeResume();
   }, [id, fetchResume, createNewResume, navigate]);
 
-  // Auto-save every 5 seconds when changes are made
+  // Auto-save when there are unsaved changes
   useEffect(() => {
-    if (resume && !isSaving) {
-      const timeoutId = setTimeout(() => {
+    if (hasUnsavedChanges && resume && !isSaving) {
+      // Clear any existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Set new timeout for auto-save
+      saveTimeoutRef.current = setTimeout(() => {
         saveResume()
           .then(() => {
             setShowSaveSuccess(true);
             setTimeout(() => setShowSaveSuccess(false), 2000);
           });
-      }, 5000);
-
-      return () => clearTimeout(timeoutId);
+      }, 3000);
     }
-  }, [resume, isSaving, saveResume]);
-
-  // Handle CV generation and navigation
-  const handleGenerateCV = async (jobId: number) => {
-    try {
-      await generateCVForJob(jobId);
-      // After successful generation, navigate to the new resume
-      if (resume?.id) {
-        navigate(`/resumes/${resume.id}`);
+    
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    } catch (error) {
-      console.error('Error generating CV:', error);
-    }
-  };
+    };
+  }, [hasUnsavedChanges, resume, isSaving, saveResume]);
+
+  // Handle Ctrl+S for manual saving
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (resume && !isSaving) {
+          saveResume()
+            .then(() => {
+              setShowSaveSuccess(true);
+              setTimeout(() => setShowSaveSuccess(false), 2000);
+            });
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [resume, isSaving, saveResume]);
 
   // Replace handleDownloadPdf with Puppeteer backend download
   const downloadResumePdf = async () => {
@@ -99,7 +121,13 @@ const ResumeBuilder: React.FC = () => {
       const downloadButton = document.querySelector('[title="Download PDF (Server)"]') as HTMLButtonElement;
       if (downloadButton) {
         downloadButton.disabled = true;
-        downloadButton.innerHTML = '<div class="animate-spin h-4 w-4 mr-2">⏳</div> Generating...';
+        downloadButton.innerHTML = `
+          <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Generating...
+        `;
       }
 
       // Check server health first
@@ -214,10 +242,10 @@ const ResumeBuilder: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <Loader2Icon className="animate-spin h-12 w-12 text-blue-600 mb-4" />
-        <h2 className="text-xl font-medium text-gray-700">Loading your resume...</h2>
-      </div>
+      <PageLoader 
+        title="Loading Resume Builder" 
+        subtitle="We're preparing your resume editor..."
+      />
     );
   }
 
@@ -328,65 +356,76 @@ const ResumeBuilder: React.FC = () => {
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 flex justify-center items-start py-8 px-80">
+        <main className="flex-1 flex justify-center items-start py-8 px-60">
           <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden relative">
-            {/* Sidebar toggle button - always in the same position */}
-            <button
-              onClick={() => setSidebarVisible(!sidebarVisible)}
-              className="absolute -top-2 -left-2 z-20 flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:bg-gray-50"
-              title={sidebarVisible ? 'Hide Sidebar' : 'Show Sidebar'}
-            >
-              {sidebarVisible ? <ChevronLeftIcon size={16} className="text-gray-600" /> : <ChevronRightIcon size={16} className="text-gray-600" />}
-            </button>
-
             {/* Left sidebar */}
-            {sidebarVisible && (
-              <aside className="w-full mt-8 lg:w-2/5 xl:w-1/3 border-r border-gray-200 bg-white flex flex-col h-full">
-                {/* Tabs */}
-                <div className="flex-none flex border-b border-gray-200">
-                  <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                      }`}
-                    onClick={() => setActiveTab('content')}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <FileEditIcon size={18} />
-                      Content
-                    </span>
-                  </button>
-                  <button
-                    className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                      }`}
-                    onClick={() => setActiveTab('templates')}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <LayoutIcon size={18} />
-                      Templates
-                    </span>
-                  </button>
-                </div>
+            <div className={`bg-white border-r border-gray-200 transition-all duration-300 ${
+              sidebarVisible ? 'lg:w-2/5 xl:w-1/3' : 'w-16'
+            }`}>
+              {/* Left sidebar toggle button */}
+              <button
+                onClick={() => setSidebarVisible(!sidebarVisible)}
+                className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
+                title={sidebarVisible ? 'Hide Left Sidebar' : 'Show Left Sidebar'}
+              >
+                {sidebarVisible ? (
+                  <ChevronLeftIcon size={20} className="text-blue-600" />
+                ) : (
+                  <ChevronRightIcon size={20} className="text-blue-600" />
+                )}
+              </button>
 
-                {/* Tab content */}
-                <div className="flex-1 overflow-auto">
-                  {activeTab === 'content' ? (
-                    <EditorSidebar resume={resume} />
-                  ) : (
-                    <TemplateSelector
-                      selectedTemplate={selectedTemplate}
-                    />
-                  )}
+              {sidebarVisible && (
+                <div className="flex flex-col h-full">
+                  {/* Tabs */}
+                  <div className="flex-none flex border-b border-gray-200">
+                    <button
+                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
+                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        }`}
+                      onClick={() => setActiveTab('content')}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <FileEditIcon size={18} />
+                        Content
+                      </span>
+                    </button>
+                    <button
+                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
+                        ? 'text-blue-600 border-b-2 border-blue-600'
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                        }`}
+                      onClick={() => setActiveTab('templates')}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <LayoutIcon size={18} />
+                        Templates
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Tab content */}
+                  <div className="flex-1 overflow-auto">
+                    {activeTab === 'content' ? (
+                      <EditorSidebar resume={resume} />
+                    ) : (
+                      <TemplateSelector
+                        selectedTemplate={selectedTemplate}
+                      />
+                    )}
+                  </div>
                 </div>
-              </aside>
-            )}
+              )}
+            </div>
 
             {/* Preview area */}
             <div className={`flex-1 p-4 mt-8 md:p-8 overflow-auto bg-white relative ${!sidebarVisible ? 'flex justify-center' : ''}`}>
               <ResumePreview resume={resume} />
             </div>
+
+            {/* Right sidebar - Job Skills Comparison */}
+            <JobSkillsComparison />
           </div>
         </main>
       </div>

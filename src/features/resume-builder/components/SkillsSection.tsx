@@ -42,7 +42,7 @@ const getLevelColor = (level: string) => {
       return 'bg-amber-100';
     case 'INTERMEDIATE':
       return 'bg-green-100';
-    case 'PROFICIENT':
+    case 'ADVANCED':
       return 'bg-blue-100';
     case 'EXPERT':
       return 'bg-purple-100';
@@ -115,9 +115,9 @@ const SkillCard: React.FC<SkillCardProps> = ({
             onClick={() => onEdit(skill.id)}
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-900">{skill.skill}</h3>
+              <h3 className="text-sm font-medium text-gray-900 truncate max-w-[70px]" title={skill.skill}>{skill.skill}</h3>
               {skill.level && (
-                <div className={`w-3 h-3 rounded-full ${getLevelColor(skill.level)}`} title={skill.level.charAt(0) + skill.level.slice(1).toLowerCase()} />
+                <div className={`w-3 h-3 rounded-full ${getLevelColor(skill.level)}`} title={skill.level} />
               )}
             </div>
           </div>
@@ -260,8 +260,8 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
                   <span>Intermediate</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-blue-100" title="Proficient"></div>
-                  <span>Proficient</span>
+                  <div className="w-3 h-3 rounded-full bg-blue-100" title="Advanced"></div>
+                  <span>Advanced</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-purple-100" title="Expert"></div>

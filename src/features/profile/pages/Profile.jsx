@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogD
 import { useNavigate } from "react-router-dom";
 import { useBlocker } from "../../../useBlocker";
 import { Upload, Loader2 } from "lucide-react";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -196,7 +197,12 @@ const Profile = () => {
   };
 
   if (loading) {
-    return <div className="container mx-auto py-6 px-4 text-center">Loading profile...</div>;
+    return (
+      <PageLoader 
+        title="Loading Profile" 
+        subtitle="We're fetching your professional information..."
+      />
+    );
   }
 
   if (error) {
@@ -207,52 +213,115 @@ const Profile = () => {
   const mappedSkills = profileData?.userSkills?.map(skill => ({
     id: skill.id || `skill-${skill.skill.replace(/\s+/g, '-').toLowerCase()}`,
     name: skill.skill,
-    level: skill.level?.toLowerCase() ?? ''
+    level: skill.level ?? ''
   })) || [];
 
   // Map experiences to the format expected by ExperienceSection component
-  const mappedExperiences = profileData?.experienceList?.map(exp => ({
-    companyLogo: "https://via.placeholder.com/40", // Placeholder until you have actual logos
-    position: exp.jobTitle,
-    city: exp.city,
-    country: exp.country,
-    company: exp.company,
-    startDate: exp.startDate,
-    endDate: exp.endDate,
-    present: exp.present,
-    location: `${exp.city}, ${exp.country}`,
-    description: exp.description,
-    duration: {
-      startDate: formatDate(exp.startDate),
-      endDate: exp.present ? "Present" : formatDate(exp.endDate)
-    },
-    months: calculateMonths(exp.startDate, exp.endDate, exp.present),
-    responsibilities: [exp.description],
-    techStack: [] // Add tech stack if available in your data
-  })) || [];
+  const mappedExperiences = profileData?.experienceList?.map(exp => {
+    // Handle location construction - only show non-empty values and avoid extra commas
+    const locationParts = [];
+    if (exp.city && exp.city.trim()) locationParts.push(exp.city.trim());
+    if (exp.country && exp.country.trim()) locationParts.push(exp.country.trim());
+    const location = locationParts.length > 0 ? locationParts.join(', ') : '';
+
+    // Handle experience duration - only show dates if both are provided
+    const hasStartDate = exp.startDate && exp.startDate.trim();
+    const hasEndDate = exp.endDate && exp.endDate.trim();
+    const isPresent = exp.present;
+    
+    let durationText = '';
+    if (hasStartDate && (hasEndDate || isPresent)) {
+      const startDate = formatDate(exp.startDate);
+      const endDate = isPresent ? "Present" : formatDate(exp.endDate);
+      durationText = `${startDate} - ${endDate}`;
+    } else if (hasStartDate) {
+      durationText = formatDate(exp.startDate);
+    } else if (hasEndDate) {
+      durationText = formatDate(exp.endDate);
+    }
+
+    return {
+      companyLogo: "https://via.placeholder.com/40", // Placeholder until you have actual logos
+      position: exp.jobTitle,
+      city: exp.city,
+      country: exp.country,
+      company: exp.company,
+      startDate: exp.startDate,
+      endDate: exp.endDate,
+      present: exp.present,
+      location: location,
+      description: exp.description,
+      duration: {
+        startDate: hasStartDate ? formatDate(exp.startDate) : '',
+        endDate: isPresent ? "Present" : (hasEndDate ? formatDate(exp.endDate) : ''),
+        displayText: durationText
+      },
+      months: calculateMonths(exp.startDate, exp.endDate, exp.present),
+      responsibilities: [exp.description],
+      techStack: [] // Add tech stack if available in your data
+    };
+  }) || [];
 
   // Map educations to the format expected by EducationSection component
-  const mappedEducations = profileData?.educationList?.map(edu => ({
-    ...edu,
-    duration: {
-      startDate: formatDate(edu.startDate),
-      endDate: edu.present ? "Present" : formatDate(edu.endDate)
+  const mappedEducations = profileData?.educationList?.map(edu => {
+    // Handle education duration - only show dates if both are provided
+    const hasStartDate = edu.startDate && edu.startDate.trim();
+    const hasEndDate = edu.endDate && edu.endDate.trim();
+    const isPresent = edu.present;
+    
+    let durationText = '';
+    if (hasStartDate && (hasEndDate || isPresent)) {
+      const startDate = formatDate(edu.startDate);
+      const endDate = isPresent ? "Present" : formatDate(edu.endDate);
+      durationText = `${startDate} - ${endDate}`;
+    } else if (hasStartDate) {
+      durationText = formatDate(edu.startDate);
+    } else if (hasEndDate) {
+      durationText = formatDate(edu.endDate);
     }
-  })) || [];
+
+    return {
+      ...edu,
+      duration: {
+        startDate: hasStartDate ? formatDate(edu.startDate) : '',
+        endDate: isPresent ? "Present" : (hasEndDate ? formatDate(edu.endDate) : ''),
+        displayText: durationText
+      }
+    };
+  }) || [];
 
   // Map projects to the format expected by ProjectSection component
-  const mappedProjects = profileData?.projects?.map(project => ({
-    ...project,
-    duration: {
-      startDate: formatDate(project.startDate),
-      endDate: project.present ? "Present" : formatDate(project.endDate)
-    },
-    // Optionally map skills if needed
-    skills: project.skills?.map(skill => ({
-      id: skill.id,
-      skill: skill.skill
-    })) || []
-  })) || [];
+  const mappedProjects = profileData?.projects?.map(project => {
+    // Handle project duration - only show dates if both are provided
+    const hasStartDate = project.startDate && project.startDate.trim();
+    const hasEndDate = project.endDate && project.endDate.trim();
+    const isPresent = project.present;
+    
+    let durationText = '';
+    if (hasStartDate && (hasEndDate || isPresent)) {
+      const startDate = formatDate(project.startDate);
+      const endDate = isPresent ? "Present" : formatDate(project.endDate);
+      durationText = `${startDate} - ${endDate}`;
+    } else if (hasStartDate) {
+      durationText = formatDate(project.startDate);
+    } else if (hasEndDate) {
+      durationText = formatDate(project.endDate);
+    }
+
+    return {
+      ...project,
+      duration: {
+        startDate: hasStartDate ? formatDate(project.startDate) : '',
+        endDate: isPresent ? "Present" : (hasEndDate ? formatDate(project.endDate) : ''),
+        displayText: durationText
+      },
+      // Optionally map skills if needed
+      skills: project.skills?.map(skill => ({
+        id: skill.id,
+        skill: skill.skill
+      })) || []
+    };
+  }) || [];
 
   return (
     <div className="container mx-auto py-6 px-4 max-w-5xl mt-8">
