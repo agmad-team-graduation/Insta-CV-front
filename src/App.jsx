@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { SignUpProvider } from './features/auth/context/ContextSignUp';
 import { LoginProvider } from './features/auth/context/ContextLogin';
-import { Login } from './features/auth/components/Login';
+import Login from './features/auth/components/Login/login';
 import "@/common/styles/App.css";
 import LandingPage from "./pages/LandingPage"
 import Footer from '@/common/components/layout/Footer';
