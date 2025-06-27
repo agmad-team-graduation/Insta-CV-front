@@ -1,7 +1,7 @@
 import React from 'react';
 import { Briefcase, MapPin, DollarSign, ExternalLink } from 'lucide-react';
 
-const SimilarJobs = ({ jobs, onJobClick }) => {
+const SimilarJobs = ({ jobs, onJobClick, currentJobId }) => {
   // Helper function to generate a unique key for each job
   const generateJobKey = (job, index) => {
     if (job.id) return `job-${job.id}`;
@@ -10,15 +10,18 @@ const SimilarJobs = ({ jobs, onJobClick }) => {
     return `job-unknown-${index}`;
   };
 
-  // Function to get random 3 jobs from the array
+  // Function to get random 3 jobs from the array, excluding the current job
   const getRandomJobs = (jobsArray, count = 3) => {
     if (!jobsArray || jobsArray.length === 0) return [];
     
-    // If we have fewer jobs than requested, return all available
-    if (jobsArray.length <= count) return jobsArray;
+    // Filter out the current job
+    const filteredJobs = jobsArray.filter(job => job.id !== currentJobId);
+    
+    // If we have fewer jobs than requested after filtering, return all available
+    if (filteredJobs.length <= count) return filteredJobs;
     
     // Create a copy of the array to avoid mutating the original
-    const shuffled = [...jobsArray];
+    const shuffled = [...filteredJobs];
     
     // Fisher-Yates shuffle algorithm
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -30,7 +33,7 @@ const SimilarJobs = ({ jobs, onJobClick }) => {
     return shuffled.slice(0, count);
   };
 
-  // Get random 3 jobs
+  // Get random 3 jobs (excluding current job)
   const randomJobs = getRandomJobs(jobs, 3);
 
   return (

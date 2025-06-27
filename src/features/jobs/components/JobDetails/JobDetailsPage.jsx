@@ -229,6 +229,7 @@ function JobDetailsPage() {
         <SimilarJobs
           jobs={recommendations}
           onJobClick={handleSimilarJobClick}
+          currentJobId={parseInt(jobID)}
         />
       </main>
     </div>
