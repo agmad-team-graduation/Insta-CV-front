@@ -10,6 +10,29 @@ const SimilarJobs = ({ jobs, onJobClick }) => {
     return `job-unknown-${index}`;
   };
 
+  // Function to get random 3 jobs from the array
+  const getRandomJobs = (jobsArray, count = 3) => {
+    if (!jobsArray || jobsArray.length === 0) return [];
+    
+    // If we have fewer jobs than requested, return all available
+    if (jobsArray.length <= count) return jobsArray;
+    
+    // Create a copy of the array to avoid mutating the original
+    const shuffled = [...jobsArray];
+    
+    // Fisher-Yates shuffle algorithm
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // Return the first 3 jobs from the shuffled array
+    return shuffled.slice(0, count);
+  };
+
+  // Get random 3 jobs
+  const randomJobs = getRandomJobs(jobs, 3);
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
       <div className="flex items-center gap-3 mb-6">
@@ -18,8 +41,8 @@ const SimilarJobs = ({ jobs, onJobClick }) => {
       </div>
       
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobs && jobs.length > 0 ? (
-          jobs.slice(0, 6).map((job, idx) => (
+        {randomJobs && randomJobs.length > 0 ? (
+          randomJobs.map((job, idx) => (
             <div
               key={generateJobKey(job, idx)}
               className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-pointer group"
