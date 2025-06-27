@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
 import { Button } from '@/common/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/common/components/ui/dialog';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '@/common/utils/apiClient';
 import { Badge } from '@/common/components/ui/badge';
@@ -17,34 +17,49 @@ const InterviewQuestionsPage = () => {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [flippedCardId, setFlippedCardId] = useState(null);
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
+  const fetchQuestions = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
       setLoading(true);
-      setError(null);
-      try {
-        const response = await apiClient.post(`/api/v1/jobs/interview-questions`,{jobId:jobID, numberOfQuestions:30});
-        
-        // Set the questions from the response data
-        if (response.data && response.data.questions) {
-          setQuestions(response.data.questions);
-        } else {
-          setError("No questions found for this job.");
+    }
+    setError(null);
+    try {
+      const response = await apiClient.post(`/api/v1/jobs/interview-questions`,{jobId:jobID, numberOfQuestions:10});
+      
+      // Set the questions from the response data
+      if (response.data && response.data.questions) {
+        setQuestions(response.data.questions);
+        if (isRefresh) {
+          toast.success('New questions loaded successfully!');
         }
-      } catch (err) {
-        console.error("Error fetching interview questions:", err.response?.data?.message || err.message);
-        setError("Failed to load interview questions.");
-        toast.error("Failed to load interview questions.");
-      } finally {
-        setLoading(false);
+      } else {
+        setError("No questions found for this job.");
       }
-    };
+    } catch (err) {
+      console.error("Error fetching interview questions:", err.response?.data?.message || err.message);
+      setError("Failed to load interview questions.");
+      toast.error("Failed to load interview questions.");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
     fetchQuestions();
   }, [jobID]);
+
+  const handleRefresh = () => {
+    setFlippedCardId(null); // Reset flipped cards
+    fetchQuestions(true);
+  };
 
   if (loading) {
     return (
@@ -71,7 +86,19 @@ const InterviewQuestionsPage = () => {
               <Sparkles className="mr-2 h-6 w-6 text-blue-600" />
               Interview Questions
             </h1>
-            <div />
+            <Button 
+              onClick={handleRefresh} 
+              disabled={refreshing}
+              variant="outline" 
+              className="flex items-center space-x-2"
+            >
+              {refreshing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              <span>{refreshing ? 'Loading...' : 'New Questions'}</span>
+            </Button>
           </div>
         </div>
       </header>
