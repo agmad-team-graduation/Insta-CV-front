@@ -17,6 +17,9 @@ export interface Resume {
   createdAt: string;
   updatedAt: string;
   sectionsOrder: Record<string, number>;
+  cvSettings?: {
+    template: TemplateName;
+  };
 }
 
 export interface PersonalDetails {

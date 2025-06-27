@@ -20,6 +20,9 @@ interface CV {
   downloads: number;
   views: number;
   jobId?: number;
+  cvSettings?: {
+    template: string;
+  };
 }
 
 const CVsList = () => {
@@ -45,7 +48,8 @@ const CVsList = () => {
         status: cv.status || 'Active',
         downloads: cv.downloads || 0,
         views: cv.views || 0,
-        jobId: cv.jobId
+        jobId: cv.jobId,
+        cvSettings: cv.cvSettings
       }));
       
       setCvs(transformedCVs);
@@ -82,8 +86,11 @@ const CVsList = () => {
   };
 
   const handlePreview = (cvId: string) => {
+    // Find the CV to get its template
+    const cv = cvs.find(c => c.id === cvId);
+    const template = cv?.cvSettings?.template || selectedTemplate;
     // Open preview in new tab with template parameter
-    window.open(`/resumes/${cvId}/preview?template=${selectedTemplate}`, '_blank');
+    window.open(`/resumes/${cvId}/preview?template=${template}`, '_blank');
   };
 
   const handleEdit = (cvId: string) => {
@@ -138,8 +145,12 @@ const CVsList = () => {
         throw new Error('Authentication token not found. Please log in again.');
       }
       
-      // Use the preview page URL with the selected template
-      const previewUrl = `${window.location.origin}/resumes/${cvId}/preview?template=${selectedTemplate}`;
+      // Find the CV to get its template
+      const cv = cvs.find(c => c.id === cvId);
+      const template = cv?.cvSettings?.template || selectedTemplate;
+      
+      // Use the preview page URL with the CV's specific template
+      const previewUrl = `${window.location.origin}/resumes/${cvId}/preview?template=${template}`;
       const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request

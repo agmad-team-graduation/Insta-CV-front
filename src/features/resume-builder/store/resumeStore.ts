@@ -64,7 +64,13 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const resumeData = await fetchResume(resumeId);
-      set({ resume: resumeData, isLoading: false, hasUnsavedChanges: false });
+      const template = resumeData.cvSettings?.template || 'modern';
+      set({ 
+        resume: resumeData, 
+        isLoading: false, 
+        hasUnsavedChanges: false,
+        selectedTemplate: template
+      });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to fetch resume data', 
@@ -77,7 +83,13 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const resumeData = await createCV(createEmpty);
-      set({ resume: resumeData, isLoading: false, hasUnsavedChanges: false });
+      const template = resumeData.cvSettings?.template || 'modern';
+      set({ 
+        resume: resumeData, 
+        isLoading: false, 
+        hasUnsavedChanges: false,
+        selectedTemplate: template
+      });
       return resumeData.id;
     } catch (error) {
       set({ 
@@ -371,7 +383,23 @@ const useResumeStore = create<ResumeState>((set, get) => ({
   },
 
   setSelectedTemplate: (template) => {
-    set({ selectedTemplate: template });
+    set((state) => {
+      if (!state.resume) {
+        return { selectedTemplate: template };
+      }
+      
+      return {
+        selectedTemplate: template,
+        resume: {
+          ...state.resume,
+          cvSettings: {
+            ...state.resume.cvSettings,
+            template: template
+          }
+        },
+        hasUnsavedChanges: true
+      };
+    });
   },
 
   saveResume: async () => {
@@ -395,10 +423,13 @@ const useResumeStore = create<ResumeState>((set, get) => ({
     set({ isGenerating: true, error: null });
     try {
       const resumeData = await generateCV(jobId);
+      // Set the template from cvSettings or fallback to 'modern'
+      const template = resumeData.cvSettings?.template || 'modern';
       set({ 
         resume: resumeData, 
         isGenerating: false,
-        hasUnsavedChanges: false
+        hasUnsavedChanges: false,
+        selectedTemplate: template
       });
       return resumeData.id;
     } catch (error) {
