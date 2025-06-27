@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon } from 'lucide-react';
@@ -24,7 +24,8 @@ const ResumeBuilder: React.FC = () => {
     isSaving,
     saveResume,
     generateCVForJob,
-    updateResumeTitle
+    updateResumeTitle,
+    hasUnsavedChanges
   } = useResumeStore();
 
   const [activeTab, setActiveTab] = useState<'content' | 'templates'>('content');
@@ -32,6 +33,9 @@ const ResumeBuilder: React.FC = () => {
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
+  
+  // Add ref for debouncing
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // DnD sensors configuration
   const sensors = useSensors(
@@ -64,33 +68,49 @@ const ResumeBuilder: React.FC = () => {
     initializeResume();
   }, [id, fetchResume, createNewResume, navigate]);
 
-  // Auto-save every 5 seconds when changes are made
+  // Auto-save when there are unsaved changes
   useEffect(() => {
-    if (resume && !isSaving) {
-      const timeoutId = setTimeout(() => {
+    if (hasUnsavedChanges && resume && !isSaving) {
+      // Clear any existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      
+      // Set new timeout for auto-save
+      saveTimeoutRef.current = setTimeout(() => {
         saveResume()
           .then(() => {
             setShowSaveSuccess(true);
             setTimeout(() => setShowSaveSuccess(false), 2000);
           });
-      }, 5000);
-
-      return () => clearTimeout(timeoutId);
+      }, 3000);
     }
-  }, [resume, isSaving, saveResume]);
-
-  // Handle CV generation and navigation
-  const handleGenerateCV = async (jobId: number) => {
-    try {
-      await generateCVForJob(jobId);
-      // After successful generation, navigate to the new resume
-      if (resume?.id) {
-        navigate(`/resumes/${resume.id}`);
+    
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    } catch (error) {
-      console.error('Error generating CV:', error);
-    }
-  };
+    };
+  }, [hasUnsavedChanges, resume, isSaving, saveResume]);
+
+  // Handle Ctrl+S for manual saving
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (resume && !isSaving) {
+          saveResume()
+            .then(() => {
+              setShowSaveSuccess(true);
+              setTimeout(() => setShowSaveSuccess(false), 2000);
+            });
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [resume, isSaving, saveResume]);
 
   // Replace handleDownloadPdf with Puppeteer backend download
   const downloadResumePdf = async () => {
