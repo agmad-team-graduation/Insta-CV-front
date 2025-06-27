@@ -306,11 +306,13 @@ const CVsList = () => {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => handleDownload(cv.id)}
-                  className="download-button hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+                  onClick={() => toast.info('PDF Download feature is coming soon! Stay tuned for updates.')}
+                  className="download-button opacity-50 cursor-not-allowed"
+                  title="PDF Download - Coming Soon!"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Download
+                  <span className="text-xs text-orange-600 font-medium ml-1">(Soon)</span>
                 </Button>
               </div>
             </div>

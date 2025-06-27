@@ -8,6 +8,7 @@ import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
 import TemplateSelector from './TemplateSelector';
 import { Input } from "../../../common/components/ui/input";
+import { toast } from 'sonner';
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -317,11 +318,12 @@ const ResumeBuilder: React.FC = () => {
 
               {/* Download PDF (Server) Button */}
               <button
-                onClick={downloadResumePdf}
-                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors"
-                title="Download PDF (Server)"
+                onClick={() => toast.info('PDF Download feature is coming soon! Stay tuned for updates.')}
+                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed opacity-50"
+                title="PDF Download - Coming Soon!"
               >
                 <DownloadIcon size={18} /> Download PDF
+                <span className="text-xs text-orange-600 font-medium">(Coming Soon)</span>
               </button>
             </div>
           </div>
