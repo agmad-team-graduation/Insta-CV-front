@@ -4,9 +4,11 @@ import { Button } from "@/common/components/ui/button";
 import { useNavigate, useLocation } from 'react-router-dom';
 import JobsList from '../AllJobs/JobsList';
 import apiClient from '@/common/utils/apiClient';
+import { toast } from 'sonner';
 
 const RecommendedJobs = () => {
   const [forceLoading, setForceLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -14,9 +16,12 @@ const RecommendedJobs = () => {
     setForceLoading(true);
     try {
       await apiClient.post('/api/v1/jobs/scrape/analyze-recommendations');
-      // The JobsList component will handle fetching the updated recommendations
+      // Trigger a refresh of the job list
+      setRefreshTrigger(prev => prev + 1);
+      toast.success('Recommendations analyzed successfully');
     } catch (err) {
       console.error('Error analyzing recommendations:', err);
+      toast.error('Failed to analyze recommendations. Please try again.');
     } finally {
       setForceLoading(false);
     }
@@ -67,7 +72,7 @@ const RecommendedJobs = () => {
       {/* Main content area with flex-grow to push footer down */}
       <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div className="min-h-[calc(100vh-16rem)]">
-          <JobsList isRecommended={true} />
+          <JobsList isRecommended={true} refreshTrigger={refreshTrigger} />
         </div>
       </main>
     </div>

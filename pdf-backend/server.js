@@ -211,6 +211,26 @@ app.get('/generate-pdf', async (req, res) => {
             overflow: visible !important;
             height: auto !important;
             }
+            
+            /* Preserve border radius for skill badges while removing it for other elements */
+            .rounded-lg,
+            .rounded-md,
+            .rounded-sm,
+            .rounded-xl,
+            .rounded-2xl,
+            .rounded-3xl {
+            border-radius: 0 !important;
+            }
+            
+            /* Keep border radius for skill badges */
+            .rounded-full {
+            border-radius: 9999px !important;
+            }
+            
+            /* Keep border radius for skill badges with rounded class */
+            .rounded {
+            border-radius: 0.375rem !important;
+            }
         `
         });
 
@@ -245,7 +265,7 @@ app.get('/generate-pdf', async (req, res) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Use a higher scale to better utilize page width
-        const scale = 1.0;
+        const scale = 0.9;
         console.log('Using scale:', scale);
 
         const pdfBuffer = await page.pdf({

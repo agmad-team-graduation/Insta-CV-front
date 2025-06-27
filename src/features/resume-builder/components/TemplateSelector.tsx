@@ -31,25 +31,25 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       features: ['Professional', 'Traditional', 'Corporate']
     },
     {
-      id: 'minimal',
-      name: 'Minimal',
-      description: 'A clean, minimalist design that puts focus on your content. Great for creative professionals.',
-      thumbnail: 'https://images.pexels.com/photos/7319303/pexels-photo-7319303.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Minimalist', 'Content-focused', 'Elegant']
-    },
-    {
       id: 'technical',
       name: 'Technical',
       description: 'Specifically designed for technical roles with a monospace font and structured layout.',
       thumbnail: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Monospace', 'Technical', 'Developer-friendly']
     },
+    // {
+    //   id: 'harvard',
+    //   name: 'Harvard',
+    //   description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
+    //   thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    //   features: ['Academic', 'Professional', 'Research-focused']
+    // },
     {
-      id: 'harvard',
-      name: 'Harvard',
-      description: 'Based on Harvard Career Services guidelines. Ideal for research and education roles.',
-      thumbnail: 'https://images.pexels.com/photos/6953876/pexels-photo-6953876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Academic', 'Professional', 'Research-focused']
+      id: 'harvardclassic',
+      name: 'Harvard Classic',
+      description: 'A refined Harvard-style template with elegant typography and clean section dividers.',
+      thumbnail: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Academic', 'Elegant', 'Traditional']
     },
     {
       id: 'huntergreen',
@@ -59,12 +59,26 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       features: ['Elegant', 'Hunter green', 'Business']
     },
     {
-      id: 'atlanticblue',
-      name: 'Atlantic Blue',
-      description: 'A modern template with a deep blue color scheme and sidebar layout.',
+      id: 'latex',
+      name: 'LaTeX',
+      description: 'Academic-style template inspired by LaTeX documents with precise typography and clean formatting.',
       thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      features: ['Sidebar', 'Deep blue', 'Modern']
-    }
+      features: ['Academic', 'LaTeX-inspired', 'Precise typography']
+    },
+    {
+      id: 'skillcategorized',
+      name: 'Skill Categorized',
+      description: 'Organizes skills by proficiency level with color-coded categories for clear skill progression.',
+      thumbnail: 'https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      features: ['Skill categories', 'Color-coded', 'Proficiency levels']
+    },
+    // {
+    //   id: 'atlanticblue',
+    //   name: 'Atlantic Blue',
+    //   description: 'A modern template with a deep blue color scheme and sidebar layout.',
+    //   thumbnail: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    //   features: ['Sidebar', 'Deep blue', 'Modern']
+    // }
   ];
 
   return (

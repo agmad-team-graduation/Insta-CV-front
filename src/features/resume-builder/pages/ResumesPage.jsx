@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/common/components/ui/button";
-import { Card, CardContent } from "@/common/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui/card";
 import { FileText, Plus, Calendar, Edit, Trash2, ChevronLeft, ChevronRight, Layout, List, FileType, FileUp, User, Briefcase, Pencil } from 'lucide-react';
 import useResumeStore from '../store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Badge } from "@/common/components/ui/badge";
 import CreateResumeDialog from '../components/CreateResumeDialog';
 import { Input } from "@/common/components/ui/input";
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const PAGE_SIZE = 9; // Show 9 resumes per page (3x3 grid)
 
@@ -112,6 +113,7 @@ const ResumesPage = () => {
 
   const fetchResumes = async () => {
     try {
+      setLoading(true);
       const response = await apiClient.get('/api/v1/cv/user');
       setAllResumes(response.data || []);
     } catch (error) {
@@ -212,9 +214,10 @@ const ResumesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      <PageLoader 
+        title="Loading Resumes" 
+        subtitle="We're fetching your professional resumes..."
+      />
     );
   }
 

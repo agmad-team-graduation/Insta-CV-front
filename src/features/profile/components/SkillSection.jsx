@@ -11,10 +11,10 @@ import { PlusCircle, Pencil, Trash2, X, Check, Code } from "lucide-react";
 import { cn } from "@/common/lib/utils";
 
 const proficiencyLevels = [
-  { value: "beginner", label: "Beginner" },
-  { value: "intermediate", label: "Intermediate" },
-  { value: "advanced", label: "Advanced" },
-  { value: "expert", label: "Expert" },
+  { value: "BEGINNER", label: "Beginner" },
+  { value: "INTERMEDIATE", label: "Intermediate" },
+  { value: "ADVANCED", label: "Advanced" },
+  { value: "EXPERT", label: "Expert" },
 ];
 
 const skillSchema = z.object({
@@ -116,7 +116,7 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
                 <FormLabel>Level</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -150,14 +150,16 @@ function SkillsSection({ data, isEditMode, onUpdate }) {
 
   const getProficiencyClass = (proficiency) => {
     switch (proficiency) {
-      case 'beginner':
+      case 'BEGINNER':
         return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300';
-      case 'intermediate':
+      case 'INTERMEDIATE':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'advanced':
+      case 'ADVANCED':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'expert':
+      case 'EXPERT':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 

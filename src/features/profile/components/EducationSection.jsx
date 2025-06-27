@@ -6,7 +6,8 @@ import { formatDate } from "@/common/utils/formatters";
 import { Badge } from "@/common/components/ui/badge";
 
 const EducationItem = (props) => {
-  const { degree, school, city, country, startDate, endDate, description, present } = props;
+  const { degree, school, city, country, startDate, endDate, description, present, duration } = props;
+  
   return (
     <Card className="mb-4">
       <CardContent className="p-6">
@@ -27,12 +28,14 @@ const EducationItem = (props) => {
               {description && <div className="text-black text-base mt-2">{description}</div>}
             </div>
           </div>
-          {/* Right: Date range badge */}
-          <div className="flex-shrink-0">
-            <span className="bg-gray-100 text-gray-700 rounded-lg px-4 py-2 text-base font-medium">
-              {formatDate(startDate)} - {present ? 'Present' : (endDate === "Present" ? "Present" : formatDate(endDate))}
-            </span>
-          </div>
+          {/* Right: Date range badge - only show if there are dates */}
+          {duration?.displayText && (
+            <div className="flex-shrink-0">
+              <span className="bg-gray-100 text-gray-700 rounded-lg px-4 py-2 text-base font-medium">
+                {duration.displayText}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

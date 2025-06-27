@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
+import PageLoader from "@/common/components/ui/PageLoader";
 
 const JobsGrid = () => {
   const navigate = useNavigate();
@@ -108,10 +109,11 @@ const JobsGrid = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-64">
-            <Loader className="w-10 h-10 text-blue-500 animate-spin mb-4" />
-            <p className="text-gray-600">Loading jobs...</p>
-          </div>
+          <PageLoader 
+            title="Loading Jobs" 
+            subtitle="We're fetching your job opportunities..."
+            size="small"
+          />
         ) : jobs.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-400" />
