@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import useUserStore from '@/store/userStore';
+import { FRONTEND_BASE_URL } from '@/config';
 
 const AuthContext = createContext({
     email: '',
@@ -51,7 +52,7 @@ export const SignUpProvider = ({children})=>{
             window.addEventListener(
                 "message",
                 async (event) => {
-                    if (event.origin !== window.location.origin) return;
+                    if (event.origin !== FRONTEND_BASE_URL) return;
       
                     const { user, token, expiresIn, error } = event.data;
       

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '@/config';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -35,7 +36,7 @@ function ForgotPassword() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/v1/auth/forget-password', {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/forget-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
