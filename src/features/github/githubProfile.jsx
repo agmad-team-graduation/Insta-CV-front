@@ -18,7 +18,7 @@ const GithubProfile = () => {
   const [refreshing, setRefreshing] = useState(false);
   
   // Get the updateGithubConnection method from user store
-  const { updateGithubConnection, forceRefreshUser } = useUserStore();
+  const { updateGithubConnection, forceRefreshUser, user, fetchUser } = useUserStore();
 
   const fetchGithubProfile = async (forceRefresh = false, accessToken = "") => {
     try {
@@ -44,7 +44,7 @@ const GithubProfile = () => {
         // Update the user's GitHub connection status to false when no data is available
         updateGithubConnection(false);
         console.error("Error fetching GitHub profile data:", err);
-        toast.error(err.response.data.message);
+        // toast.error(err.response.data.message);
       } else {
         toast.error("Failed to refresh GitHub profile. Please try again.");
       }
@@ -86,9 +86,21 @@ const GithubProfile = () => {
     }
   };
 
+  // Fetch user data first
   useEffect(() => {
-    fetchGithubProfile(false, "");
+    fetchUser();
   }, []);
+
+  useEffect(() => {
+    // Only fetch GitHub profile if user has GitHub connected
+    if (user?.githubConnected) {
+      fetchGithubProfile(false, "");
+    } else {
+      // If not connected, set loading to false and show connect UI
+      setLoading(false);
+      setError("Please connect your GitHub account to view your profile.");
+    }
+  }, [user?.githubConnected]);
 
   const handleConnect = async () => {
     try {
