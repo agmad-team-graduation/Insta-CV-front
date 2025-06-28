@@ -6,10 +6,13 @@
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get("code");
       const isLogin = urlParams.get("isLogin");
+      
+      // Get API URL from environment or use default
+      const API_BASE_URL = window.API_BASE_URL || 'https://instacv-backend-production.up.railway.app';
 
       if (code) {
         if (!isLogin){
-          fetch(`https://instacv-backend-production.up.railway.app/api/github/test/callback?code=${code}`)
+          fetch(`${API_BASE_URL}/api/github/test/callback?code=${code}`)
             .then(res => res.json())
             .then(data => {
               // Send token response back to main window
@@ -26,7 +29,7 @@
             });
         }
         else {
-           fetch(`https://instacv-backend-production.up.railway.app/api/github/test/login-callback?code=${code}`)
+           fetch(`${API_BASE_URL}/api/github/test/login-callback?code=${code}`)
           .then(res => res.json())
           .then(data => {
             // Send login response back to main window

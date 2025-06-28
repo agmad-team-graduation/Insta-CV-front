@@ -11,7 +11,7 @@ import TemplateSelector from './TemplateSelector';
 import JobSkillsComparison from './JobSkillsComparison';
 import { Input } from "../../../common/components/ui/input";
 import PageLoader from "@/common/components/ui/PageLoader";
-import { PDF_BACKEND_URL } from '@/config';
+import { PDF_BACKEND_URL, FRONTEND_URL } from '@/config';
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -166,7 +166,7 @@ const ResumeBuilder: React.FC = () => {
       }
       
       // Use the preview page URL instead of current page
-      const previewUrl = `${window.location.origin}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
+      const previewUrl = `${FRONTEND_URL}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
       const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
@@ -347,12 +347,11 @@ const ResumeBuilder: React.FC = () => {
 
               {/* Download PDF (Server) Button */}
               <button
-                onClick={() => toast.info('PDF Download feature is coming soon! Stay tuned for updates.')}
-                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed opacity-50"
-                title="PDF Download - Coming Soon!"
+                onClick={downloadResumePdf}
+                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                title="Download PDF (Server)"
               >
                 <DownloadIcon size={18} /> Download PDF
-                <span className="text-xs text-orange-600 font-medium">(Coming Soon)</span>
               </button>
             </div>
           </div>

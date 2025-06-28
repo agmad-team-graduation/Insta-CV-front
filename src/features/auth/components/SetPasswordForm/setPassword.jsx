@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import apiClient from '@/common/utils/apiClient';
 
 function SetPassword() {
   const navigate = useNavigate();
@@ -73,21 +74,8 @@ function SetPassword() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
+      const response = await apiClient.post(endpoint, body);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send request');
-      }
-
-      const data = await response.json();
-      
       // Show appropriate success message based on the flow
       if (isResetFlow) {
         toast.success("Password has been reset successfully");
@@ -103,7 +91,8 @@ function SetPassword() {
 
     } catch (error) {
       console.error('Error:', error);
-      toast.error(error.message || "An error occurred. Please try again.");
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

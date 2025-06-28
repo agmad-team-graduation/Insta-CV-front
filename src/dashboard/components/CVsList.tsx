@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '@/common/utils/apiClient';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import PageLoader from "@/common/components/ui/PageLoader";
-import { PDF_BACKEND_URL } from '@/config';
+import { PDF_BACKEND_URL, FRONTEND_URL } from '@/config';
 
 interface CV {
   id: string;
@@ -151,7 +151,7 @@ const CVsList = () => {
       const template = cv?.cvSettings?.template || selectedTemplate;
       
       // Use the preview page URL with the CV's specific template
-      const previewUrl = `${window.location.origin}/resumes/${cvId}/preview?template=${template}`;
+      const previewUrl = `${FRONTEND_URL}/resumes/${cvId}/preview?template=${template}`;
       const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
@@ -327,13 +327,12 @@ const CVsList = () => {
                 <Button 
                   size="sm" 
                   variant="outline"
-                  onClick={() => toast.info('PDF Download feature is coming soon! Stay tuned for updates.')}
-                  className="download-button opacity-50 cursor-not-allowed"
-                  title="PDF Download - Coming Soon!"
+                  onClick={() => handleDownload(cv.id)}
+                  className="download-button hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
+                  title="Download PDF"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Download
-                  <span className="text-xs text-orange-600 font-medium ml-1">(Soon)</span>
                 </Button>
               </div>
             </div>
