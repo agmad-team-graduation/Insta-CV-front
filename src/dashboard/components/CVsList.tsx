@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '@/common/utils/apiClient';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import PageLoader from "@/common/components/ui/PageLoader";
+import { PDF_BACKEND_URL } from '@/config';
 
 interface CV {
   id: string;
@@ -117,7 +118,7 @@ const CVsList = () => {
         const healthController = new AbortController();
         const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
         
-        const healthResponse = await fetch('http://localhost:3001/health', { 
+        const healthResponse = await fetch(`${PDF_BACKEND_URL}/health`, { 
           signal: healthController.signal 
         });
         
@@ -151,7 +152,7 @@ const CVsList = () => {
       
       // Use the preview page URL with the CV's specific template
       const previewUrl = `${window.location.origin}/resumes/${cvId}/preview?template=${template}`;
-      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
+      const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
       const controller = new AbortController();
