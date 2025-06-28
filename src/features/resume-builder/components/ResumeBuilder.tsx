@@ -137,6 +137,8 @@ const ResumeBuilder: React.FC = () => {
         const healthController = new AbortController();
         const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
         
+        console.log(`${PDF_BACKEND_URL}/health`);
+
         const healthResponse = await fetch(`${PDF_BACKEND_URL}/health`, { 
           signal: healthController.signal 
         });
