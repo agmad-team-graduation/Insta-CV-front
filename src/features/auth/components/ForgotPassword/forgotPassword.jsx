@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Mail } from 'lucide-react';
 import { toast } from 'sonner';
-import { API_BASE_URL } from '@/config';
+import apiClient from '@/common/utils/apiClient';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -36,27 +36,18 @@ function ForgotPassword() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/forget-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email }),
+      const response = await apiClient.post('/api/v1/auth/forget-password', {
+        email: email
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send request');
-      }
-
-      const data = await response.json();
-      toast.success(data.message || "Password reset email sent successfully", {
+      toast.success(response.data.message || "Password reset email sent successfully", {
         bodyClassName: "mt-4 text-center text-green-600 text-sm",
       });
       setEmail('');
     } catch (err) {
       console.error('Error:', err);
-      toast.error(err.message || "Something went wrong");
+      const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

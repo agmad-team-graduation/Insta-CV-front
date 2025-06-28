@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const puppeteer = require('puppeteer');
@@ -13,16 +14,17 @@ app.get('/health', (req, res) => {
     res.json({ 
       status: 'ok', 
       browserConnected: globalBrowser ? globalBrowser.isConnected() : false,
-      uptime: process.uptime()
+      uptime: process.uptime(),
+      browserType: process.env.BROWSER_WS_ENDPOINT ? 'browserless' : 'local',
+      hasBrowserEndpoint: !!process.env.BROWSER_WS_ENDPOINT
     });
   });
 // Global browser instance for reuse
 let globalBrowser = null;
 let browserLaunchTime = null;
 const BROWSER_RESTART_INTERVAL = 5 * 60 * 1000; // 5 minutes
-const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
-async function getBrowser() {
+const getBrowser = async () => {
   const now = Date.now();
   
   // Restart browser if it's been running too long or if it's null
@@ -35,63 +37,44 @@ async function getBrowser() {
       }
     }
     
-    console.log('Launching new browser instance...');
+    console.log('Connecting to browser...');
     
-    // Try different launch configurations for Windows compatibility
-    const launchConfigs = [
-      {
-        name: 'With executable path',
-        options: {
+    try {
+      if (process.env.BROWSER_WS_ENDPOINT) {
+        // Use Browserless for staging and production
+        console.log('Using Browserless service...');
+        globalBrowser = await puppeteer.connect({
+          browserWSEndpoint: process.env.BROWSER_WS_ENDPOINT,
+        });
+        console.log('✓ Connected to Browserless service successfully');
+      } else {
+        // Fallback to local Chrome instance if BROWSER_WS_ENDPOINT is not set for local development
+        console.log('Using local Chrome instance...');
+        globalBrowser = await puppeteer.launch({
           headless: true,
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--disable-web-security',
-            '--disable-features=VizDisplayCompositor'
-          ],
-          executablePath: chromePath,
-          timeout: 30000,
-          protocolTimeout: 30000,
-          defaultViewport: { width: 1200, height: 800 }
-        }
-      },
-    ];
-
-    let lastError = null;
-    
-    for (const config of launchConfigs) {
-      try {
-        console.log(`Trying browser configuration: ${config.name}`);
-        globalBrowser = await puppeteer.launch(config.options);
-        console.log(`✓ Browser launched successfully with ${config.name}`);
-        break;
-      } catch (error) {
-        console.error(`✗ Failed with ${config.name}:`, error.message);
-        lastError = error;
-        
-        // Wait a bit before trying next configuration
-        await new Promise(resolve => setTimeout(resolve, 1000));
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--headless=new'],
+          ignoreDefaultArgs: ['--disable-extensions'],
+        });
+        console.log('✓ Launched local Chrome instance successfully');
       }
+      
+      browserLaunchTime = now;
+      
+      // Handle browser disconnection
+      globalBrowser.on('disconnected', () => {
+        console.log('Browser disconnected, will reconnect on next request');
+        globalBrowser = null;
+        browserLaunchTime = null;
+      });
+      
+    } catch (error) {
+      console.error('✗ Failed to connect to browser:', error.message);
+      throw new Error(`Failed to connect to browser: ${error.message}`);
     }
-    
-    if (!globalBrowser) {
-      throw new Error(`All browser configurations failed. Last error: ${lastError?.message}`);
-    }
-    
-    browserLaunchTime = now;
-    
-    // Handle browser disconnection
-    globalBrowser.on('disconnected', () => {
-      console.log('Browser disconnected, will restart on next request');
-      globalBrowser = null;
-      browserLaunchTime = null;
-    });
   }
   
   return globalBrowser;
-}
+};
 
 app.get('/generate-pdf', async (req, res) => {
   let page = null;
@@ -125,14 +108,17 @@ app.get('/generate-pdf', async (req, res) => {
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
         
         // Set the isLoggedIn cookie using the token from frontend
+        const urlObj = new URL(url);
+        const domain = urlObj.hostname === 'localhost' ? 'localhost' : urlObj.hostname;
+        
         await page.setCookie({
         name: 'isLoggedIn',
         value: token,
-        domain: 'localhost',
+        domain: domain,
         path: '/'
         });
         
-        console.log('Set isLoggedIn cookie with user token');
+        console.log(`Set isLoggedIn cookie with user token for domain: ${domain}`);
         
         // Disable images and other resources for faster loading
         await page.setRequestInterception(true);
@@ -348,4 +334,6 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-app.listen(3001, () => console.log('PDF server running on port 3001')); 
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => console.log(`PDF server running on port ${PORT}`)); 

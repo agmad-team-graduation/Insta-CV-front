@@ -10,6 +10,7 @@ import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import PageLoader from "@/common/components/ui/PageLoader";
 import { FRONTEND_BASE_URL, PDF_BACKEND_URL } from '@/config';
 
+
 interface CV {
   id: string;
   name: string;
@@ -152,6 +153,7 @@ const CVsList = () => {
       
       // Use the preview page URL with the CV's specific template
       const previewUrl = `${FRONTEND_BASE_URL}/resumes/${cvId}/preview?template=${template}`;
+
       const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
@@ -328,7 +330,8 @@ const CVsList = () => {
                   size="sm" 
                   variant="outline"
                   onClick={() => handleDownload(cv.id)}
-                  className="download-button hover:bg-purple-50 hover:text-purple-600 transition-all duration-200"
+                  className="download-button hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
+                  title="Download PDF"
                 >
                   <Download className="w-3 h-3 mr-1" />
                   Download
