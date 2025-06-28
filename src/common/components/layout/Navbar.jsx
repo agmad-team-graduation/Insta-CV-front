@@ -119,7 +119,75 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Navigation */}
-      
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-xl border-b border-gray-200/50 z-40">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="space-y-4">
+              {navItems.map((item) => (
+                <div key={item.label}>
+                  <a
+                    href={item.href}
+                    className="block py-3 px-4 text-gray-700 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                  
+                  {/* Mobile dropdown for Features */}
+                  {item.hasDropdown && (
+                    <div className="ml-4 mt-2 space-y-2">
+                      <a 
+                        href="#templates" 
+                        className="block py-2 px-4 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        CV Templates
+                      </a>
+                      <a 
+                        href="#builder" 
+                        className="block py-2 px-4 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        AI Builder
+                      </a>
+                      <a 
+                        href="#export" 
+                        className="block py-2 px-4 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Export Options
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Mobile Action Buttons */}
+              <div className="border-t border-gray-200 pt-4 space-y-3">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    handleLogin();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full text-gray-700 hover:text-blue-600 hover:bg-blue-50 justify-center"
+                >
+                  Login
+                </Button>
+                <Button 
+                  onClick={() => {
+                    handleGetStarted();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg justify-center"
+                >
+                  Get Started
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

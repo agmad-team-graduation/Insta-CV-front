@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut, Github } from 'lucide-react';
+import { LayoutDashboard, User, Briefcase, GraduationCap, FileText, LogOut, Github, Menu, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/common/components/ui/avatar';
 import { Badge } from '@/common/components/ui/badge';
 import { cn } from '@/common/lib/utils';
@@ -8,6 +8,8 @@ import { useCookies } from 'react-cookie';
 import { Button } from '@/common/components/ui/button';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import useUserStore from '@/store/userStore';
+import { useIsMobile } from '@/common/hooks/use-mobile';
+import { Sheet, SheetContent, SheetTrigger } from '@/common/components/ui/sheet';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -17,7 +19,7 @@ const navItems = [
   { icon: FileText, label: 'Resumes', href: '/resumes' },
 ];
 
-const Sidebar = () => {
+const SidebarContent = ({ onLinkClick }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies(['isLoggedIn', 'user']);
@@ -70,10 +72,10 @@ const Sidebar = () => {
   const displayUser = user || { name: 'User Name', email: 'user@example.com' };
 
   return (
-    <div className="h-screen w-64 bg-gradient-to-b from-slate-50 to-white border-r border-slate-200/60 flex flex-col fixed left-0 top-0 shadow-xl backdrop-blur-sm">
+    <div className="h-full bg-gradient-to-b from-slate-50 to-white border-r border-slate-200/60 flex flex-col shadow-xl backdrop-blur-sm">
       {/* Logo Section */}
       <div className="p-6 border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-        <Link to="/" className="flex items-center group">
+        <Link to="/" className="flex items-center group" onClick={onLinkClick}>
           <div className="relative">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
               <span className="text-white font-bold text-lg tracking-tight">IC</span>
@@ -100,6 +102,7 @@ const Sidebar = () => {
               <Link
                 key={item.href}
                 to={item.href}
+                onClick={onLinkClick}
                 className={cn(
                   "flex items-center px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden",
                   "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:shadow-sm",
@@ -170,6 +173,47 @@ const Sidebar = () => {
           Logout
         </Button>
       </div>
+    </div>
+  );
+};
+
+const Sidebar = () => {
+  const isMobile = useIsMobile();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setMobileOpen(false);
+    }
+  };
+
+  if (isMobile) {
+    // Mobile version with Sheet overlay
+    return (
+      <>
+        {/* Mobile trigger button */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="fixed top-4 left-4 z-50 md:hidden bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80 p-0">
+            <SidebarContent onLinkClick={handleLinkClick} />
+          </SheetContent>
+        </Sheet>
+      </>
+    );
+  }
+
+  // Desktop version - fixed sidebar
+  return (
+    <div className="hidden md:flex h-screen w-64 fixed left-0 top-0 z-40">
+      <SidebarContent onLinkClick={handleLinkClick} />
     </div>
   );
 };

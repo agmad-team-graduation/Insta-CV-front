@@ -59,11 +59,11 @@ const AuthLayout = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      {/* Sidebar - Updated width to match new sidebar */}
+      {/* Sidebar - Now responsive */}
       <Sidebar />
       
-      {/* Main Content - Updated margin to match new sidebar width */}
-      <div className="ml-64">
+      {/* Main Content - Responsive margin for desktop sidebar */}
+      <div className="md:ml-64">
         <Outlet />
       </div>
     </div>
