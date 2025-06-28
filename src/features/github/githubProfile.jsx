@@ -21,6 +21,7 @@ const GithubProfile = () => {
   const { updateGithubConnection, forceRefreshUser, user, fetchUser } = useUserStore();
 
   const fetchGithubProfile = async (forceRefresh = false, accessToken = "") => {
+    let res = false;
     try {
       setLoading(true);
       setRefreshing(true);
@@ -37,6 +38,7 @@ const GithubProfile = () => {
       if (forceRefresh) {
         toast.success("GitHub profile refreshed successfully");
       }
+      res = true;
     } catch (err) {
       // console.error("Error fetching GitHub profile data:", err);
       if (!githubData) {
@@ -44,13 +46,14 @@ const GithubProfile = () => {
         // Update the user's GitHub connection status to false when no data is available
         updateGithubConnection(false);
         console.error("Error fetching GitHub profile data:", err);
-        // toast.error(err.response.data.message);
+        toast.error(err.response.data.message);
       } else {
         toast.error("Failed to refresh GitHub profile. Please try again.");
       }
     } finally {
       setLoading(false);
       setRefreshing(false);
+      return res;
     }
   };
 
@@ -127,11 +130,13 @@ const GithubProfile = () => {
           }
   
           if (githubToken) {
-            await fetchGithubProfile(true, githubToken);
-            // Update the user's GitHub connection status to true
-            updateGithubConnection(true);
-            // Force refresh user data to ensure sidebar badge updates
-            await forceRefreshUser();
+            const res = await fetchGithubProfile(true, githubToken);
+            if (res) {
+              // Update the user's GitHub connection status to true
+              updateGithubConnection(true);
+              // Force refresh user data to ensure sidebar badge updates
+              await forceRefreshUser();
+            }
           }
         },
         { once: true }
