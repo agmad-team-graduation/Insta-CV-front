@@ -1,6 +1,8 @@
 import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 
 const Footer = () => {
+  const appVersion = import.meta.env.VITE_APP_VERSION || '1.0.0';
+  
   const footerLinks = {
     product: [
       { name: "Features", href: "#features" },
@@ -118,9 +120,14 @@ const Footer = () => {
           <p className="text-gray-400 text-sm">
             © 2024 InstaCV Builder. All rights reserved.
           </p>
-          <p className="text-gray-400 text-sm mt-4 md:mt-0">
-            Made with ❤️ for developers by developers
-          </p>
+          <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 mt-4 md:mt-0">
+            <p className="text-gray-400 text-sm">
+              Made with ❤️ for developers by developers
+            </p>
+            <p className="text-gray-500 text-xs">
+              v{appVersion}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

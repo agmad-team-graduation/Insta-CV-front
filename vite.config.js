@@ -2,7 +2,7 @@ import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig, loadEnv } from "vite"
-
+//
 export default defineConfig(({ mode }) => {
   // load .env, .env.development, etc.
   const env = loadEnv(mode, process.cwd())
@@ -13,6 +13,12 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+    },
+    server: {
+      allowedHosts: [
+        "apparent-clone-flashers-exterior.trycloudflare.com",
+        ".trycloudflare.com"
+      ]
     }
   }
   

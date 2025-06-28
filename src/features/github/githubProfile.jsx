@@ -8,6 +8,7 @@ import GithubProjectSection from "./components/GithubProjectSection";
 import GithubSkillsSection from "./components/GithubSkillsSection";
 import useUserStore from "@/store/userStore";
 import PageLoader from "@/common/components/ui/PageLoader";
+import { FRONTEND_BASE_URL } from '@/config';
 
 const GithubProfile = () => {
   const [githubData, setGithubData] = useState(null);
@@ -104,7 +105,7 @@ const GithubProfile = () => {
       window.addEventListener(
         "message",
         async (event) => {
-          if (event.origin !== window.location.origin) return;
+          if (event.origin !== FRONTEND_BASE_URL) return;
   
           const { githubToken, error } = event.data;
   

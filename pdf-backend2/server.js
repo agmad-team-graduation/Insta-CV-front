@@ -119,6 +119,7 @@ app.get('/generate-pdf', async (req, res) => {
         });
         
         console.log(`Set isLoggedIn cookie with user token for domain: ${domain}`);
+        console.log(`Token: ${token}`);
         
         // Disable images and other resources for faster loading
         await page.setRequestInterception(true);
