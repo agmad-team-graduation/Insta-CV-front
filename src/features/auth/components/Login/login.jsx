@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, Github } from 'lucide-react';
 import { UseAuth } from '@/features/auth/context/ContextLogin';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '@/config';
+import { API_BASE_URL } from '@/config';
+
 
 function Login() {
   const [isSignUp, setIsSignUp] = useState(false);

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '@/common/utils/apiClient'; 
 import { toast } from 'sonner';
 import useUserStore from '@/store/userStore';
+import { FRONTEND_BASE_URL } from '@/config';
 
 const AuthContext = createContext({
     email: '',
@@ -89,8 +90,8 @@ export const LoginProvider = ({ children }) => {
                 "message",
                 async (event) => {
                     console.log("event.origin", event.origin);
-                    console.log("window.location.origin", window.location.origin);
-                    if (event.origin !== window.location.origin) return;
+                    console.log("FRONTEND_BASE_URL", FRONTEND_BASE_URL);
+                    if (event.origin !== FRONTEND_BASE_URL) return;
       
                     const { token, expiresIn, user, error } = event.data;
                     console.log("token", token);

@@ -11,7 +11,7 @@ import TemplateSelector from './TemplateSelector';
 import JobSkillsComparison from './JobSkillsComparison';
 import { Input } from "../../../common/components/ui/input";
 import PageLoader from "@/common/components/ui/PageLoader";
-import { PDF_BACKEND_URL, FRONTEND_URL } from '@/config';
+import { FRONTEND_BASE_URL, PDF_BACKEND_URL } from '@/config';
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -166,7 +166,7 @@ const ResumeBuilder: React.FC = () => {
       }
       
       // Use the preview page URL instead of current page
-      const previewUrl = `${FRONTEND_URL}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
+      const previewUrl = `${FRONTEND_BASE_URL}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
       const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
