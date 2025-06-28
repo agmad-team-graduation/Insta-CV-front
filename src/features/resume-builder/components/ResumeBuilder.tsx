@@ -3,6 +3,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileEditIcon, FileTextIcon, DownloadIcon, LayoutIcon, EyeIcon, Loader2Icon, ArrowLeftIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, InfoIcon } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import useResumeStore from '../store/resumeStore';
 import EditorSidebar from './EditorSidebar';
 import ResumePreview from './ResumePreview';
@@ -10,6 +11,7 @@ import TemplateSelector from './TemplateSelector';
 import JobSkillsComparison from './JobSkillsComparison';
 import { Input } from "../../../common/components/ui/input";
 import PageLoader from "@/common/components/ui/PageLoader";
+import { FRONTEND_BASE_URL, PDF_BACKEND_URL } from '@/config';
 
 const ResumeBuilder: React.FC = () => {
   const navigate = useNavigate();
@@ -135,7 +137,9 @@ const ResumeBuilder: React.FC = () => {
         const healthController = new AbortController();
         const healthTimeoutId = setTimeout(() => healthController.abort(), 5000);
         
-        const healthResponse = await fetch('http://localhost:3001/health', { 
+        console.log(`${PDF_BACKEND_URL}/health`);
+
+        const healthResponse = await fetch(`${PDF_BACKEND_URL}/health`, { 
           signal: healthController.signal 
         });
         
@@ -164,8 +168,8 @@ const ResumeBuilder: React.FC = () => {
       }
       
       // Use the preview page URL instead of current page
-      const previewUrl = `${window.location.origin}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
-      const pdfUrl = `http://localhost:3001/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
+      const previewUrl = `${FRONTEND_BASE_URL}/resumes/${resume.id}/preview?template=${selectedTemplate}`;
+      const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request
       const controller = new AbortController();
@@ -346,7 +350,7 @@ const ResumeBuilder: React.FC = () => {
               {/* Download PDF (Server) Button */}
               <button
                 onClick={downloadResumePdf}
-                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-blue-600 hover:text-blue-900 hover:bg-blue-50 transition-colors"
+                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 title="Download PDF (Server)"
               >
                 <DownloadIcon size={18} /> Download PDF

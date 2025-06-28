@@ -8,6 +8,7 @@ import GithubProjectSection from "./components/GithubProjectSection";
 import GithubSkillsSection from "./components/GithubSkillsSection";
 import useUserStore from "@/store/userStore";
 import PageLoader from "@/common/components/ui/PageLoader";
+import { FRONTEND_BASE_URL } from '@/config';
 
 const GithubProfile = () => {
   const [githubData, setGithubData] = useState(null);
@@ -17,9 +18,10 @@ const GithubProfile = () => {
   const [refreshing, setRefreshing] = useState(false);
   
   // Get the updateGithubConnection method from user store
-  const { updateGithubConnection, forceRefreshUser } = useUserStore();
+  const { updateGithubConnection, forceRefreshUser, user, fetchUser } = useUserStore();
 
   const fetchGithubProfile = async (forceRefresh = false, accessToken = "") => {
+    let res = false;
     try {
       setLoading(true);
       setRefreshing(true);
@@ -36,6 +38,7 @@ const GithubProfile = () => {
       if (forceRefresh) {
         toast.success("GitHub profile refreshed successfully");
       }
+      res = true;
     } catch (err) {
       // console.error("Error fetching GitHub profile data:", err);
       if (!githubData) {
@@ -50,6 +53,7 @@ const GithubProfile = () => {
     } finally {
       setLoading(false);
       setRefreshing(false);
+      return res;
     }
   };
 
@@ -85,9 +89,21 @@ const GithubProfile = () => {
     }
   };
 
+  // Fetch user data first
   useEffect(() => {
-    fetchGithubProfile(false, "");
+    fetchUser();
   }, []);
+
+  useEffect(() => {
+    // Only fetch GitHub profile if user has GitHub connected
+    if (user?.githubConnected) {
+      fetchGithubProfile(false, "");
+    } else {
+      // If not connected, set loading to false and show connect UI
+      setLoading(false);
+      setError("Please connect your GitHub account to view your profile.");
+    }
+  }, [user?.githubConnected]);
 
   const handleConnect = async () => {
     try {
@@ -104,7 +120,7 @@ const GithubProfile = () => {
       window.addEventListener(
         "message",
         async (event) => {
-          if (event.origin !== window.location.origin) return;
+          if (event.origin !== FRONTEND_BASE_URL) return;
   
           const { githubToken, error } = event.data;
   
@@ -114,11 +130,13 @@ const GithubProfile = () => {
           }
   
           if (githubToken) {
-            await fetchGithubProfile(true, githubToken);
-            // Update the user's GitHub connection status to true
-            updateGithubConnection(true);
-            // Force refresh user data to ensure sidebar badge updates
-            await forceRefreshUser();
+            const res = await fetchGithubProfile(true, githubToken);
+            if (res) {
+              // Update the user's GitHub connection status to true
+              updateGithubConnection(true);
+              // Force refresh user data to ensure sidebar badge updates
+              await forceRefreshUser();
+            }
           }
         },
         { once: true }
