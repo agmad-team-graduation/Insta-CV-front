@@ -171,6 +171,87 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
         {projects.length === 0 && (
           <div className="text-center text-muted-foreground py-4">No projects added yet.</div>
         )}
+        
+        {/* Show add form when showForm is true and not editing */}
+        {showForm && editingIndex === null && (
+          <form ref={formRef} onSubmit={handleFormSubmit} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
+            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            <input
+              className="border rounded px-3 py-2"
+              name="title"
+              placeholder="Project Title"
+              value={form.title}
+              onChange={handleChange}
+              required
+            />
+            <div className="flex gap-3">
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="startDate"
+                type="month"
+                placeholder="Start Date"
+                value={form.startDate}
+                onChange={handleChange}
+              />
+              <input
+                className="border rounded px-3 py-2 flex-1"
+                name="endDate"
+                type="month"
+                placeholder="End Date"
+                value={form.endDate}
+                onChange={handleChange}
+              />
+            </div>
+            <textarea
+              className="border rounded px-3 py-2"
+              name="description"
+              placeholder="Description"
+              value={form.description}
+              onChange={handleChange}
+            />
+            {/* Abilities/Skills input */}
+            <div>
+              <label className="block font-medium mb-1">Abilities / Skills</label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  className="border rounded px-3 py-2 flex-1"
+                  placeholder="Add an ability (e.g. React, Node.js)"
+                  value={abilityInput}
+                  onChange={e => setAbilityInput(e.target.value)}
+                />
+                <Button type="button" size="sm" onClick={handleAddAbility}>
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {abilities.map(a => (
+                  <span key={a.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 flex items-center gap-1">
+                    {a.skill}
+                    <button type="button" className="ml-1 text-red-500 hover:text-red-700" onClick={() => handleRemoveAbility(a.id)}>&times;</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="present"
+                checked={form.present}
+                onChange={handleChange}
+              />
+              Present
+            </label>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" size="sm" onClick={() => { setShowForm(false); setEditingIndex(null); setForm(initialForm); setAbilities([]); }}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm">
+                Add
+              </Button>
+            </div>
+          </form>
+        )}
+        
         {projects && projects.map((project, index) => (
           <div key={index} className="relative">
             {editingIndex === index ? (
@@ -246,7 +327,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
                     Cancel
                   </Button>
                   <Button type="submit" size="sm">
-                    {editingIndex !== null ? 'Save' : 'Add'}
+                    Save
                   </Button>
                 </div>
               </form>
