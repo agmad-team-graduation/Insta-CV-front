@@ -279,39 +279,40 @@ const ResumeBuilder: React.FC = () => {
     >
       <div className="min-h-screen bg-white flex flex-col">
         {/* Header with actions */}
-        <header className="flex-none bg-white shadow-sm border-b border-gray-200 py-3 px-6">
+        <header className="flex-none bg-white shadow-sm border-b border-gray-200 py-3 px-4 md:px-6">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+            {/* Left side - Back button and title */}
+            <div className="flex items-center space-x-2 md:space-x-4 min-w-0 flex-1">
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors flex-shrink-0"
                 title="Go Back"
               >
                 <ArrowLeftIcon size={18} />
                 <span className="hidden sm:inline">Back</span>
               </button>
-              <div className="flex items-center space-x-2">
-                <FileTextIcon className="h-6 w-6 text-blue-600" />
+              <div className="flex items-center space-x-2 min-w-0">
+                <FileTextIcon className="h-5 w-5 md:h-6 md:w-6 text-blue-600 flex-shrink-0" />
                 {isEditingTitle ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
                     <Input
                       value={editingTitle}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditingTitle(e.target.value)}
                       onKeyDown={handleTitleKeyDown}
                       onBlur={handleTitleSave}
-                      className="h-8 text-sm w-64"
+                      className="h-8 text-sm w-32 md:w-64"
                       autoFocus
                       type="text"
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 group">
-                    <h1 className="text-xl font-semibold text-gray-800">
+                  <div className="flex items-center gap-2 group min-w-0">
+                    <h1 className="text-lg md:text-xl font-semibold text-gray-800 truncate">
                       {resume?.cvTitle || `Resume #${resume?.id}`}
                     </h1>
                     <button
                       onClick={handleTitleEdit}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded flex-shrink-0"
                     >
                       <PencilIcon className="h-4 w-4 text-gray-500" />
                     </button>
@@ -320,9 +321,10 @@ const ResumeBuilder: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
+            {/* Right side - Actions */}
+            <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
               {isSaving && (
-                <div className="flex items-center text-gray-500">
+                <div className="hidden md:flex items-center text-gray-500">
                   <Loader2Icon className="animate-spin h-4 w-4 mr-2" />
                   <span className="text-sm">Saving...</span>
                 </div>
@@ -330,50 +332,60 @@ const ResumeBuilder: React.FC = () => {
 
               {showSaveSuccess && (
                 <div className="text-green-600 text-sm flex items-center">
-                  <span>✓ Saved</span>
+                  <span className="hidden md:inline">✓ Saved</span>
+                  <span className="md:hidden">✓</span>
                 </div>
               )}
 
               {/* Preview Button */}
               <button
                 onClick={() => window.open(`/resumes/${resume.id}/preview?template=${selectedTemplate}`, '_blank')}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                 title="Preview resume in new tab (Use Ctrl+P for custom print)"
               >
-                <EyeIcon size={18} />
-                <span className="hidden sm:inline">Preview Page</span>
-                <InfoIcon size={14} className="text-gray-500" />
+                <EyeIcon size={16} className="md:hidden" />
+                <EyeIcon size={18} className="hidden md:block" />
+                <span className="hidden sm:inline">Preview</span>
+                <InfoIcon size={12} className="text-gray-500 hidden md:inline" />
               </button>
 
-              {/* Download PDF (Server) Button */}
+              {/* Download PDF Button */}
               <button
                 onClick={downloadResumePdf}
-                className="no-print flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                title="Download PDF (Server)"
+                className="no-print flex items-center gap-1 md:gap-2 px-2 md:px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                title="Download PDF"
               >
-                <DownloadIcon size={18} /> Download PDF
+                <DownloadIcon size={16} className="md:hidden" />
+                <DownloadIcon size={18} className="hidden md:block" />
+                <span className="hidden md:inline">PDF</span>
               </button>
             </div>
           </div>
         </header>
 
         {/* Main content area */}
-        <main className="flex-1 flex justify-center items-start py-8 px-60">
-          <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden relative">
+        <main className="flex-1 flex justify-center items-start py-4 md:py-8 px-2 md:px-4 lg:px-60">
+          <div className="w-full flex flex-col lg:flex-row bg-white rounded-xl overflow-hidden relative shadow-sm md:shadow-none border md:border-0">
             {/* Left sidebar */}
             <div className={`bg-white border-r border-gray-200 transition-all duration-300 ${
-              sidebarVisible ? 'lg:w-2/5 xl:w-1/3' : 'w-16'
-            }`}>
+              sidebarVisible ? 'w-full lg:w-2/5 xl:w-1/3' : 'w-full lg:w-16'
+            } ${!sidebarVisible && 'lg:block hidden'}`}>
               {/* Left sidebar toggle button */}
               <button
                 onClick={() => setSidebarVisible(!sidebarVisible)}
                 className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
-                title={sidebarVisible ? 'Hide Left Sidebar' : 'Show Left Sidebar'}
+                title={sidebarVisible ? 'Hide Sidebar' : 'Show Sidebar'}
               >
                 {sidebarVisible ? (
-                  <ChevronLeftIcon size={20} className="text-blue-600" />
+                  <>
+                    <ChevronLeftIcon size={20} className="text-blue-600" />
+                    <span className="ml-2 text-sm font-medium text-blue-600 lg:hidden">Hide Editor</span>
+                  </>
                 ) : (
-                  <ChevronRightIcon size={20} className="text-blue-600" />
+                  <>
+                    <ChevronRightIcon size={20} className="text-blue-600" />
+                    <span className="ml-2 text-sm font-medium text-blue-600 lg:hidden">Show Editor</span>
+                  </>
                 )}
               </button>
 
@@ -382,27 +394,29 @@ const ResumeBuilder: React.FC = () => {
                   {/* Tabs */}
                   <div className="flex-none flex border-b border-gray-200">
                     <button
-                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'content'
+                      className={`flex-1 py-3 px-2 md:px-4 text-center font-medium transition-colors ${activeTab === 'content'
                         ? 'text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                         }`}
                       onClick={() => setActiveTab('content')}
                     >
-                      <span className="flex items-center justify-center gap-2">
-                        <FileEditIcon size={18} />
-                        Content
+                      <span className="flex items-center justify-center gap-1 md:gap-2">
+                        <FileEditIcon size={16} className="md:hidden" />
+                        <FileEditIcon size={18} className="hidden md:block" />
+                        <span className="text-xs md:text-sm">Content</span>
                       </span>
                     </button>
                     <button
-                      className={`flex-1 py-3 px-4 text-center font-medium transition-colors ${activeTab === 'templates'
+                      className={`flex-1 py-3 px-2 md:px-4 text-center font-medium transition-colors ${activeTab === 'templates'
                         ? 'text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                         }`}
                       onClick={() => setActiveTab('templates')}
                     >
-                      <span className="flex items-center justify-center gap-2">
-                        <LayoutIcon size={18} />
-                        Templates
+                      <span className="flex items-center justify-center gap-1 md:gap-2">
+                        <LayoutIcon size={16} className="md:hidden" />
+                        <LayoutIcon size={18} className="hidden md:block" />
+                        <span className="text-xs md:text-sm">Templates</span>
                       </span>
                     </button>
                   </div>
@@ -422,12 +436,14 @@ const ResumeBuilder: React.FC = () => {
             </div>
 
             {/* Preview area */}
-            <div className={`flex-1 p-4 mt-8 md:p-8 overflow-auto bg-white relative ${!sidebarVisible ? 'flex justify-center' : ''}`}>
+            <div className={`flex-1 ${sidebarVisible ? 'hidden lg:block' : 'block'} p-2 md:p-4 lg:p-8 overflow-auto bg-white relative ${!sidebarVisible ? 'flex justify-center' : ''}`}>
               <ResumePreview resume={resume} />
             </div>
 
-            {/* Right sidebar - Job Skills Comparison */}
-            <JobSkillsComparison />
+            {/* Right sidebar - Job Skills Comparison - Hide on mobile */}
+            <div className="hidden xl:block">
+              <JobSkillsComparison />
+            </div>
           </div>
         </main>
       </div>

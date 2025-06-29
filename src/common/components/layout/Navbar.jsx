@@ -90,7 +90,7 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Action Buttons */}
+            {/* Desktop Action Buttons */}
             <div className="hidden md:flex items-center space-x-4">
               <Button 
                 variant="ghost" 
@@ -110,16 +110,81 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors touch-target"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
-      </nav>
 
-      {/* Mobile Navigation */}
-      
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200/50">
+            <div className="px-4 py-2 space-y-1">
+              {navItems.map((item) => (
+                <div key={item.label}>
+                  <a
+                    href={item.href}
+                    className="block px-3 py-3 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                  {/* Mobile dropdown items for Features */}
+                  {item.hasDropdown && (
+                    <div className="ml-4 space-y-1">
+                      <a 
+                        href="#templates" 
+                        className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        CV Templates
+                      </a>
+                      <a 
+                        href="#builder" 
+                        className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        AI Builder
+                      </a>
+                      <a 
+                        href="#export" 
+                        className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Export Options
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Mobile Action Buttons */}
+              <div className="pt-4 pb-2 space-y-2 border-t border-gray-200/50">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    handleLogin();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-center text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                >
+                  Login
+                </Button>
+                <Button 
+                  onClick={() => {
+                    handleGetStarted();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
+                >
+                  Get Started
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
     </>
   );
 };
