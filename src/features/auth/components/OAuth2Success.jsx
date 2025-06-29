@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const OAuth2Success = () => {
     const navigate = useNavigate();
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'user']);
-    const { updateUserPhoto } = useUserStore();
+    const { updateUserPhoto, setUser } = useUserStore();
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     const expiresIn = params.get("expiresIn");
@@ -26,6 +26,9 @@ const OAuth2Success = () => {
             try {
                 const { data } = await apiClient.get('/api/v1/auth/me');
                 setCookie("user", data, { path: '/', maxAge: parseInt(expiresIn, 10) });
+
+                // Update the global user store
+                setUser(data);
 
                 // If user has a photo, update the global store
                 if (data.photoUrl) {

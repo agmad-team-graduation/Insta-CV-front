@@ -63,7 +63,7 @@ function JobDetailsPage() {
       }
       setJob(response.data);
     } catch (error) {
-      console.error("Error fetching job details:", error);
+      // console.error("Error fetching job details:", error);
     } finally {
       setLoading(false);
     }

@@ -8,6 +8,7 @@ import GithubProjectSection from "./components/GithubProjectSection";
 import GithubSkillsSection from "./components/GithubSkillsSection";
 import useUserStore from "@/store/userStore";
 import PageLoader from "@/common/components/ui/PageLoader";
+import { FRONTEND_BASE_URL } from '@/config';
 
 const GithubProfile = () => {
   const [githubData, setGithubData] = useState(null);
@@ -15,38 +16,41 @@ const GithubProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [tokenProcessed, setTokenProcessed] = useState(false);
   
-  // Get the updateGithubConnection method from user store
-  const { updateGithubConnection, forceRefreshUser } = useUserStore();
+  const { fetchUserData, user } = useUserStore();
 
   const fetchGithubProfile = async (forceRefresh = false, accessToken = "") => {
     try {
       setLoading(true);
       setRefreshing(true);
+      
       const response1 = await apiClient.post(`/api/github/test/profile`, {
         accessToken,
         forceRefresh
       });
       setGithubData(response1.data);
+      
       const response2 = await apiClient.get("/api/v1/profiles/me/skills");
       setSkills(response2.data);
       setError(null);
-      // Update the user's GitHub connection status to true when data is fetched successfully
-      updateGithubConnection(true);
+      
       if (forceRefresh) {
         toast.success("GitHub profile refreshed successfully");
       }
+      
+      return true;
     } catch (err) {
-      // console.error("Error fetching GitHub profile data:", err);
-      if (!githubData) {
+      console.error("Error fetching GitHub profile data:", err);
+      
+      if (!githubData && accessToken !== "") {
         setError("Please connect your GitHub account to view your profile.");
-        // Update the user's GitHub connection status to false when no data is available
-        updateGithubConnection(false);
-        console.error("Error fetching GitHub profile data:", err);
-        toast.error(err.response.data.message);
-      } else {
+        toast.error(err.response?.data?.message || "Failed to fetch GitHub profile");
+      } else if (accessToken !== "") {
         toast.error("Failed to refresh GitHub profile. Please try again.");
       }
+      
+      return false;
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -54,18 +58,19 @@ const GithubProfile = () => {
   };
 
   const handleSkillAdded = (skillName) => {
-    // Add the new skill to the current skills array
     setSkills(prevSkills => {
       if (!Array.isArray(prevSkills)) {
         return [{ skill: skillName }];
       }
-      // Check if skill already exists to avoid duplicates
+      
       const exists = prevSkills.some(s => 
         (typeof s === 'string' ? s : s.name || s.skill) === skillName
       );
+      
       if (!exists) {
         return [...prevSkills, { skill: skillName }];
       }
+      
       return prevSkills;
     });
   };
@@ -74,10 +79,12 @@ const GithubProfile = () => {
     try {
       await apiClient.delete("/api/github/test/profile");
       setGithubData(null);
-      // Update the user's GitHub connection status to false
-      updateGithubConnection(false);
-      // Force refresh user data to ensure sidebar badge updates
-      await forceRefreshUser();
+      setSkills(null);
+      setError("Please connect your GitHub account to view your profile.");
+      
+      // Fetch fresh user data from backend to update GitHub connection status
+      await fetchUserData(true);
+      
       toast.success("GitHub account disconnected successfully");
     } catch (err) {
       console.error("Error disconnecting GitHub:", err);
@@ -85,12 +92,11 @@ const GithubProfile = () => {
     }
   };
 
-  useEffect(() => {
-    fetchGithubProfile(false, "");
-  }, []);
-
   const handleConnect = async () => {
     try {
+      // Reset token processed flag
+      setTokenProcessed(false);
+      
       const response = await apiClient.get("/api/github/test/authorize");
       const authUrl = response.data.authLink;
   
@@ -104,7 +110,8 @@ const GithubProfile = () => {
       window.addEventListener(
         "message",
         async (event) => {
-          if (event.origin !== window.location.origin) return;
+          if (event.origin !== FRONTEND_BASE_URL) return;
+          if (tokenProcessed) return; // Prevent multiple processing
   
           const { githubToken, error } = event.data;
   
@@ -114,19 +121,47 @@ const GithubProfile = () => {
           }
   
           if (githubToken) {
-            await fetchGithubProfile(true, githubToken);
-            // Update the user's GitHub connection status to true
-            updateGithubConnection(true);
-            // Force refresh user data to ensure sidebar badge updates
-            await forceRefreshUser();
+            console.log("githubToken", githubToken);
+            setTokenProcessed(true); // Mark as processed
+            const success = await fetchGithubProfile(true, githubToken);
+            if (success) {
+              // Fetch fresh user data from backend to update GitHub connection status
+              await fetchUserData(true);
+            }
           }
-        },
-        { once: true }
+        }
+        // ,
+        // { once: true }
       );
     } catch (error) {
       toast.error("Failed to connect to GitHub. Please try again.");
     }
   };
+
+  // Initialize user data and handle GitHub profile loading
+  useEffect(() => {
+    const initializeComponent = async () => {
+      try {
+        // Always fetch fresh user data to get the correct GitHub connection status
+        const userData = await fetchUserData(true);
+        
+        // Only fetch GitHub profile if user has GitHub connected
+        if (userData?.githubConnected) {
+          await fetchGithubProfile(false, "");
+        } else {
+          // If not connected, set loading to false and show connect UI
+          setLoading(false);
+          setError("Please connect your GitHub account to view your profile.");
+        }
+      } catch (error) {
+        console.error("Error initializing component:", error);
+        setLoading(false);
+        setError("Failed to load user data. Please try again.");
+      }
+    };
+
+    initializeComponent();
+  }, []); // Only run once on mount
 
   if (loading) {
     return (

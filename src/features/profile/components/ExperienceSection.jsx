@@ -3,6 +3,8 @@ import { Button } from "@/common/components/ui/button";
 import { Edit, Plus, Briefcase, Trash2, PlusCircle } from "lucide-react";
 import { Badge } from "@/common/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui/card";
+import { formatDate } from "@/common/utils/formatters";
+import DeleteTooltip from "../../resume-builder/components/DeleteTooltip";
 
 const ExperienceItem = ({
   companyLogo,
@@ -171,7 +173,7 @@ const ExperienceSection = ({ experiences, onAdd, onDelete, onEdit }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="font-bold text-xl text-black text-left">Work Experience</CardTitle>
+        <CardTitle className="font-bold text-xl text-black text-left">Experience</CardTitle>
         <Button 
           onClick={handleShowForm}
           size="sm"
@@ -279,14 +281,13 @@ const ExperienceSection = ({ experiences, onAdd, onDelete, onEdit }) => {
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
                 </button>
-                <button
-                  className="absolute top-2 right-2 text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"
-                  onClick={() => handleDelete(index)}
-                  title="Delete"
-                  style={{ zIndex: 10 }}
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
+                <div className="absolute top-2 right-2" style={{ zIndex: 10 }}>
+                  <DeleteTooltip 
+                    onDelete={() => handleDelete(index)} 
+                    itemName={experience.jobTitle || experience.company}
+                    className="bg-white rounded-full shadow"
+                  />
+                </div>
               </>
             )}
           </div>

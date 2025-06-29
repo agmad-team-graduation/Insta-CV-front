@@ -8,7 +8,8 @@ import { useState, useEffect } from 'react';
 import apiClient from '@/common/utils/apiClient';
 import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import PageLoader from "@/common/components/ui/PageLoader";
-import { PDF_BACKEND_URL, FRONTEND_URL } from '@/config';
+import { FRONTEND_BASE_URL, PDF_BACKEND_URL } from '@/config';
+
 
 interface CV {
   id: string;
@@ -151,7 +152,8 @@ const CVsList = () => {
       const template = cv?.cvSettings?.template || selectedTemplate;
       
       // Use the preview page URL with the CV's specific template
-      const previewUrl = `${FRONTEND_URL}/resumes/${cvId}/preview?template=${template}`;
+      const previewUrl = `${FRONTEND_BASE_URL}/resumes/${cvId}/preview?template=${template}`;
+
       const pdfUrl = `${PDF_BACKEND_URL}/generate-pdf?url=${encodeURIComponent(previewUrl)}&token=${encodeURIComponent(cookieValue)}`;
       
       // Add timeout to the fetch request

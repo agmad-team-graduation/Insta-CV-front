@@ -7,30 +7,15 @@ const useUserStore = create((set, get) => ({
   isLoading: false,
   isPhotoLoaded: false,
 
-  // Fetch user data once and store it
-  fetchUser: async () => {
+  // Fetch user data from auth endpoint
+  fetchUserData: async (forceRefresh = false) => {
     const { user } = get();
-    if (user) return user; // Already loaded
+    if (user && !forceRefresh) return user; // Already loaded unless force refresh
 
     set({ isLoading: true });
     try {
-      const response = await apiClient.get('/api/v1/profiles/me');
-      console.log("response", response.data);
-      set({ user: response.data, isLoading: false });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      set({ isLoading: false });
-      return null;
-    }
-  },
-
-  // Force refresh user data (clears cache and fetches fresh data)
-  forceRefreshUser: async () => {
-    set({ isLoading: true });
-    try {
-      const response = await apiClient.get('/api/v1/profiles/me');
-      console.log("force refresh response", response.data);
+      const response = await apiClient.get('/api/v1/auth/me');
+      console.log("user data response", response.data);
       set({ user: response.data, isLoading: false });
       return response.data;
     } catch (error) {
@@ -66,19 +51,6 @@ const useUserStore = create((set, get) => ({
     set({ userPhoto: photoUrl, isPhotoLoaded: true });
   },
 
-  // Update user's GitHub connection status
-  updateGithubConnection: (isConnected) => {
-    const { user } = get();
-    if (user) {
-      set({ 
-        user: { 
-          ...user, 
-          githubConnected: isConnected 
-        } 
-      });
-    }
-  },
-
   // Clear user data on logout
   clearUser: () => {
     set({ user: null, userPhoto: '', isLoading: false, isPhotoLoaded: false });
@@ -88,6 +60,24 @@ const useUserStore = create((set, get) => ({
   initializeFromCookies: (cookieUser) => {
     if (cookieUser && cookieUser.name) {
       set({ user: cookieUser });
+    }
+  },
+
+  // Set user data directly (used for login)
+  setUser: (userData) => {
+    set({ user: userData });
+  },
+
+  // Update user data with fresh data from API (preserves existing data)
+  updateUserData: (newUserData) => {
+    const { user } = get();
+    if (user && newUserData) {
+      set({ 
+        user: { 
+          ...user, 
+          ...newUserData 
+        } 
+      });
     }
   }
 }));

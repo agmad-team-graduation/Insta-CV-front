@@ -42,11 +42,8 @@ const JobHeader = ({
         </div>
         
         <div className="text-right">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-2">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium">
             {postedDate || "Recently Posted"}
-          </div>
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center">
-            <Building2 className="w-8 h-8 text-blue-600" />
           </div>
         </div>
       </div>

@@ -52,7 +52,7 @@ const AddJobDialog = ({ open, onOpenChange, onJobAdded }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Job</DialogTitle>
           <DialogDescription>
@@ -88,12 +88,12 @@ const AddJobDialog = ({ open, onOpenChange, onJobAdded }) => {
               onChange={(e) => setDescription(e.target.value)}
               disabled={isSubmitting}
               required
-              className="min-h-[200px]"
+              className="min-h-[200px] max-h-[300px] resize-y"
             />
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="sticky bottom-0 bg-white border-t pt-4">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)}

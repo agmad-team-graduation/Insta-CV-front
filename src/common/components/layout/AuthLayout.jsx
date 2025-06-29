@@ -7,15 +7,15 @@ import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { Cookie } from 'lucide-react';
 import PageLoader from "@/common/components/ui/PageLoader";
-import { useIsMobile } from '@/common/hooks/use-mobile';
-import { Button } from '@/common/components/ui/button';
-import { Menu } from 'lucide-react';
+import MobileWarningModal from "@/common/components/ui/MobileWarningModal";
+import { useIsMobile } from "@/common/hooks/use-mobile";
+
 
 const AuthLayout = () => {
   const [cookies, setCookies] = useCookies(['isLoggedIn', 'user']);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
   const isMobile = useIsMobile();
 
   // Check authentication status
@@ -47,6 +47,13 @@ const AuthLayout = () => {
     // Validate token with backend
     checkAuth();
   }, [cookies.isLoggedIn, setCookies]);
+
+  // Show mobile warning when authenticated and on mobile
+  useEffect(() => {
+    if (isAuthenticated && isMobile) {
+      setShowMobileWarning(true);
+    }
+  }, [isAuthenticated, isMobile]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -108,6 +115,12 @@ const AuthLayout = () => {
       `}>
         <Outlet />
       </div>
+
+      {/* Mobile Warning Modal */}
+      <MobileWarningModal 
+        open={showMobileWarning} 
+        onOpenChange={setShowMobileWarning}
+      />
     </div>
   );
 };

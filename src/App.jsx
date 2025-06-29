@@ -24,7 +24,41 @@ import ResumesPage from './features/resume-builder/pages/ResumesPage';
 import ResumePreviewPage from './features/resume-builder/pages/ResumePreviewPage';
 import ProfileFlow from './features/profile/pages/ProfileFlow';
 import SignUp from './features/auth/components/SignUp/signup';
+import { useEffect } from 'react';
+import useUserStore from './store/userStore';
 
+// Component to initialize user data from cookies
+const UserInitializer = () => {
+  const [cookies] = useCookies(['isLoggedIn', 'user']);
+  const { initializeFromCookies, setUser, fetchUserData } = useUserStore();
+
+  useEffect(() => {
+    const initializeUser = async () => {
+      if (cookies.isLoggedIn) {
+        // Initialize from cookies first for immediate display
+        if (cookies.user) {
+          initializeFromCookies(cookies.user);
+        }
+        
+        // Then fetch fresh user data from API to get complete data including githubConnected
+        try {
+          const freshUserData = await fetchUserData(true);
+          if (freshUserData) {
+            // Update with fresh data that includes githubConnected status
+            setUser(freshUserData);
+          }
+        } catch (error) {
+          console.error('Error fetching fresh user data:', error);
+          // If API call fails, keep the cookie data
+        }
+      }
+    };
+
+    initializeUser();
+  }, [cookies.isLoggedIn, cookies.user, initializeFromCookies, fetchUserData, setUser]);
+
+  return null; // This component doesn't render anything
+};
 
 function AppContent() {
   const location = useLocation();
@@ -33,6 +67,7 @@ function AppContent() {
   return (
     <>
       <Toaster />
+      <UserInitializer />
       <div className="content">
         <Routes>
           <Route path='/' element={cookies.isLoggedIn ? <Navigate to="/dashboard" /> : <LandingPage />} />

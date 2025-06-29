@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import apiClient from '@/common/utils/apiClient'; 
 import { toast } from 'sonner';
 import useUserStore from '@/store/userStore';
+import { FRONTEND_BASE_URL } from '@/config';
 
 const AuthContext = createContext({
     email: '',
@@ -18,11 +19,11 @@ const AuthContext = createContext({
 
 export const LoginProvider = ({ children }) => {
     const navigate = useNavigate(); 
-    const { updateUserPhoto } = useUserStore();
+    const { updateUserPhoto, setUser } = useUserStore();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [user, setUser] = useState(null);
+    const [user, setUserState] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken', 'user']);
@@ -43,6 +44,9 @@ export const LoginProvider = ({ children }) => {
             // Store token and user data
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
             setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
+            setUserState(data.user);
+            
+            // Update the global user store
             setUser(data.user);
 
             // If user has a photo, update the global store
@@ -77,20 +81,20 @@ export const LoginProvider = ({ children }) => {
         try {
             const response = await apiClient.get("/api/github/test/authorize?isLogin=true");
             const authUrl = response.data.authLink;
-      
+            console.log("window.location.origin", window.location.origin);
+            
             const popup = window.open(authUrl, "_blank", "width=500,height=600");
-      
+            
             if (!popup) {
                 toast.error("Popup blocked! Please allow popups for this site.");
                 return;
             }
-      
+            
             window.addEventListener(
                 "message",
                 async (event) => {
                     console.log("event.origin", event.origin);
-                    console.log("window.location.origin", window.location.origin);
-                    if (event.origin !== window.location.origin) return;
+                    console.log("FRONTEND_BASE_URL", FRONTEND_BASE_URL);
       
                     const { token, expiresIn, user, error } = event.data;
                     console.log("token", token);
@@ -110,6 +114,9 @@ export const LoginProvider = ({ children }) => {
                         try {
                             // const { data: userData } = await apiClient.get('/api/v1/auth/me');
                             setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
+                            setUserState(user);
+                            
+                            // Update the global user store
                             setUser(user);
 
                             // If user has a photo, update the global store
@@ -130,8 +137,9 @@ export const LoginProvider = ({ children }) => {
                             toast.error('Login successful but failed to fetch user data.');
                         }
                     }
-                },
-                { once: true }
+                }
+                // ,
+                // { once: true }
             );
         } catch (error) {
             toast.error("Failed to connect to GitHub. Please try again.");

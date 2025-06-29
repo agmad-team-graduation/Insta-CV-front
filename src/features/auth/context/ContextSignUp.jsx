@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import useUserStore from '@/store/userStore';
+import { FRONTEND_BASE_URL } from '@/config';
 
 const AuthContext = createContext({
     email: '',
@@ -18,7 +19,7 @@ const AuthContext = createContext({
 
 export const SignUpProvider = ({children})=>{
     const navigate = useNavigate();
-    const { updateUserPhoto } = useUserStore();
+    const { updateUserPhoto, setUser } = useUserStore();
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'user']);
     
     const [email,setEmail]=useState('');
@@ -51,7 +52,7 @@ export const SignUpProvider = ({children})=>{
             window.addEventListener(
                 "message",
                 async (event) => {
-                    if (event.origin !== window.location.origin) return;
+                    if (event.origin !== FRONTEND_BASE_URL) return;
       
                     const { user, token, expiresIn, error } = event.data;
       
@@ -68,6 +69,9 @@ export const SignUpProvider = ({children})=>{
                         try {
                             // const { data: userData } = await apiClient.get('/api/v1/auth/me');
                             setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
+
+                            // Update the global user store
+                            setUser(user);
 
                             // If user has a photo, update the global store
                             if (user.photoUrl) {
@@ -87,8 +91,9 @@ export const SignUpProvider = ({children})=>{
                             toast.error('Signup successful but failed to fetch user data.');
                         }
                     }
-                },
-                { once: true }
+                }
+                // ,
+                // { once: true }
             );
         } catch (error) {
             toast.error("Failed to connect to GitHub. Please try again.");

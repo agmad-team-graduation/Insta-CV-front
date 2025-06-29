@@ -29,27 +29,17 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { 
     user, 
     userPhoto, 
-    fetchUser, 
     fetchUserPhoto, 
     clearUser, 
     initializeFromCookies 
   } = useUserStore();
 
-  // Initialize user data once when component mounts
+  // Load user photo if not already loaded
   useEffect(() => {
-    if (cookies.isLoggedIn) {
-      // Initialize from cookies first if available
-      initializeFromCookies(cookies.user);
-      
-      // Fetch user data and photo if not already loaded
-      const loadUserData = async () => {
-        await fetchUser();
-        await fetchUserPhoto();
-      };
-      
-      loadUserData();
+    if (cookies.isLoggedIn && !userPhoto) {
+      fetchUserPhoto();
     }
-  }, [cookies.isLoggedIn, cookies.user, fetchUser, fetchUserPhoto, initializeFromCookies]);
+  }, [cookies.isLoggedIn, userPhoto, fetchUserPhoto]);
 
   // Close sidebar when clicking on nav items on mobile
   const handleNavClick = () => {
@@ -244,7 +234,10 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.href);
+            // Special handling for jobs section to include recommended-jobs
+            const isActive = item.href === '/jobs' 
+              ? location.pathname.startsWith('/jobs') || location.pathname.startsWith('/recommended-jobs')
+              : location.pathname.startsWith(item.href);
             
             return (
               <Link
@@ -273,15 +266,15 @@ const Sidebar = ({ isOpen, onClose }) => {
                       variant="secondary" 
                       className={cn(
                         "ml-auto text-[10px] px-1.5 py-0.5",
-                        displayUser.githubConnected 
+                        user?.githubConnected 
                           ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200",
-                        isActive && displayUser.githubConnected && "bg-blue-200 text-blue-800",
-                        isActive && !displayUser.githubConnected && "bg-gray-200 text-gray-800"
+                        isActive && user?.githubConnected && "bg-blue-200 text-blue-800",
+                        isActive && !user?.githubConnected && "bg-gray-200 text-gray-800"
                       )}
                     >
                       <Github className="w-2.5 h-2.5 mr-0.5" />
-                      {displayUser.githubConnected ? "Connected" : "Disconnected"}
+                      {user?.githubConnected ? "Connected" : "Disconnected"}
                     </Badge>
                   )}
                 </div>

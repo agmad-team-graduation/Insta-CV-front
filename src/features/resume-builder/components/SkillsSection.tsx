@@ -309,7 +309,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
           {skills.length > 0 ? (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={skills.map(skill => skill.id)} strategy={verticalListSortingStrategy}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {skills.map((skill) => (
                     <SkillCard
                       key={skill.id}

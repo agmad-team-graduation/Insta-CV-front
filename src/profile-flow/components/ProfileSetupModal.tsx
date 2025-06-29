@@ -9,6 +9,9 @@ import SkillsStep from './profile-steps/SkillsStep';
 import { ProfileData, PersonalDetails, Education, Experience, Skill } from '@/common/utils/profile';
 import { useCookies } from 'react-cookie';
 import useUserStore from '@/store/userStore';
+import apiClient from '@/common/utils/apiClient';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface ProfileSetupModalProps {
   isOpen: boolean;
@@ -18,6 +21,7 @@ interface ProfileSetupModalProps {
 const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }) => {
   const [cookies] = useCookies(['user']);
   const { user } = useUserStore();
+  const navigate = useNavigate();
   
   // Get user name from either the global store or cookies
   const getUserName = () => {
@@ -79,6 +83,63 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
     onClose(profileData);
   };
 
+  // Function to ensure all profile data has proper default values
+  const sanitizeProfileData = (data: ProfileData) => {
+    return {
+      personalDetails: {
+        fullName: data.personalDetails?.fullName || '',
+        jobTitle: data.personalDetails?.jobTitle || '',
+        bio: data.personalDetails?.bio || ''
+      },
+      educationList: data.educationList?.map(edu => ({
+        degree: edu.degree || '',
+        school: edu.school || '',
+        city: edu.city || '',
+        country: edu.country || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        Present: edu.present || false,
+        description: edu.description || ''
+      })) || [],
+      experienceList: data.experienceList?.map(exp => ({
+        jobTitle: exp.jobTitle || '',
+        company: exp.company || '',
+        city: exp.city || '',
+        country: exp.country || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || '',
+        Present: exp.present || false,
+        description: exp.description || ''
+      })) || [],
+      userSkills: data.userSkills?.map(skill => ({
+        skill: skill.skill || '',
+        level: skill.level || 'BEGINNER'
+      })) || [],
+      projects: []
+    };
+  };
+
+  // Handle modal close attempts (clicking outside, pressing escape)
+  const handleModalCloseAttempt = async () => {
+    // Create an initial profile with current data or minimal data
+    try {
+      const dataToSave = profileData.personalDetails.fullName ? profileData : {
+        personalDetails: { fullName: getUserName(), jobTitle: '', bio: '' },
+        educationList: [],
+        experienceList: [],
+        userSkills: []
+      };
+      
+      const sanitizedData = sanitizeProfileData(dataToSave);
+      await apiClient.post('/api/v1/profiles/create', sanitizedData);
+      toast.success('Profile created successfully!');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      toast.error('Failed to create profile. Please try again.');
+    }
+  };
+
   const updatePersonalDetails = (data: PersonalDetails) => {
     setProfileData(prev => ({ ...prev, personalDetails: data }));
   };
@@ -133,8 +194,14 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <Card className="relative w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden bg-white border border-gray-200 shadow-2xl">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={handleModalCloseAttempt} // Handle clicking outside
+    >
+      <Card 
+        className="relative w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden bg-white border border-gray-200 shadow-2xl"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()} // Prevent closing when clicking inside the card
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30" />
         
         {/* Header */}
@@ -147,7 +214,7 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => onClose(profileData)}
+              onClick={handleModalCloseAttempt}
               className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
             >
               <X className="h-5 w-5" />
