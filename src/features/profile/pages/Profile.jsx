@@ -324,11 +324,11 @@ const Profile = () => {
   }) || [];
 
   return (
-    <div className="container mx-auto py-6 px-4 max-w-5xl mt-8">
+    <div className="container mx-auto py-4 md:py-6 px-4 max-w-5xl mt-4 md:mt-8">
       {profileData && (
         <>
-          <Card className="mb-6">
-            <CardContent>
+          <Card className="mb-4 md:mb-6">
+            <CardContent className="p-4 md:p-6">
               <ProfileHeader
                 name={profileData.personalDetails?.fullName || ""}
                 title={profileData.personalDetails?.jobTitle || "Software Engineer"}
@@ -340,7 +340,7 @@ const Profile = () => {
                 jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
                 onPhotoUpdate={handlePhotoUpdate}
               />
-              <div className="flex mt-2 justify-end">
+              <div className="flex mt-3 md:mt-2 justify-center sm:justify-end">
                 <input
                   type="file"
                   id="cv-upload"
@@ -351,7 +351,7 @@ const Profile = () => {
                 />
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-2 text-sm"
+                  className="flex items-center gap-2 text-sm w-full sm:w-auto justify-center sm:justify-start touch-target"
                   disabled={uploadingCV}
                   onClick={() => document.getElementById('cv-upload').click()}
                 >
@@ -361,8 +361,8 @@ const Profile = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="mb-6">
-            <CardContent>
+          <Card className="mb-4 md:mb-6">
+            <CardContent className="p-4 md:p-6">
               <PersonalDetailsSection
                 name={profileData.personalDetails?.fullName || ""}
                 email={profileData.personalDetails?.email || ""}
@@ -394,7 +394,7 @@ const Profile = () => {
       )}
       
       {/* Skills Section */}
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <SkillsSection 
           data={mappedSkills}
           isEditMode={true}
@@ -414,7 +414,7 @@ const Profile = () => {
       </div>
       
       {/* Experience Section */}
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <ExperienceSection 
           experiences={mappedExperiences}
           onAdd={async newExp => {
@@ -447,7 +447,7 @@ const Profile = () => {
       </div>
       
       {/* Education Section */}
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <EducationSection
           educations={mappedEducations}
           onAdd={async newEdu => {
@@ -480,7 +480,7 @@ const Profile = () => {
       </div>
 
       {/* Projects Section */}
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <ProjectSection 
           projects={mappedProjects}
           onAdd={async newProj => {
@@ -514,18 +514,19 @@ const Profile = () => {
 
       {/* CV Upload Dialog */}
       <Dialog open={showCVUploadDialog} onOpenChange={setShowCVUploadDialog}>
-        <DialogContent>
+        <DialogContent className="mx-4 max-w-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Upload CV</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg md:text-xl">Upload CV</DialogTitle>
+            <DialogDescription className="text-sm md:text-base">
               How would you like to process the uploaded CV?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+          <DialogFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:gap-2">
             <Button 
               variant="outline" 
               onClick={() => handleCVUpload(false)}
               disabled={uploadingCV}
+              className="w-full sm:w-auto touch-target"
             >
               Add to Current Profile
             </Button>
@@ -533,6 +534,7 @@ const Profile = () => {
               variant="destructive" 
               onClick={() => handleCVUpload(true)}
               disabled={uploadingCV}
+              className="w-full sm:w-auto touch-target"
             >
               Overwrite Current Profile
             </Button>
@@ -546,34 +548,34 @@ const Profile = () => {
           setShowUploadProgress(false);
         }
       }}>
-        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+        <DialogContent className="mx-4 sm:max-w-md p-0 overflow-hidden">
           <div className="relative">
             {/* Background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50" />
             
             {/* Content */}
-            <div className="relative p-8">
+            <div className="relative p-6 md:p-8">
               <div className="text-center">
                 {/* Animated Icon */}
-                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                  <Loader2 className="h-10 w-10 text-white animate-spin" />
+                <div className="mx-auto w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-lg">
+                  <Loader2 className="h-8 w-8 md:h-10 md:w-10 text-white animate-spin" />
                 </div>
                 
                 {/* Title and Description */}
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">
                   Processing Your CV
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6">
                   We're analyzing your CV and extracting your professional information...
                 </p>
                 
                 {/* Progress Bar */}
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm text-gray-600">
+                <div className="space-y-2 md:space-y-3">
+                  <div className="flex justify-between text-xs md:text-sm text-gray-600">
                     <span>Progress</span>
                     <span>{Math.round(uploadProgress)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-gray-200 rounded-full h-2 md:h-3 overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${uploadProgress}%` }}
@@ -582,7 +584,7 @@ const Profile = () => {
                 </div>
                 
                 {/* Status Messages */}
-                <div className="mt-6 text-sm text-gray-500">
+                <div className="mt-4 md:mt-6 text-xs md:text-sm text-gray-500">
                   {uploadProgress < 30 && "Uploading CV file..."}
                   {uploadProgress >= 30 && uploadProgress < 60 && "Parsing document content..."}
                   {uploadProgress >= 60 && uploadProgress < 90 && "Extracting professional information..."}
@@ -596,16 +598,16 @@ const Profile = () => {
       </Dialog>
 
       <Dialog open={showLeaveModal} onOpenChange={setShowLeaveModal}>
-        <DialogContent>
+        <DialogContent className="mx-4 max-w-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Unsaved Changes</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg md:text-xl">Unsaved Changes</DialogTitle>
+            <DialogDescription className="text-sm md:text-base">
               You have unsaved changes. What would you like to do?
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button onClick={handleSaveAndLeave}>Save Profile</Button>
-            <Button variant="outline" onClick={handleLeaveWithoutSaving}>Leave</Button>
+          <DialogFooter className="flex flex-col gap-3 sm:flex-row sm:gap-2">
+            <Button onClick={handleSaveAndLeave} className="w-full sm:w-auto touch-target">Save Profile</Button>
+            <Button variant="outline" onClick={handleLeaveWithoutSaving} className="w-full sm:w-auto touch-target">Leave</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

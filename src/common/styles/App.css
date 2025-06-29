@@ -97,41 +97,101 @@ body {
   animation: slide-up 0.5s ease-out;
 }
 
+/* Comprehensive Mobile Responsiveness */
+
 /* Mobile-specific improvements */
 @media (max-width: 768px) {
-  /* Improve touch targets */
+  /* Improve touch targets - minimum 44px for better accessibility */
   button, 
   [role="button"], 
-  a[role="button"] {
+  a[role="button"],
+  .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
   
-  /* Better text sizing for mobile */
+  /* Better text sizing for mobile readability */
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.75rem !important;
+    line-height: 1.2;
   }
   
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem !important;
+    line-height: 1.3;
   }
   
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.25rem !important;
+    line-height: 1.4;
   }
   
-  /* Improve form inputs on mobile */
+  h4 {
+    font-size: 1.125rem !important;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  /* Improve form inputs on mobile - prevent zoom on iOS */
   input, 
   textarea, 
   select {
-    font-size: 16px; /* Prevent zoom on iOS */
+    font-size: 16px !important; /* Prevent zoom on iOS */
     padding: 12px;
+    border-radius: 8px;
   }
   
-  /* Better spacing */
+  /* Better spacing and layout */
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+  
+  /* Mobile-friendly modals and dialogs */
+  .modal-content,
+  .dialog-content {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+  
+  /* Responsive images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Mobile navigation improvements */
+  .mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Better scrollable areas on mobile */
+  .scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+  
+  /* Hide scrollbars on mobile while maintaining functionality */
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Mobile-friendly tables */
+  table {
+    font-size: 0.875rem;
+  }
+  
+  th, td {
+    padding: 8px 4px;
   }
 }
 
@@ -141,12 +201,51 @@ body {
     padding-left: 2rem;
     padding-right: 2rem;
   }
+  
+  /* Tablet-specific text sizing */
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
 }
 
-/* Prevent zoom on double tap for iOS */
+/* Prevent zoom on double tap for iOS - critical for mobile UX */
 @media (max-width: 768px) {
   * {
     touch-action: manipulation;
+  }
+  
+  /* Smooth scrolling for mobile */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better button press feedback on mobile */
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1025px) {
+  .container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* High-density display improvements */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo,
+  .icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
 
@@ -154,5 +253,64 @@ body {
 @media (prefers-color-scheme: dark) {
   .read-the-docs {
     color: #ccc;
+  }
+  
+  /* Dark mode mobile improvements */
+  @media (max-width: 768px) {
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus improvements for keyboard navigation */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  * {
+    color: #000 !important;
+    background: transparent !important;
+  }
+}
+
+/* Utility classes for responsive design */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
   }
 }

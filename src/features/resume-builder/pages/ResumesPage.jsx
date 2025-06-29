@@ -222,12 +222,12 @@ const ResumesPage = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">My Resumes</h1>
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">My Resumes</h1>
         <Button 
           onClick={handleCreateNew}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create New Resume
@@ -239,7 +239,7 @@ const ResumesPage = () => {
         onOpenChange={setShowCreateDialog} 
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {currentResumes.map((resume) => (
           <Card 
             key={resume.id}
@@ -250,10 +250,10 @@ const ResumesPage = () => {
               navigate(`/resumes/${resume.id}`);
             }}
           >
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-4">
+            <CardContent className="p-4 md:p-6">
+              <div className="flex justify-between items-start mb-3 md:mb-4">
                 <div className="flex items-center flex-1 min-w-0">
-                  <FileText className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0" />
+                  <FileText className="h-4 w-4 md:h-5 md:w-5 text-blue-600 mr-2 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     {editingTitleId === resume.id ? (
                       <div className="title-edit-container" onClick={e => e.stopPropagation()}>
@@ -268,7 +268,7 @@ const ResumesPage = () => {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 group">
-                        <h3 className="font-mono font-medium text-gray-900 truncate">
+                        <h3 className="font-mono font-medium text-gray-900 truncate text-sm md:text-base">
                           {resume.cvTitle || `Resume #${resume.id}`}
                         </h3>
                         <button
@@ -287,43 +287,43 @@ const ResumesPage = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-500 hover:text-red-600 ml-2 flex-shrink-0"
+                  className="text-gray-500 hover:text-red-600 ml-2 flex-shrink-0 h-8 w-8"
                   onClick={(e) => handleDelete(resume.id, e)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
               
               {/* Summary Preview */}
               {resume.summarySection?.summary && !resume.summarySection.hidden && (
-                <div className="mb-4 text-sm text-gray-600 line-clamp-2">
+                <div className="mb-3 md:mb-4 text-xs md:text-sm text-gray-600 line-clamp-2">
                   {resume.summarySection.summary}
                 </div>
               )}
               
-              <div className="space-y-2 text-sm text-gray-600">
+              <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm text-gray-600">
                 <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span>
+                  <Calendar className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">
                     Updated: {formatDateTime(resume.updatedAt)}
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <List className="h-4 w-4 mr-2" />
+                  <List className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
                   <span>
                     {countActiveSections(resume)} active sections
                   </span>
                 </div>
                 <div className="flex items-center">
-                  <Edit className="h-4 w-4 mr-2" />
-                  <span>
+                  <Edit className="h-3 w-3 md:h-4 md:w-4 mr-2 flex-shrink-0" />
+                  <span className="min-w-0">
                     {resume.jobId ? (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/job-details/${resume.jobId}`);
                         }}
-                        className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
+                        className="text-blue-600 hover:text-blue-800 hover:underline focus:outline-none truncate"
                       >
                         Generated for Job #{resume.jobId}
                       </button>
@@ -338,10 +338,10 @@ const ResumesPage = () => {
         ))}
 
         {allResumes.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-            <FileText className="h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Resumes Yet</h3>
-            <p className="text-gray-500 mb-4">Create your first resume to get started</p>
+          <div className="col-span-full flex flex-col items-center justify-center py-8 md:py-12 bg-gray-50 rounded-lg border border-gray-200">
+            <FileText className="h-10 w-10 md:h-12 md:w-12 text-gray-400 mb-3 md:mb-4" />
+            <h3 className="text-base md:text-lg font-medium text-gray-900 mb-2">No Resumes Yet</h3>
+            <p className="text-sm md:text-base text-gray-500 mb-3 md:mb-4 text-center px-4">Create your first resume to get started</p>
             <Button 
               onClick={handleCreateNew}
               className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -354,25 +354,29 @@ const ResumesPage = () => {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center space-x-4 mt-8">
+        <div className="flex justify-center items-center space-x-2 md:space-x-4 mt-6 md:mt-8">
           <Button 
             onClick={handlePrevPage} 
             disabled={currentPage === 1} 
             variant="outline" 
-            size="icon"
+            size="sm"
+            className="md:size-default"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="hidden sm:inline ml-1">Previous</span>
           </Button>
-          <span className="text-sm text-gray-700">
+          <span className="text-xs md:text-sm text-gray-700 px-2">
             Page {currentPage} of {totalPages}
           </span>
           <Button 
             onClick={handleNextPage} 
             disabled={currentPage === totalPages} 
             variant="outline" 
-            size="icon"
+            size="sm"
+            className="md:size-default"
           >
-            <ChevronRight className="h-5 w-5" />
+            <span className="hidden sm:inline mr-1">Next</span>
+            <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
         </div>
       )}

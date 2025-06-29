@@ -5,17 +5,18 @@ import apiClient from '@/common/utils/apiClient';
 import Sidebar from './Sidebar';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
-import { Cookie } from 'lucide-react';
+import { Cookie, Menu } from 'lucide-react';
 import PageLoader from "@/common/components/ui/PageLoader";
 import MobileWarningModal from "@/common/components/ui/MobileWarningModal";
 import { useIsMobile } from "@/common/hooks/use-mobile";
-
+import { Button } from '@/common/components/ui/button';
 
 const AuthLayout = () => {
   const [cookies, setCookies] = useCookies(['isLoggedIn', 'user']);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showMobileWarning, setShowMobileWarning] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
 
   // Check authentication status
