@@ -1,15 +1,9 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/common/components/ui/dialog";
 import { Button } from "@/common/components/ui/button";
-import { Monitor, Smartphone, ExternalLink, AlertTriangle } from "lucide-react";
+import { Monitor, Smartphone, AlertTriangle, Info } from "lucide-react";
 
 const MobileWarningModal = ({ open, onOpenChange }) => {
-  const handleViewAsDesktop = () => {
-    // Open the current URL in a new tab with desktop user agent
-    const currentUrl = window.location.href;
-    window.open(currentUrl, '_blank');
-  };
-
   const handleContinueAnyway = () => {
     // Close the modal but keep it closed
     onOpenChange(false);
@@ -47,29 +41,19 @@ const MobileWarningModal = ({ open, onOpenChange }) => {
             </ul>
           </div>
 
-          {/* Recommendations */}
+          {/* Desktop site tip */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-              <Monitor className="w-4 h-4" />
-              Recommended alternatives:
+              <Info className="w-4 h-4" />
+              💡 Pro Tip:
             </h4>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Use a desktop or laptop computer</li>
-              <li>• Try tablet in landscape mode</li>
-              <li>• Use browser's "Desktop site" option</li>
-            </ul>
+            <p className="text-sm text-blue-700">
+              Tap the three dots (⋮) in your browser menu and select <strong>"Desktop site"</strong> or <strong>"Request desktop site"</strong> for a better experience.
+            </p>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-col gap-3 pt-2">
-            <Button 
-              onClick={handleViewAsDesktop}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Open as Desktop Site
-            </Button>
-            
+          {/* Action button */}
+          <div className="pt-2">
             <Button 
               onClick={handleContinueAnyway}
               variant="outline"
