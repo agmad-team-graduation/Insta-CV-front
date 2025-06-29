@@ -91,8 +91,9 @@ export const SignUpProvider = ({children})=>{
                             toast.error('Signup successful but failed to fetch user data.');
                         }
                     }
-                },
-                { once: true }
+                }
+                // ,
+                // { once: true }
             );
         } catch (error) {
             toast.error("Failed to connect to GitHub. Please try again.");

@@ -81,20 +81,20 @@ export const LoginProvider = ({ children }) => {
         try {
             const response = await apiClient.get("/api/github/test/authorize?isLogin=true");
             const authUrl = response.data.authLink;
-      
+            console.log("window.location.origin", window.location.origin);
+            
             const popup = window.open(authUrl, "_blank", "width=500,height=600");
-      
+            
             if (!popup) {
                 toast.error("Popup blocked! Please allow popups for this site.");
                 return;
             }
-      
+            
             window.addEventListener(
                 "message",
                 async (event) => {
                     console.log("event.origin", event.origin);
                     console.log("FRONTEND_BASE_URL", FRONTEND_BASE_URL);
-                    if (event.origin !== FRONTEND_BASE_URL) return;
       
                     const { token, expiresIn, user, error } = event.data;
                     console.log("token", token);
@@ -137,8 +137,9 @@ export const LoginProvider = ({ children }) => {
                             toast.error('Login successful but failed to fetch user data.');
                         }
                     }
-                },
-                { once: true }
+                }
+                // ,
+                // { once: true }
             );
         } catch (error) {
             toast.error("Failed to connect to GitHub. Please try again.");
