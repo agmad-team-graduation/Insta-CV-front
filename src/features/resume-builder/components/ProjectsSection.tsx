@@ -8,7 +8,8 @@ import {
   GripVerticalIcon,
   CalendarIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  UserIcon
 } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
@@ -18,6 +19,7 @@ import { ProjectItem } from '../types/index';
 import useResumeStore from '../store/resumeStore';
 import SectionItemEditor from './SectionItemEditor';
 import EditableField from './ui/EditableField';
+import ImportProjectsModal from './ImportProjectsModal';
 
 interface ProjectsSectionProps {
   projects: ProjectItem[];
@@ -193,6 +195,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
 }) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const { 
     addItem, 
     reorderItems, 
@@ -243,6 +246,10 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       skills: [],
       present: false
     });
+  };
+
+  const handleImportFromProfile = (project: Omit<ProjectItem, 'id' | 'orderIndex'>) => {
+    addItem('projectSection', project);
   };
 
   const handleToggleVisibility = (id: number) => {
@@ -350,14 +357,31 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
             </div>
           )}
 
-          {/* Add Project Button */}
-          <button
-            onClick={handleAddProject}
-            className="mt-6 w-full py-3 px-4 border-2 border-dashed border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
-          >
-            <PlusIcon size={18} />
-            Add Project
-          </button>
+          {/* Add Project Buttons */}
+          <div className="mt-6 space-y-3">
+            <button
+              onClick={handleAddProject}
+              className="w-full py-3 px-4 border-2 border-dashed border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
+            >
+              <PlusIcon size={18} />
+              Add Project
+            </button>
+            
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="w-full py-3 px-4 border-2 border-dashed border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 rounded-lg transition-all duration-200 font-medium flex items-center justify-center gap-2"
+            >
+              <UserIcon size={18} />
+              Add Project from Profile
+            </button>
+          </div>
+
+          {/* Import Projects Modal */}
+          <ImportProjectsModal
+            open={showImportModal}
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImportFromProfile}
+          />
         </div>
       </div>
     </div>
