@@ -16,6 +16,7 @@ const GithubProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [tokenProcessed, setTokenProcessed] = useState(false);
   
   const { fetchUserData, user } = useUserStore();
 
@@ -93,6 +94,9 @@ const GithubProfile = () => {
 
   const handleConnect = async () => {
     try {
+      // Reset token processed flag
+      setTokenProcessed(false);
+      
       const response = await apiClient.get("/api/github/test/authorize");
       const authUrl = response.data.authLink;
   
@@ -107,6 +111,7 @@ const GithubProfile = () => {
         "message",
         async (event) => {
           if (event.origin !== FRONTEND_BASE_URL) return;
+          if (tokenProcessed) return; // Prevent multiple processing
   
           const { githubToken, error } = event.data;
   
@@ -116,14 +121,17 @@ const GithubProfile = () => {
           }
   
           if (githubToken) {
+            console.log("githubToken", githubToken);
+            setTokenProcessed(true); // Mark as processed
             const success = await fetchGithubProfile(true, githubToken);
             if (success) {
               // Fetch fresh user data from backend to update GitHub connection status
               await fetchUserData(true);
             }
           }
-        },
-        { once: true }
+        }
+        // ,
+        // { once: true }
       );
     } catch (error) {
       toast.error("Failed to connect to GitHub. Please try again.");
