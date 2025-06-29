@@ -60,19 +60,51 @@ const ProfileHeader = ({
   };
 
   return (
-    <div className="flex items-center gap-6">
-      <PhotoUpload currentPhotoUrl={avatar} onPhotoUpdate={handlePhotoUpdate} />
-      <div className="flex-1 min-w-0">
-        <div className="font-bold text-2xl mb-1 text-black text-left">{name}</div>
-        <div className="flex flex-wrap items-center gap-3 text-gray-600 text-base mb-1 mt-2">
-          <Briefcase className="w-5 h-5 inline-block mr-1" />
-          {jobTitle || title}
-          <Mail className="w-5 h-5 inline-block ml-4 mr-1" />
-          {email}
-          <Phone className="w-5 h-5 inline-block ml-4 mr-1" />
-          {phone}
-          <MapPin className="w-5 h-5 inline-block ml-4 mr-1" />
-          {location || country}
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+      <div className="flex-shrink-0">
+        <PhotoUpload currentPhotoUrl={avatar} onPhotoUpdate={handlePhotoUpdate} />
+      </div>
+      <div className="flex-1 min-w-0 w-full">
+        <div className="font-bold text-xl md:text-2xl mb-2 text-black text-left">{name}</div>
+        
+        {/* Desktop view - horizontal layout */}
+        <div className="hidden sm:flex flex-wrap items-center gap-3 text-gray-600 text-sm md:text-base mb-1 mt-2">
+          <div className="flex items-center">
+            <Briefcase className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+            {jobTitle || title}
+          </div>
+          <div className="flex items-center">
+            <Mail className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+            {email}
+          </div>
+          <div className="flex items-center">
+            <Phone className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+            {phone}
+          </div>
+          <div className="flex items-center">
+            <MapPin className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+            {location || country}
+          </div>
+        </div>
+
+        {/* Mobile view - vertical layout */}
+        <div className="sm:hidden space-y-2 text-gray-600 text-sm">
+          <div className="flex items-center">
+            <Briefcase className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{jobTitle || title}</span>
+          </div>
+          <div className="flex items-center">
+            <Mail className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{email}</span>
+          </div>
+          <div className="flex items-center">
+            <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{phone}</span>
+          </div>
+          <div className="flex items-center">
+            <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+            <span className="truncate">{location || country}</span>
+          </div>
         </div>
       </div>
     </div>

@@ -118,3 +118,120 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Mobile-specific responsive enhancements */
+@layer utilities {
+  /* Ensure proper touch targets on mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Responsive text sizing */
+  .text-responsive-lg {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-md {
+    @apply text-base md:text-lg;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm md:text-base;
+  }
+  
+  /* Better spacing for mobile */
+  .container-mobile {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Card improvements for mobile */
+  .card-mobile {
+    @apply rounded-lg md:rounded-xl p-4 md:p-6;
+  }
+  
+  /* Form improvements for mobile */
+  .form-mobile {
+    @apply space-y-4 md:space-y-6;
+  }
+  
+  .input-mobile {
+    @apply text-base md:text-sm; /* Prevent zoom on iOS */
+  }
+  
+  /* Button improvements for mobile */
+  .btn-mobile {
+    @apply px-4 py-3 md:px-6 md:py-2;
+  }
+  
+  /* Prevent horizontal scroll */
+  .prevent-scroll {
+    @apply overflow-x-hidden;
+  }
+  
+  /* Safe area padding for mobile devices with notches */
+  .safe-area-padding {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .safe-area-padding-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-padding-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  /* Improve touch scrolling on iOS */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix viewport issues */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  /* Improve button tap targets */
+  button, 
+  [role="button"], 
+  input[type="button"], 
+  input[type="submit"], 
+  input[type="reset"] {
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Better form styling on mobile */
+  input, 
+  textarea, 
+  select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Improve dialog/modal behavior on mobile */
+  .dialog-mobile {
+    @apply max-h-[90vh] overflow-y-auto;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+  
+  .print-break-before {
+    break-before: page;
+  }
+}
