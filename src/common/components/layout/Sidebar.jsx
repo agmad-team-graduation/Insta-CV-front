@@ -84,7 +84,10 @@ const Sidebar = () => {
         <div className="space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.href);
+            // Special handling for jobs section to include recommended-jobs
+            const isActive = item.href === '/jobs' 
+              ? location.pathname.startsWith('/jobs') || location.pathname.startsWith('/recommended-jobs')
+              : location.pathname.startsWith(item.href);
             
             return (
               <Link
