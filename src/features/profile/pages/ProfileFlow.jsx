@@ -152,6 +152,20 @@ const ProfileFlow = () => {
     navigate('/dashboard');
   };
 
+  // Handle modal close attempts (clicking outside, pressing escape)
+  const handleModalCloseAttempt = async () => {
+    // Create an initial profile with minimal data
+    try {
+      const initialData = sanitizeProfileData({});
+      await apiClient.post('/api/v1/profiles/create', initialData);
+      toast.success('Initial profile created successfully!');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error creating initial profile:', error);
+      toast.error('Failed to create initial profile. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center p-4">
       <div className="text-center space-y-8">
@@ -195,7 +209,12 @@ const ProfileFlow = () => {
       />
 
       {/* Choice Modal */}
-      <Dialog open={showChoiceModal} onOpenChange={setShowChoiceModal}>
+      <Dialog open={showChoiceModal} onOpenChange={(open) => {
+        if (!open) {
+          // When user tries to close the choice modal, create initial profile
+          handleModalCloseAttempt();
+        }
+      }}>
         <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
           <div className="relative">
             {/* Background gradient */}
