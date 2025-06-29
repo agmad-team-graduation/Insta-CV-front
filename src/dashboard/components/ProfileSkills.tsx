@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/common/components/ui/card';
-import { Badge } from '@/common/components/ui/badge';
 import { Progress } from '@/common/components/ui/progress';
 import { Button } from '@/common/components/ui/button';
 import { Plus, Star } from 'lucide-react';
@@ -20,7 +19,6 @@ interface UserSkillResponse {
 interface TransformedSkill {
   name: string;
   level: number;
-  category: string;
   inDemand: boolean;
 }
 
@@ -55,7 +53,6 @@ const ProfileSkills = () => {
         .map((skill: UserSkillResponse) => ({
           name: skill.skill,
           level: getSkillLevelPercentage(skill.level), // Use skill level percentage
-          category: getSkillCategory(skill.skill),
           inDemand: isSkillInDemand(skill.skill)
         }))
         .filter(skill => skill.level > 0); // Filter out skills with 0% level
@@ -68,27 +65,6 @@ const ProfileSkills = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Helper functions
-  const getSkillCategory = (skillName: string): string => {
-    const categories: Record<string, string> = {
-      'React': 'Frontend',
-      'Vue': 'Frontend',
-      'Angular': 'Frontend',
-      'JavaScript': 'Frontend',
-      'TypeScript': 'Frontend',
-      'Python': 'Backend',
-      'Java': 'Backend',
-      'Node.js': 'Backend',
-      'Express': 'Backend',
-      'Spring': 'Backend',
-      'AWS': 'Cloud',
-      'Azure': 'Cloud',
-      'Docker': 'Cloud',
-      'Kubernetes': 'Cloud'
-    };
-    return categories[skillName] || 'Frontend';
   };
 
   const isSkillInDemand = (skillName: string): boolean => {
@@ -167,12 +143,6 @@ const ProfileSkills = () => {
                       <Star className="w-3 h-3 text-yellow-500 fill-current" />
                     )}
                   </div>
-                  <Badge 
-                    variant="secondary" 
-                    className="text-xs bg-gray-100 text-gray-600"
-                  >
-                    {skill.category}
-                  </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                   <Progress className="flex-1 h-2" value={skill.level} {...({} as any)} />
