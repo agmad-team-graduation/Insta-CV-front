@@ -8,7 +8,7 @@
       const isLogin = urlParams.get("isLogin");
       
       // Get API URL from environment or use default
-      const API_BASE_URL = window.API_BASE_URL || 'https://instacv-backend-production.up.railway.app';
+      const API_BASE_URL = 'https://instacv-backend-production.up.railway.app' || 'http://localhost:8080';
 
       if (code) {
         if (!isLogin){
@@ -19,13 +19,13 @@
               window.opener.postMessage({ githubToken: data.access_token }, window.origin);
               setTimeout(() => {
                 window.close();
-              }, 250);
+              }, 500);
             })
             .catch(() => {
               window.opener.postMessage({ error: "GitHub callback failed" }, window.origin);
               setTimeout(() => {
                 window.close();
-              }, 250);
+              }, 500);
             });
         }
         else {
@@ -40,20 +40,20 @@
             }, window.origin);
             setTimeout(() => {
               window.close();
-            }, 250);
+            }, 500);
           })
           .catch(() => {
             window.opener.postMessage({ error: "GitHub login failed" }, window.origin);
             setTimeout(() => {
               window.close();
-            }, 250);
+            }, 500);
           });
         }
       } else {
         window.opener.postMessage({ error: "Missing code in callback" }, window.origin);
         setTimeout(() => {
           window.close();
-        }, 250);
+        }, 500);
       }
     </script>
   </body>
