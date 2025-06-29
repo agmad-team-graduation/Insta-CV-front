@@ -9,6 +9,7 @@ import useResumeStore from '../store/resumeStore';
 import EditableField from './ui/EditableField';
 import { formatDateRange } from '../utils/formatters';
 import { EducationItem, ExperienceItem, ProjectItem, SkillItem } from '../types';
+import DeleteTooltip from './DeleteTooltip';
 
 type SectionKey = 'educationSection' | 'experienceSection' | 'projectSection' | 'skillSection';
 
@@ -34,10 +35,26 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
   };
 
   const handleDelete = () => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this item? This action cannot be undone.');
-    if (confirmDelete) {
-      deleteItem(sectionKey, item.id);
-      onComplete?.();
+    deleteItem(sectionKey, item.id);
+    onComplete?.();
+  };
+
+  const getItemName = () => {
+    switch (sectionKey) {
+      case 'educationSection':
+        const education = item as EducationItem;
+        return education.degree || education.school;
+      case 'experienceSection':
+        const experience = item as ExperienceItem;
+        return experience.jobTitle || experience.company;
+      case 'projectSection':
+        const project = item as ProjectItem;
+        return project.title;
+      case 'skillSection':
+        const skill = item as SkillItem;
+        return skill.skill;
+      default:
+        return undefined;
     }
   };
 
@@ -112,13 +129,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{educationItem.degree || 'New Education'}</h3>
           </div>
-          <button 
-            onClick={handleDelete}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-            title="Delete education"
-          >
-            <Trash2Icon size={16} />
-          </button>
+          <DeleteTooltip onDelete={handleDelete} itemName={getItemName()} />
         </div>
         
         <div className="space-y-4">
@@ -230,13 +241,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{experienceItem.jobTitle || 'New Experience'}</h3>
           </div>
-          <button 
-            onClick={handleDelete}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-            title="Delete experience"
-          >
-            <Trash2Icon size={16} />
-          </button>
+          <DeleteTooltip onDelete={handleDelete} itemName={getItemName()} />
         </div>
         
         <div className="space-y-4">
@@ -348,13 +353,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
             <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
             <h3 className="font-semibold text-gray-800">{projectItem.title || 'New Project'}</h3>
           </div>
-          <button 
-            onClick={handleDelete}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-            title="Delete project"
-          >
-            <Trash2Icon size={16} />
-          </button>
+          <DeleteTooltip onDelete={handleDelete} itemName={getItemName()} />
         </div>
         
         <div className="space-y-4">
@@ -507,13 +506,7 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
               <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
               <h3 className="font-semibold text-gray-800">{skill.skill || 'New Skill'}</h3>
             </div>
-            <button 
-              onClick={handleDelete}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all duration-200"
-              title="Delete skill"
-            >
-              <Trash2Icon size={16} />
-            </button>
+            <DeleteTooltip onDelete={handleDelete} itemName={getItemName()} />
           </div>
           <div className="space-y-4">
             {/* Skill Name */}
@@ -583,7 +576,11 @@ const SectionItemEditor: React.FC<SectionItemEditorProps> = ({ sectionKey, item,
     }
   };
 
-  return renderEditor();
+  return (
+    <>
+      {renderEditor()}
+    </>
+  );
 };
 
 export default SectionItemEditor; 

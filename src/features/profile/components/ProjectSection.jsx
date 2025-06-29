@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/common/components/ui
 import { Badge } from "@/common/components/ui/badge";
 import { PlusCircle, FileCode2, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/common/components/ui/button";
+import DeleteTooltip from "../../resume-builder/components/DeleteTooltip";
 
 const ProjectItem = ({ title, duration, present, description, skills, url }) => (
   
@@ -68,8 +69,8 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
   const [abilityInput, setAbilityInput] = useState("");
   const [abilities, setAbilities] = useState([]);
   const [error, setError] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
   const formRef = useRef(null);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -106,31 +107,24 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
       present: form.present,
       skills: abilities
     };
-    if (editIndex !== null) {
-      onEdit(editIndex, projectData);
+    if (editingIndex !== null) {
+      onEdit(editingIndex, projectData);
     } else {
       onAdd(projectData);
     }
     setForm(initialForm);
     setAbilities([]);
     setShowForm(false);
-    setEditIndex(null);
+    setEditingIndex(null);
   };
 
   const handleDelete = (index) => {
     onDelete(index);
-    // If deleting the project being edited, reset form
-    if (editIndex === index) {
-      setForm(initialForm);
-      setAbilities([]);
-      setShowForm(false);
-      setEditIndex(null);
-    }
   };
 
   const handleShowForm = () => {
     setShowForm(true);
-    setEditIndex(null);
+    setEditingIndex(null);
     setForm(initialForm);
     setAbilities([]);
     setTimeout(() => {
@@ -140,7 +134,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
     }, 0);
   };
 
-  const handleEdit = (index) => {
+  const handleEditClick = (index) => {
     const project = projects[index];
     setForm({
       title: project.title || "",
@@ -153,7 +147,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
     });
     setAbilities(project.skills || []);
     setShowForm(true);
-    setEditIndex(index);
+    setEditingIndex(index);
     setTimeout(() => {
       if (formRef.current) {
         formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -178,106 +172,107 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
           <div className="text-center text-muted-foreground py-4">No projects added yet.</div>
         )}
         {projects && projects.map((project, index) => (
-          <div key={project.id || index} className="relative">
-            <ProjectItem {...project} />
-            <div className="absolute top-2 right-2 flex gap-2 z-10">
-              <button
-                className="text-gray-500 bg-white rounded-full p-1 shadow"
-                onClick={() => handleEdit(index)}
-                title="Edit"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
-              </button>
-              <button
-                className="text-red-600 hover:text-red-800 bg-white rounded-full p-1 shadow"
-                onClick={() => handleDelete(index)}
-                title="Delete"
-                type="button"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
-            </div>
+          <div key={index} className="relative">
+            {editingIndex === index ? (
+              <form ref={formRef} onSubmit={handleFormSubmit} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
+                {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+                <input
+                  className="border rounded px-3 py-2"
+                  name="title"
+                  placeholder="Project Title"
+                  value={form.title}
+                  onChange={handleChange}
+                  required
+                />
+                <div className="flex gap-3">
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="startDate"
+                    type="month"
+                    placeholder="Start Date"
+                    value={form.startDate}
+                    onChange={handleChange}
+                  />
+                  <input
+                    className="border rounded px-3 py-2 flex-1"
+                    name="endDate"
+                    type="month"
+                    placeholder="End Date"
+                    value={form.endDate}
+                    onChange={handleChange}
+                  />
+                </div>
+                <textarea
+                  className="border rounded px-3 py-2"
+                  name="description"
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={handleChange}
+                />
+                {/* Abilities/Skills input */}
+                <div>
+                  <label className="block font-medium mb-1">Abilities / Skills</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      className="border rounded px-3 py-2 flex-1"
+                      placeholder="Add an ability (e.g. React, Node.js)"
+                      value={abilityInput}
+                      onChange={e => setAbilityInput(e.target.value)}
+                    />
+                    <Button type="button" size="sm" onClick={handleAddAbility}>
+                      Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {abilities.map(a => (
+                      <span key={a.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 flex items-center gap-1">
+                        {a.skill}
+                        <button type="button" className="ml-1 text-red-500 hover:text-red-700" onClick={() => handleRemoveAbility(a.id)}>&times;</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="present"
+                    checked={form.present}
+                    onChange={handleChange}
+                  />
+                  Present
+                </label>
+                <div className="flex gap-2 justify-end">
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setShowForm(false); setEditingIndex(null); setForm(initialForm); setAbilities([]); }}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="sm">
+                    {editingIndex !== null ? 'Save' : 'Add'}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <ProjectItem {...project} />
+                <button
+                  className="absolute top-2 right-10 bg-white rounded-full p-1 shadow"
+                  onClick={() => handleEditClick(index)}
+                  title="Edit"
+                  style={{ zIndex: 10 }}
+                  type="button"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4.243 1.414 1.414-4.243a4 4 0 01.828-1.414z" /></svg>
+                </button>
+                <div className="absolute top-2 right-2" style={{ zIndex: 10 }}>
+                  <DeleteTooltip 
+                    onDelete={() => handleDelete(index)} 
+                    itemName={project.title}
+                    className="bg-white rounded-full shadow"
+                  />
+                </div>
+              </>
+            )}
           </div>
         ))}
-        {showForm && (
-          <form ref={formRef} onSubmit={handleFormSubmit} className="mb-4 p-4 border rounded-lg bg-gray-50 flex flex-col gap-3">
-            {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-            <input
-              className="border rounded px-3 py-2"
-              name="title"
-              placeholder="Project Title"
-              value={form.title}
-              onChange={handleChange}
-              required
-            />
-            <div className="flex gap-3">
-              <input
-                className="border rounded px-3 py-2 flex-1"
-                name="startDate"
-                type="month"
-                placeholder="Start Date"
-                value={form.startDate}
-                onChange={handleChange}
-              />
-              <input
-                className="border rounded px-3 py-2 flex-1"
-                name="endDate"
-                type="month"
-                placeholder="End Date"
-                value={form.endDate}
-                onChange={handleChange}
-              />
-            </div>
-            <textarea
-              className="border rounded px-3 py-2"
-              name="description"
-              placeholder="Description"
-              value={form.description}
-              onChange={handleChange}
-            />
-            {/* Abilities/Skills input */}
-            <div>
-              <label className="block font-medium mb-1">Abilities / Skills</label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  className="border rounded px-3 py-2 flex-1"
-                  placeholder="Add an ability (e.g. React, Node.js)"
-                  value={abilityInput}
-                  onChange={e => setAbilityInput(e.target.value)}
-                />
-                <Button type="button" size="sm" onClick={handleAddAbility}>
-                  Add
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {abilities.map(a => (
-                  <span key={a.id} className="bg-gray-200 text-gray-800 rounded px-3 py-1 flex items-center gap-1">
-                    {a.skill}
-                    <button type="button" className="ml-1 text-red-500 hover:text-red-700" onClick={() => handleRemoveAbility(a.id)}>&times;</button>
-                  </span>
-                ))}
-              </div>
-            </div>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="present"
-                checked={form.present}
-                onChange={handleChange}
-              />
-              Present
-            </label>
-            <div className="flex gap-2 justify-end">
-              <Button type="button" variant="outline" size="sm" onClick={() => { setShowForm(false); setEditIndex(null); setForm(initialForm); setAbilities([]); }}>
-                Cancel
-              </Button>
-              <Button type="submit" size="sm">
-                {editIndex !== null ? 'Save' : 'Add'}
-              </Button>
-            </div>
-          </form>
-        )}
       </CardContent>
     </Card>
   );
