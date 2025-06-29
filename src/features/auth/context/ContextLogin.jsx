@@ -19,11 +19,11 @@ const AuthContext = createContext({
 
 export const LoginProvider = ({ children }) => {
     const navigate = useNavigate(); 
-    const { updateUserPhoto } = useUserStore();
+    const { updateUserPhoto, setUser } = useUserStore();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [user, setUser] = useState(null);
+    const [user, setUserState] = useState(null);
     const [loading, setLoading] = useState(false);
 
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken', 'user']);
@@ -44,6 +44,9 @@ export const LoginProvider = ({ children }) => {
             // Store token and user data
             setCookie('isLoggedIn', data.token, { path: '/', maxAge: data.expiresIn });
             setCookie('user', data.user, { path: '/', maxAge: data.expiresIn });
+            setUserState(data.user);
+            
+            // Update the global user store
             setUser(data.user);
 
             // If user has a photo, update the global store
@@ -111,6 +114,9 @@ export const LoginProvider = ({ children }) => {
                         try {
                             // const { data: userData } = await apiClient.get('/api/v1/auth/me');
                             setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
+                            setUserState(user);
+                            
+                            // Update the global user store
                             setUser(user);
 
                             // If user has a photo, update the global store

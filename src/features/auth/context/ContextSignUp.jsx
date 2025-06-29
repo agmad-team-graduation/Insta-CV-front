@@ -19,7 +19,7 @@ const AuthContext = createContext({
 
 export const SignUpProvider = ({children})=>{
     const navigate = useNavigate();
-    const { updateUserPhoto } = useUserStore();
+    const { updateUserPhoto, setUser } = useUserStore();
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'user']);
     
     const [email,setEmail]=useState('');
@@ -69,6 +69,9 @@ export const SignUpProvider = ({children})=>{
                         try {
                             // const { data: userData } = await apiClient.get('/api/v1/auth/me');
                             setCookie('user', user, { path: '/', maxAge: parseInt(expiresIn, 10) });
+
+                            // Update the global user store
+                            setUser(user);
 
                             // If user has a photo, update the global store
                             if (user.photoUrl) {
