@@ -331,13 +331,13 @@ const Profile = () => {
             <CardContent>
               <ProfileHeader
                 name={profileData.personalDetails?.fullName || ""}
-                title={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                title={profileData.personalDetails?.jobTitle || ""}
                 avatar={photoUrl}
                 country={profileData.personalDetails?.address?.split(", ")[2] || ""}
                 email={profileData.personalDetails?.email || ""}
                 phone={profileData.personalDetails?.phone || ""}
                 location={profileData.personalDetails?.address || ""}
-                jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                jobTitle={profileData.personalDetails?.jobTitle || ""}
                 onPhotoUpdate={handlePhotoUpdate}
               />
               <div className="flex mt-2 justify-end">
@@ -367,7 +367,7 @@ const Profile = () => {
                 name={profileData.personalDetails?.fullName || ""}
                 email={profileData.personalDetails?.email || ""}
                 phone={profileData.personalDetails?.phone || ""}
-                jobTitle={profileData.personalDetails?.jobTitle || "Software Engineer"}
+                jobTitle={profileData.personalDetails?.jobTitle || ""}
                 location={profileData.personalDetails?.address || ""}
                 about={profileData.personalDetails?.about || ""}
                 isEditMode={true}
