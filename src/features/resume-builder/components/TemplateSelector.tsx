@@ -27,7 +27,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       id: 'classic',
       name: 'Classic',
       description: 'A timeless, professional template with a dark header. Ideal for corporate roles.',
-      thumbnail: 'https://images.pexels.com/photos/8867482/pexels-photo-8867482.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      thumbnail: 'https://images.pexels.com/photos/927022/pexels-photo-927022.jpeg',
       features: ['Professional', 'Traditional', 'Corporate']
     },
     {
@@ -46,7 +46,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
     // },
     {
       id: 'harvardclassic',
-      name: 'Harvard Classic',
+      name: 'Harvard',
       description: 'A refined Harvard-style template with elegant typography and clean section dividers.',
       thumbnail: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
       features: ['Academic', 'Elegant', 'Traditional']
@@ -55,7 +55,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
       id: 'huntergreen',
       name: 'Hunter Green',
       description: 'A sophisticated template with a hunter green color scheme. Perfect for business professionals.',
-      thumbnail: 'https://images.pexels.com/photos/3747463/pexels-photo-3747463.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      thumbnail: 'https://images.pexels.com/photos/3760072/pexels-photo-3760072.jpeg',
       features: ['Elegant', 'Hunter green', 'Business']
     },
     {
