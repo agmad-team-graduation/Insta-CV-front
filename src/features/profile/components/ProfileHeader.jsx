@@ -65,14 +65,30 @@ const ProfileHeader = ({
       <div className="flex-1 min-w-0">
         <div className="font-bold text-2xl mb-1 text-black text-left">{name}</div>
         <div className="flex flex-wrap items-center gap-3 text-gray-600 text-base mb-1 mt-2">
-          <Briefcase className="w-5 h-5 inline-block mr-1" />
-          {jobTitle || title}
-          <Mail className="w-5 h-5 inline-block ml-4 mr-1" />
-          {email}
-          <Phone className="w-5 h-5 inline-block ml-4 mr-1" />
-          {phone}
-          <MapPin className="w-5 h-5 inline-block ml-4 mr-1" />
-          {location || country}
+          {(jobTitle || title) && (
+            <>
+              <Briefcase className="w-5 h-5 inline-block mr-1" />
+              {jobTitle || title}
+            </>
+          )}
+          {email && (
+            <>
+              <Mail className="w-5 h-5 inline-block ml-4 mr-1" />
+              {email}
+            </>
+          )}
+          {phone && (
+            <>
+              <Phone className="w-5 h-5 inline-block ml-4 mr-1" />
+              {phone}
+            </>
+          )}
+          {(location || country) && (
+            <>
+              <MapPin className="w-5 h-5 inline-block ml-4 mr-1" />
+              {location || country}
+            </>
+          )}
         </div>
       </div>
     </div>
