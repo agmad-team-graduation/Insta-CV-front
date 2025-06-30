@@ -124,23 +124,8 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose, 
 
   // Handle modal close attempts (clicking outside, pressing escape)
   const handleModalCloseAttempt = async () => {
-    // Create an initial profile with current data or minimal data
-    try {
-      const dataToSave = profileData.personalDetails.fullName ? profileData : {
-        personalDetails: { fullName: getUserName(), jobTitle: '', bio: '' },
-        educationList: [],
-        experienceList: [],
-        userSkills: []
-      };
-      
-      const sanitizedData = sanitizeProfileData(dataToSave);
-      await apiClient.post('/api/v1/profiles/create', sanitizedData);
-      toast.success('Profile created successfully!');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      toast.error('Failed to create profile. Please try again.');
-    }
+    toast.error('You must complete your profile before leaving this page.');
+    // Do not close the modal or navigate away
   };
 
   const updatePersonalDetails = (data: PersonalDetails) => {
@@ -203,7 +188,7 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose, 
     >
       <Card 
         className="relative w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden bg-white border border-gray-200 shadow-2xl"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()} // Prevent closing when clicking inside the card
+        onClick={(e: React.MouseEvent) => e.stopPropagation()} // Only stop propagation, do not call handleModalCloseAttempt
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30" />
         

@@ -228,9 +228,9 @@ const ProfileFlow = () => {
 
       {/* Choice Modal */}
       <Dialog open={showChoiceModal} onOpenChange={(open) => {
-        if (!open && !isFileInputActive) {
-          // When user tries to close the choice modal and file input is not active, create initial profile
-          handleModalCloseAttempt();
+        if (!open && showChoiceModal && !isFileInputActive) {
+          toast.error('You must complete your profile before leaving this page.');
+          return;
         }
       }}>
         <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
