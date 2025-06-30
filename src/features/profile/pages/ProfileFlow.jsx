@@ -17,6 +17,8 @@ const ProfileFlow = () => {
   const [selectedCVFile, setSelectedCVFile] = useState(null);
   const [showUploadProgress, setShowUploadProgress] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isFileInputActive, setIsFileInputActive] = useState(false);
+  const [manualFlowStarted, setManualFlowStarted] = useState(false);
   const navigate = useNavigate();
 
   // Function to ensure all profile data has proper default values
@@ -58,17 +60,23 @@ const ProfileFlow = () => {
   const handleManualProfile = () => {
     setShowChoiceModal(false);
     setIsModalOpen(true);
+    setManualFlowStarted(true);
   };
 
   const handleCVUpload = () => {
-    setShowChoiceModal(false);
+    setIsFileInputActive(true);
     // Trigger file input
     document.getElementById('cv-upload').click();
   };
 
   const handleCVFileSelect = (event) => {
     const file = event.target.files[0];
-    if (!file) return;
+    setIsFileInputActive(false);
+    
+    if (!file) {
+      // User cancelled file selection, keep the modal open
+      return;
+    }
 
     // Check if file is PDF
     if (file.type !== 'application/pdf') {
@@ -84,6 +92,9 @@ const ProfileFlow = () => {
   const handleCVUploadConfirm = async (shouldOverwrite, file = null) => {
     const fileToUpload = file || selectedCVFile;
     if (!fileToUpload) return;
+
+    // Close the choice modal since we're proceeding with CV upload
+    setShowChoiceModal(false);
 
     try {
       setUploadingCV(true);
@@ -166,6 +177,13 @@ const ProfileFlow = () => {
     }
   };
 
+  // Handler to go back to choice modal from manual flow
+  const handleBackToChoice = () => {
+    setIsModalOpen(false);
+    setShowChoiceModal(true);
+    setManualFlowStarted(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 flex items-center justify-center p-4">
       <div className="text-center space-y-8">
@@ -210,9 +228,9 @@ const ProfileFlow = () => {
 
       {/* Choice Modal */}
       <Dialog open={showChoiceModal} onOpenChange={(open) => {
-        if (!open) {
-          // When user tries to close the choice modal, create initial profile
-          handleModalCloseAttempt();
+        if (!open && showChoiceModal && !isFileInputActive) {
+          toast.error('You must complete your profile before leaving this page.');
+          return;
         }
       }}>
         <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
@@ -382,6 +400,7 @@ const ProfileFlow = () => {
       <ProfileSetupModal
         isOpen={isModalOpen}
         onClose={handleClose}
+        onBackToChoice={handleBackToChoice}
       />
     </div>
   );

@@ -35,6 +35,7 @@ const ResumeBuilder: React.FC = () => {
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
+  const [rightSidebarExpanded, setRightSidebarExpanded] = useState(false);
   
   // Add ref for debouncing
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -244,6 +245,26 @@ const ResumeBuilder: React.FC = () => {
     }
   };
 
+  // Handler for left sidebar toggle
+  const handleLeftSidebarToggle = () => {
+    if (!sidebarVisible) {
+      setSidebarVisible(true);
+      setRightSidebarExpanded(false);
+    } else {
+      setSidebarVisible(false);
+    }
+  };
+
+  // Handler for right sidebar toggle
+  const handleRightSidebarToggle = () => {
+    if (!rightSidebarExpanded) {
+      setRightSidebarExpanded(true);
+      setSidebarVisible(false);
+    } else {
+      setRightSidebarExpanded(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <PageLoader 
@@ -368,7 +389,7 @@ const ResumeBuilder: React.FC = () => {
             }`}>
               {/* Left sidebar toggle button */}
               <button
-                onClick={() => setSidebarVisible(!sidebarVisible)}
+                onClick={handleLeftSidebarToggle}
                 className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
                 title={sidebarVisible ? 'Hide Left Sidebar' : 'Show Left Sidebar'}
               >
@@ -429,7 +450,10 @@ const ResumeBuilder: React.FC = () => {
             </div>
 
             {/* Right sidebar - Job Skills Comparison */}
-            <JobSkillsComparison />
+            <JobSkillsComparison
+              isExpanded={rightSidebarExpanded}
+              onToggle={handleRightSidebarToggle}
+            />
           </div>
         </main>
       </div>

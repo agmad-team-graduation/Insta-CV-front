@@ -105,13 +105,13 @@ const JobsList = ({ isRecommended = false, refreshTrigger = 0 }) => {
                   </div>
                   {isRecommended && (
                     <>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No New Recommendations Yet</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No New External Jobs Yet</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      We're continuously analyzing new opportunities for you. Check back later for fresh job recommendations.
+                      We're continuously analyzing new opportunities for you. Check back later for fresh External Jobs.
                     </p>
                     <div className="mt-4 pt-4 border-t border-blue-100">
                       <p className="text-xs text-gray-500">
-                        💡 <strong>Tip:</strong> If you recently updated your profile, try searching for recommendations again to get the latest matches.
+                        💡 <strong>Tip:</strong> If you recently updated your profile, try searching for External Jobs again to get the latest matches.
                       </p>
                     </div>
                     </>

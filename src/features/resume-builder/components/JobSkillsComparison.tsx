@@ -30,12 +30,16 @@ interface JobData {
   skillMatchingAnalysis: SkillMatchingAnalysis;
 }
 
-const JobSkillsComparison: React.FC = () => {
+interface JobSkillsComparisonProps {
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, onToggle }) => {
   const { id: resumeId } = useParams<{ id: string }>();
   const { resume, addItem } = useResumeStore();
   const [jobData, setJobData] = useState<JobData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addingSkills, setAddingSkills] = useState<string[]>([]);
   const [addingAllSkills, setAddingAllSkills] = useState(false);
@@ -160,7 +164,7 @@ const JobSkillsComparison: React.FC = () => {
       }`}>
         {/* Toggle Button */}
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={onToggle}
           className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
           title={isExpanded ? 'Collapse Job Skills' : 'Expand Job Skills'}
         >
@@ -208,7 +212,7 @@ const JobSkillsComparison: React.FC = () => {
       }`}>
         {/* Toggle Button */}
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={onToggle}
           className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
           title={isExpanded ? 'Collapse Job Skills' : 'Expand Job Skills'}
         >
@@ -235,7 +239,7 @@ const JobSkillsComparison: React.FC = () => {
     }`}>
       {/* Toggle Button */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onToggle}
         className="w-full h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 transition-colors border-b border-gray-200"
         title={isExpanded ? 'Collapse Job Skills' : 'Expand Job Skills'}
       >
