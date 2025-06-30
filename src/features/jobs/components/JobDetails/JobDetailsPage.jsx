@@ -13,7 +13,7 @@ import JobDescription from "./JobDescription";
 import SkillsSection from "./SkillsSection";
 import ActionButtons from "./ActionButtons";
 import SkillsMatching from "./SkillsMatching";
-import SimilarJobs from "./SimilarJobs";
+import ExternalJobs from "./ExternalJobs";
 
 function JobDetailsPage() {
   const [job, setJob] = useState(null);
@@ -225,8 +225,8 @@ function JobDetailsPage() {
           matchPercentage={matchPercentage}
         />
 
-        {/* Similar Jobs */}
-        <SimilarJobs
+        {/* External Jobs */}
+        <ExternalJobs
           jobs={recommendations}
           onJobClick={handleSimilarJobClick}
           currentJobId={parseInt(jobID)}

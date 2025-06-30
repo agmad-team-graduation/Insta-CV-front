@@ -18,10 +18,10 @@ const RecommendedJobs = () => {
       await apiClient.post('/api/v1/jobs/scrape/analyze-recommendations');
       // Trigger a refresh of the job list
       setRefreshTrigger(prev => prev + 1);
-      toast.success('Recommendations analyzed successfully');
+      toast.success('External Jobs analyzed successfully');
     } catch (err) {
-      console.error('Error analyzing recommendations:', err);
-      toast.error('Failed to analyze recommendations. Please try again.');
+      console.error('Error analyzing External Jobs:', err);
+      toast.error('Failed to analyze External Jobs. Please try again.');
     } finally {
       setForceLoading(false);
     }
@@ -34,7 +34,7 @@ const RecommendedJobs = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center">
               <Briefcase className="mr-2 h-6 w-6 text-blue-600" />
-              Recommended Jobs
+              External Jobs
             </h1>
             <div className="flex space-x-4 items-center">
               <Button
@@ -42,7 +42,7 @@ const RecommendedJobs = () => {
                 onClick={handleForceSearch}
                 disabled={forceLoading}
               >
-                {forceLoading ? 'Searching...' : 'Search for Recommendations'}
+                {forceLoading ? 'Searching...' : 'Search for External Jobs'}
               </Button>
             </div>
           </div>
@@ -63,7 +63,7 @@ const RecommendedJobs = () => {
               className={`py-4 px-1 border-b-2 text-lg font-medium focus:outline-none transition-colors duration-200 ${location.pathname === '/recommended-jobs' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               onClick={() => navigate('/recommended-jobs')}
             >
-              Recommended Jobs
+              External Jobs
             </button>
           </div>
         </div>

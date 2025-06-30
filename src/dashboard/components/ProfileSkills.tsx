@@ -139,9 +139,9 @@ const ProfileSkills = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{skill.name}</span>
-                    {(skill.inDemand || skill.level > 75) && (
+                    {/*{(skill.inDemand || skill.level > 75) && (
                       <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    )}
+                    )}*/}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -155,13 +155,13 @@ const ProfileSkills = () => {
         
         {skills.length > 0 && (
           <div className="pt-4 border-t">
-            <div className="text-xs text-gray-500 mb-2">Skill Level Insights</div>
+            <div className="text-xs text-gray-500 mb-2 text-center">Skill Level Insights</div>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
+              {/*<div className="flex items-center gap-2 text-left">
                 <Star className="w-3 h-3 text-yellow-500 fill-current" />
                 <span className="text-xs text-gray-600">High demand skills & advanced/expert level skills</span>
-              </div>
-              <p className="text-xs text-gray-500">
+              </div>*/}
+              <p className="text-xs text-gray-500 text-center">
                 Percentages show your skill proficiency level.
               </p>
             </div>
