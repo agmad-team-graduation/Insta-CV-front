@@ -16,9 +16,10 @@ import { useNavigate } from 'react-router-dom';
 interface ProfileSetupModalProps {
   isOpen: boolean;
   onClose: (profileData?: ProfileData) => void;
+  onBackToChoice?: () => void;
 }
 
-const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }) => {
+const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose, onBackToChoice }) => {
   const [cookies] = useCookies(['user']);
   const { user } = useUserStore();
   const navigate = useNavigate();
@@ -66,7 +67,9 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
+    if (currentStep === 0 && onBackToChoice) {
+      onBackToChoice();
+    } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -121,23 +124,8 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
 
   // Handle modal close attempts (clicking outside, pressing escape)
   const handleModalCloseAttempt = async () => {
-    // Create an initial profile with current data or minimal data
-    try {
-      const dataToSave = profileData.personalDetails.fullName ? profileData : {
-        personalDetails: { fullName: getUserName(), jobTitle: '', bio: '' },
-        educationList: [],
-        experienceList: [],
-        userSkills: []
-      };
-      
-      const sanitizedData = sanitizeProfileData(dataToSave);
-      await apiClient.post('/api/v1/profiles/create', sanitizedData);
-      toast.success('Profile created successfully!');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      toast.error('Failed to create profile. Please try again.');
-    }
+    toast.error('You must complete your profile before leaving this page.');
+    // Do not close the modal or navigate away
   };
 
   const updatePersonalDetails = (data: PersonalDetails) => {
@@ -200,7 +188,7 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
     >
       <Card 
         className="relative w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden bg-white border border-gray-200 shadow-2xl"
-        onClick={(e: React.MouseEvent) => e.stopPropagation()} // Prevent closing when clicking inside the card
+        onClick={(e: React.MouseEvent) => e.stopPropagation()} // Only stop propagation, do not call handleModalCloseAttempt
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30" />
         
@@ -211,14 +199,6 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
               <h2 className="text-2xl font-bold text-gray-900">Complete Your Profile</h2>
               <p className="text-gray-600 mt-1">Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}</p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleModalCloseAttempt}
-              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </div>
           
           {/* Progress Bar */}
@@ -242,8 +222,8 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose }
               variant="ghost"
               size="default"
               onClick={handlePrevious}
-              disabled={currentStep === 0}
-              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 disabled:opacity-50"
+              disabled={false}
+              className={`text-gray-600 hover:text-gray-800 hover:bg-gray-100 ${currentStep !== 0 ? '' : ''}`}
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
               Previous

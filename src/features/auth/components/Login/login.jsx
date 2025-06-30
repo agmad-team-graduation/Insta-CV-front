@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Github } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Github, ArrowLeft } from 'lucide-react';
 import { UseAuth } from '@/features/auth/context/ContextLogin';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '@/config';
@@ -85,6 +85,17 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
+        {/* Back to Home Button */}
+        <div className="flex justify-start">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200 font-medium"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </button>
+        </div>
+
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {isSignUp ? 'Create your account' : 'Welcome back'}

@@ -53,7 +53,7 @@ const JobsPage = () => {
               className={`py-4 px-1 border-b-2 text-lg font-medium focus:outline-none transition-colors duration-200 ${location.pathname === '/recommended-jobs' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
               onClick={() => navigate('/recommended-jobs')}
             >
-              Recommended Jobs
+              External Jobs
             </button>
           </div>
         </div>
