@@ -1,8 +1,14 @@
 import { Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 const Footer = () => {
   const appVersion = import.meta.env.VITE_APP_VERSION || '1.0.0';
   
+  const handleFooterClick = (e) => {
+    e.preventDefault();
+    toast("This feature is not implemented yet");
+  };
+
   const footerLinks = {
     product: [
       { name: "Features", href: "#features" },
@@ -47,16 +53,16 @@ const Footer = () => {
               Land your dream job with resumes that showcase your real coding achievements.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
+              <a href="#" onClick={handleFooterClick} className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors">
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors">
+              <a href="#" onClick={handleFooterClick} className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-400 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
+              <a href="#" onClick={handleFooterClick} className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors">
+              <a href="#" onClick={handleFooterClick} className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-600 transition-colors">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -68,7 +74,7 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                  <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
                     {link.name}
                   </a>
                 </li>
@@ -81,7 +87,7 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                  <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
                     {link.name}
                   </a>
                 </li>
@@ -94,7 +100,7 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                  <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
                     {link.name}
                   </a>
                 </li>
@@ -107,7 +113,7 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} className="text-gray-400 hover:text-white transition-colors">
+                  <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
                     {link.name}
                   </a>
                 </li>
