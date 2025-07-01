@@ -88,7 +88,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate })
         <p className="text-gray-600 text-sm">Select a template design that best represents your professional style</p>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {templates.map((template) => (
           <div 
             key={template.id}

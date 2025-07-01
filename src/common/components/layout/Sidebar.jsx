@@ -40,7 +40,7 @@ const Sidebar = () => {
   }, [cookies.isLoggedIn, userPhoto, fetchUserPhoto]);
 
   const handleLogout = () => {
-    clearUser(); // Clear global user state
+    clearUser(); 
     removeCookie('isLoggedIn', { path: '/' });
     removeCookie('user', { path: '/' });
     navigate('/');
