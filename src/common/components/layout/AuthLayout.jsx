@@ -65,7 +65,7 @@ const AuthLayout = () => {
 
   // Redirect to home if not authenticated
   if (!isAuthenticated || !cookies.isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
