@@ -65,10 +65,12 @@ const Sidebar = () => {
       <div className="p-6 border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
         <Link to="/" className="flex items-center group">
           <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <span className="text-white font-bold text-lg tracking-tight">IC</span>
-            </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full shadow-sm"></div>
+            <img
+              src="/logos/main-icon.png"
+              alt="InstaCV Logo"
+              className="w-10 h-10 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+              style={{ display: 'inline-block' }}
+            />
           </div>
           <div className="ml-3">
             <span className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
