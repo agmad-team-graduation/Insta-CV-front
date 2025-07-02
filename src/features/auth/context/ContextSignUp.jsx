@@ -24,6 +24,7 @@ export const SignUpProvider = ({children})=>{
     
     const [email,setEmail]=useState('');
     const [name,setName]=useState('');
+    const [tokenProcessed, setTokenProcessed] = useState(false);
 
     const handleSubmit = async () => {
         const newUser = { email, name };
@@ -39,6 +40,9 @@ export const SignUpProvider = ({children})=>{
 
     const handleGitHubSignup = async () => {
         try {
+            // Reset token processed flag
+            setTokenProcessed(false);
+            
             const response = await apiClient.get("/api/github/test/authorize?isLogin=true");
             const authUrl = response.data.authLink;
       
@@ -53,6 +57,7 @@ export const SignUpProvider = ({children})=>{
                 "message",
                 async (event) => {
                     if (event.origin !== FRONTEND_BASE_URL) return;
+                    if (tokenProcessed) return; // Prevent multiple processing
       
                     const { user, token, expiresIn, error } = event.data;
       
@@ -62,6 +67,8 @@ export const SignUpProvider = ({children})=>{
                     }
       
                     if (user && token) {
+                        setTokenProcessed(true); // Mark as processed
+                        
                         // Store token and user data
                         setCookie('isLoggedIn', token, { path: '/', maxAge: parseInt(expiresIn, 10) });
                         
