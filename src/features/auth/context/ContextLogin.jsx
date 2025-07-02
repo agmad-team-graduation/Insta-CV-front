@@ -25,6 +25,7 @@ export const LoginProvider = ({ children }) => {
     const [password, setPassword] = useState('');
     const [user, setUserState] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [tokenProcessed, setTokenProcessed] = useState(false);
 
     const [cookies, setCookie] = useCookies(['isLoggedIn', 'accessToken', 'user']);
 
@@ -79,6 +80,9 @@ export const LoginProvider = ({ children }) => {
 
     const handleGitHubLogin = async () => {
         try {
+            // Reset token processed flag
+            setTokenProcessed(false);
+            
             const response = await apiClient.get("/api/github/test/authorize?isLogin=true");
             const authUrl = response.data.authLink;
             console.log("window.location.origin", window.location.origin);
@@ -95,6 +99,8 @@ export const LoginProvider = ({ children }) => {
                 async (event) => {
                     console.log("event.origin", event.origin);
                     console.log("FRONTEND_BASE_URL", FRONTEND_BASE_URL);
+                    if (event.origin !== FRONTEND_BASE_URL) return;
+                    if (tokenProcessed) return; // Prevent multiple processing
       
                     const { token, expiresIn, user, error } = event.data;
                     console.log("token", token);
@@ -107,6 +113,8 @@ export const LoginProvider = ({ children }) => {
                     }
       
                     if (user && token) {
+                        setTokenProcessed(true); // Mark as processed
+                        
                         // Store token and user data
                         setCookie('isLoggedIn', token, { path: '/', maxAge: parseInt(expiresIn, 10) });
                         
