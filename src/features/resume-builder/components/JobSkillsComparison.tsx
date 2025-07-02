@@ -43,6 +43,8 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
   const [error, setError] = useState<string | null>(null);
   const [addingSkills, setAddingSkills] = useState<string[]>([]);
   const [addingAllSkills, setAddingAllSkills] = useState(false);
+  const [addedMissingSkills, setAddedMissingSkills] = useState(false);
+  const [addedOtherSkills, setAddedOtherSkills] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,22 +80,37 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
     fetchJobData();
   }, [resume?.jobId]);
 
-  const handleSkillDoubleClick = async (skill: JobSkill) => {
-    if (!resume || isSkillInResume(skill.skill) || addingSkills.includes(skill.skill)) return;
+  const handleSkillClick = async (skill: JobSkill) => {
+    if (!resume || addingSkills.includes(skill.skill)) return;
+
+    const isCurrentlyInResume = isSkillInResume(skill.skill);
 
     try {
       setAddingSkills(prev => [...prev, skill.skill]);
       
-      // Add the skill to the resume's skill section
-      await addItem('skillSection', {
-        skill: skill.skill,
-        level: skill.level?.toUpperCase() || 'INTERMEDIATE' // Use specified level or default
-      });
-
-      toast.success(`Added "${skill.skill}" to your resume`);
+      if (isCurrentlyInResume) {
+        // Remove the skill from the resume
+        const skillToRemove = resume.skillSection.items.find(item => 
+          item.skill.toLowerCase() === skill.skill.toLowerCase()
+        );
+        
+        if (skillToRemove) {
+          // Use the deleteItem function from the store
+          const { deleteItem } = useResumeStore.getState();
+          await deleteItem('skillSection', skillToRemove.id);
+          toast.success(`Removed "${skill.skill}" from your resume`);
+        }
+      } else {
+        // Add the skill to the resume's skill section
+        await addItem('skillSection', {
+          skill: skill.skill,
+          level: skill.level?.toUpperCase() || 'INTERMEDIATE' // Use specified level or default
+        });
+        toast.success(`Added "${skill.skill}" to your resume`);
+      }
     } catch (error) {
-      console.error('Error adding skill:', error);
-      toast.error('Failed to add skill to resume');
+      console.error('Error toggling skill:', error);
+      toast.error(`Failed to ${isCurrentlyInResume ? 'remove' : 'add'} skill to resume`);
     } finally {
       setAddingSkills(prev => prev.filter(s => s !== skill.skill));
     }
@@ -316,44 +333,10 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
           {jobData.skillMatchingAnalysis?.matchedSkills?.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-5 w-5" />
-                    Matched Skills
-                  </CardTitle>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={async () => {
-                      try {
-                        const matchedSkills = jobData.skillMatchingAnalysis?.matchedSkills?.filter(match => 
-                          !isSkillInResume(match.userSkill.skill)
-                        ) || [];
-                        
-                        for (const match of matchedSkills) {
-                          await addItem('skillSection', {
-                            skill: match.userSkill.skill,
-                            level: match.userSkill.level?.toUpperCase() || 'INTERMEDIATE'
-                          });
-                        }
-                        
-                        if (matchedSkills.length > 0) {
-                          toast.success(`Added ${matchedSkills.length} matched skills to your resume`);
-                        } else {
-                          toast.info('No matched skills to add');
-                        }
-                      } catch (error) {
-                        console.error('Error adding matched skills:', error);
-                        toast.error('Failed to add some skills');
-                      }
-                    }}
-                    disabled={addingAllSkills}
-                    className="h-6 w-6 p-0"
-                    title="Add all matched skills"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+                <CardTitle className="text-lg flex items-center gap-2 text-green-700">
+                  <CheckCircle className="h-5 w-5" />
+                  Matched Skills
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
@@ -368,8 +351,8 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                       } ${
                         addingSkills.includes(match.userSkill.skill) ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                      onDoubleClick={() => handleSkillDoubleClick(match.userSkill)}
-                      title={isSkillInResume(match.userSkill.skill) ? 'Already in resume' : 'Double-click to add'}
+                      onClick={() => handleSkillClick(match.userSkill)}
+                      title={isSkillInResume(match.userSkill.skill) ? 'Click to remove' : 'Click to add'}
                     >
                       {match.userSkill.skill}
                       {addingSkills.includes(match.userSkill.skill) && <Loader2 className="h-3 w-3 ml-1 animate-spin" />}
@@ -394,6 +377,7 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                     variant="ghost"
                     onClick={async () => {
                       try {
+                        setAddingAllSkills(true);
                         const missingJobSkills = jobData.skillMatchingAnalysis?.unmatchedJobSkills?.filter(skill => 
                           !isSkillInResume(skill.skill)
                         ) || [];
@@ -407,17 +391,20 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                         
                         if (missingJobSkills.length > 0) {
                           toast.success(`Added ${missingJobSkills.length} missing skills to your resume`);
+                          setAddedMissingSkills(true);
                         } else {
                           toast.info('No missing skills to add');
                         }
                       } catch (error) {
                         console.error('Error adding missing skills:', error);
                         toast.error('Failed to add some skills');
+                      } finally {
+                        setAddingAllSkills(false);
                       }
                     }}
-                    disabled={addingAllSkills}
+                    disabled={addingAllSkills || addedMissingSkills}
                     className="h-6 w-6 p-0"
-                    title="Add all missing skills"
+                    title={addedMissingSkills ? "Already added all missing skills" : "Add all missing skills"}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -436,8 +423,8 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                       } ${
                         addingSkills.includes(skill.skill) ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                      onDoubleClick={() => handleSkillDoubleClick(skill)}
-                      title={isSkillInResume(skill.skill) ? 'Already in resume' : 'Double-click to add'}
+                      onClick={() => handleSkillClick(skill)}
+                      title={isSkillInResume(skill.skill) ? 'Click to remove' : 'Click to add'}
                     >
                       {skill.skill}
                       {addingSkills.includes(skill.skill) && <Loader2 className="h-3 w-3 ml-1 animate-spin" />}
@@ -462,6 +449,7 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                     variant="ghost"
                     onClick={async () => {
                       try {
+                        setAddingAllSkills(true);
                         const unmatchedUserSkills = jobData.skillMatchingAnalysis?.unmatchedUserSkills?.filter(skill => 
                           !isSkillInResume(skill.skill)
                         ) || [];
@@ -475,17 +463,20 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                         
                         if (unmatchedUserSkills.length > 0) {
                           toast.success(`Added ${unmatchedUserSkills.length} other skills to your resume`);
+                          setAddedOtherSkills(true);
                         } else {
                           toast.info('No other skills to add');
                         }
                       } catch (error) {
                         console.error('Error adding other skills:', error);
                         toast.error('Failed to add some skills');
+                      } finally {
+                        setAddingAllSkills(false);
                       }
                     }}
-                    disabled={addingAllSkills}
+                    disabled={addingAllSkills || addedOtherSkills}
                     className="h-6 w-6 p-0"
-                    title="Add all other skills"
+                    title={addedOtherSkills ? "Already added all other skills" : "Add all other skills"}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -504,8 +495,8 @@ const JobSkillsComparison: React.FC<JobSkillsComparisonProps> = ({ isExpanded, o
                       } ${
                         addingSkills.includes(skill.skill) ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
-                      onDoubleClick={() => handleSkillDoubleClick(skill)}
-                      title={isSkillInResume(skill.skill) ? 'Already in resume' : 'Double-click to add'}
+                      onClick={() => handleSkillClick(skill)}
+                      title={isSkillInResume(skill.skill) ? 'Click to remove' : 'Click to add'}
                     >
                       {skill.skill}
                       {addingSkills.includes(skill.skill) && <Loader2 className="h-3 w-3 ml-1 animate-spin" />}
