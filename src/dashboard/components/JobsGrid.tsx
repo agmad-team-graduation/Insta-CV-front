@@ -9,7 +9,7 @@ import useResumeStore from '@/features/resume-builder/store/resumeStore';
 import apiClient from '@/common/utils/apiClient';
 import PageLoader from "@/common/components/ui/PageLoader";
 
-const JobsGrid = () => {
+const JobsGrid = ({ refreshTrigger = 0 }) => {
   const navigate = useNavigate();
   const { generateCVForJob, isGenerating } = useResumeStore();
   const [generatingJobId, setGeneratingJobId] = useState<string | null>(null);
@@ -30,7 +30,7 @@ const JobsGrid = () => {
       }
     };
     fetchJobs();
-  }, []);
+  }, [refreshTrigger]); // Add refreshTrigger to dependency array
 
   const calculateMatchPercentage = (job: any) => {
     // Check if matchedSkills array exists
