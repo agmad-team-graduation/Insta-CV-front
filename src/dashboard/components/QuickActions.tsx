@@ -6,7 +6,7 @@ import { useState } from 'react';
 import AddJobDialog from '@/features/jobs/components/AddJob/AddJobDialog';
 import { toast } from 'sonner';
 
-const QuickActions = () => {
+const QuickActions = ({ onJobAdded }) => {
   const navigate = useNavigate();
   const [showAddJobDialog, setShowAddJobDialog] = useState(false);
 
@@ -19,9 +19,13 @@ const QuickActions = () => {
     setShowAddJobDialog(true);
   };
 
-  const handleJobAdded = () => {
+  const handleJobAdded = (jobData) => {
     setShowAddJobDialog(false);
     toast.success('Job added successfully!');
+    // Call the parent's onJobAdded callback to trigger refresh
+    if (onJobAdded) {
+      onJobAdded(jobData);
+    }
   };
 
   return (

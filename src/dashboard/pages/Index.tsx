@@ -3,8 +3,16 @@ import ProfileSkills from '../components/ProfileSkills';
 import JobsGrid from '../components/JobsGrid';
 import CVsList from '../components/CVsList';
 import QuickActions from '../components/QuickActions';
+import { useState } from 'react';
 
 const Index = () => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleJobAdded = () => {
+    // Trigger a refresh of the jobs grid
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       
@@ -13,7 +21,7 @@ const Index = () => {
         <StatsCards />
         
         {/* Quick Actions */}
-        <QuickActions />
+        <QuickActions onJobAdded={handleJobAdded} />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Profile Skills */}
@@ -23,7 +31,7 @@ const Index = () => {
           
           {/* Jobs and CVs */}
           <div className="lg:col-span-2 space-y-8">
-            <JobsGrid />
+            <JobsGrid refreshTrigger={refreshTrigger} />
             <CVsList />
           </div>
         </div>

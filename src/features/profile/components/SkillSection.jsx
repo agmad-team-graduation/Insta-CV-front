@@ -19,7 +19,7 @@ const proficiencyLevels = [
 
 const skillSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(2, "Skill name is required"),
+  name: z.string().min(1, "Skill name is required"),
   level: z.string().min(1, "Level is required"),
 });
 

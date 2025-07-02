@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Briefcase } from 'lucide-react';
 import { Button } from "@/common/components/ui/button";
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,25 +7,56 @@ import apiClient from '@/common/utils/apiClient';
 import { toast } from 'sonner';
 
 const RecommendedJobs = () => {
-  const [forceLoading, setForceLoading] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [hasCheckedInitialJobs, setHasCheckedInitialJobs] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleForceSearch = async () => {
-    setForceLoading(true);
     try {
-      await apiClient.post('/api/v1/jobs/scrape/analyze-recommendations');
-      // Trigger a refresh of the job list
-      setRefreshTrigger(prev => prev + 1);
-      toast.success('External Jobs analyzed successfully');
+      // Show immediate feedback to user
+      toast.info('Searching and analyzing external jobs. This may take a few minutes. You can continue browsing while we work in the background.');
+      
+      // Make the API call without blocking the UI
+      apiClient.post('/api/v1/jobs/scrape/analyze-recommendations')
+        .then(() => {
+          // Trigger a refresh of the job list when the analysis is complete
+          setRefreshTrigger(prev => prev + 1);
+          toast.success('External Jobs analyzed successfully! New jobs are now available.');
+        })
+        .catch((err) => {
+          console.error('Error analyzing External Jobs:', err);
+          toast.error('Failed to analyze External Jobs. Please try again.');
+        });
     } catch (err) {
-      console.error('Error analyzing External Jobs:', err);
-      toast.error('Failed to analyze External Jobs. Please try again.');
-    } finally {
-      setForceLoading(false);
+      console.error('Error initiating External Jobs search:', err);
+      toast.error('Failed to start External Jobs search. Please try again.');
     }
   };
+
+  // Check if there are any jobs initially and auto-trigger search if none found
+  useEffect(() => {
+    const checkInitialJobs = async () => {
+      if (hasCheckedInitialJobs) return;
+      
+      try {
+        const response = await apiClient.get('/api/v1/jobs/scrape/get-recommendations?page=0&size=1');
+        const jobsData = response.data.content || response.data;
+        
+        if (!jobsData || jobsData.length === 0) {
+          // No jobs found, automatically trigger search
+          handleForceSearch();
+        }
+        
+        setHasCheckedInitialJobs(true);
+      } catch (error) {
+        console.error('Error checking initial jobs:', error);
+        setHasCheckedInitialJobs(true);
+      }
+    };
+
+    checkInitialJobs();
+  }, [hasCheckedInitialJobs]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -40,9 +71,8 @@ const RecommendedJobs = () => {
               <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={handleForceSearch}
-                disabled={forceLoading}
               >
-                {forceLoading ? 'Searching...' : 'Search for External Jobs'}
+                Search for External Jobs
               </Button>
             </div>
           </div>
