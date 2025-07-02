@@ -62,7 +62,8 @@ const getTemplateDisplayName = (templateName) => {
 // Helper function to format date and time
 const formatDateTime = (dateString) => {
   const date = new Date(dateString);
-  return date.toLocaleString('en-US', {
+  const correctedDate = new Date(date.getTime() + (3 * 60 * 60 * 1000));
+  return correctedDate.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

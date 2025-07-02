@@ -162,7 +162,7 @@ const Profile = () => {
       
       const progressInterval = setInterval(() => {
         const elapsed = Date.now() - startTime;
-        const progress = Math.min((elapsed / maxDuration) * 100, 95); // Cap at 95% until response
+        const progress = Math.min((elapsed / maxDuration) * 100, 95);
         setUploadProgress(progress);
       }, 100);
 
