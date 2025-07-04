@@ -135,6 +135,8 @@ const Profile = () => {
     // Check if file is PDF
     if (file.type !== 'application/pdf') {
       toast.error('Please upload a PDF file only');
+      // Reset the input even if file type is wrong
+      event.target.value = '';
       return;
     }
 
@@ -193,6 +195,11 @@ const Profile = () => {
     } finally {
       setUploadingCV(false);
       setSelectedCVFile(null);
+      // Reset the file input element
+      const fileInput = document.getElementById('cv-upload');
+      if (fileInput) {
+        fileInput.value = '';
+      }
     }
   };
 
@@ -513,7 +520,17 @@ const Profile = () => {
       </div>
 
       {/* CV Upload Dialog */}
-      <Dialog open={showCVUploadDialog} onOpenChange={setShowCVUploadDialog}>
+      <Dialog open={showCVUploadDialog} onOpenChange={(open) => {
+        if (!open) {
+          // Reset file input when dialog is closed without uploading
+          setShowCVUploadDialog(false);
+          setSelectedCVFile(null);
+          const fileInput = document.getElementById('cv-upload');
+          if (fileInput) {
+            fileInput.value = '';
+          }
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload CV</DialogTitle>
