@@ -328,14 +328,14 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({
       {/* Content */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="p-6">
           {projects.length > 0 ? (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={projects.map(proj => proj.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                   {projects.map((project) => (
                     <ProjectCard
                       key={project.id}

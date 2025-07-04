@@ -302,14 +302,14 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       {/* Content */}
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${
-          isExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="p-6">
           {skills.length > 0 ? (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={skills.map(skill => skill.id)} strategy={verticalListSortingStrategy}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                   {skills.map((skill) => (
                     <SkillCard
                       key={skill.id}
