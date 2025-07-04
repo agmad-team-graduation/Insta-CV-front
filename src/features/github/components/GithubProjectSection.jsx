@@ -162,7 +162,7 @@ const GithubProjectEditModal = ({ open, onClose, project, onSubmit }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    // Validation
+    // Validation - only validate if dates are provided
     const today = new Date();
     const start = form.startDate ? new Date(form.startDate + '-01') : null;
     const end = form.endDate ? new Date(form.endDate + '-01') : null;
@@ -204,18 +204,17 @@ const GithubProjectEditModal = ({ open, onClose, project, onSubmit }) => {
         </div>
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">Start Date</label>
+            <label className="block text-sm font-medium mb-1">Start Date (Optional)</label>
             <input
               className="border rounded px-3 py-2 w-full"
               name="startDate"
               type="month"
               value={form.startDate}
               onChange={handleChange}
-              required
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-1">End Date</label>
+            <label className="block text-sm font-medium mb-1">End Date (Optional)</label>
             <input
               className="border rounded px-3 py-2 w-full"
               name="endDate"
@@ -223,7 +222,6 @@ const GithubProjectEditModal = ({ open, onClose, project, onSubmit }) => {
               value={form.endDate}
               onChange={handleChange}
               disabled={form.present}
-              required={!form.present}
             />
           </div>
         </div>
