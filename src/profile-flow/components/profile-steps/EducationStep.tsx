@@ -104,7 +104,7 @@ const EducationStep: React.FC<EducationStepProps> = ({ data, onUpdate }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-gray-700">Start Date</Label>
+                    <Label className="text-gray-700">Start Date (Optional)</Label>
                     <Input
                       type="date"
                       value={education.startDate}
@@ -113,7 +113,7 @@ const EducationStep: React.FC<EducationStepProps> = ({ data, onUpdate }) => {
                     />
                   </div>
                   <div>
-                    <Label className="text-gray-700">End Date</Label>
+                    <Label className="text-gray-700">End Date (Optional)</Label>
                     <Input
                       type="date"
                       value={education.endDate}

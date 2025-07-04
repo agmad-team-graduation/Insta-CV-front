@@ -189,7 +189,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
                 className="border rounded px-3 py-2 flex-1"
                 name="startDate"
                 type="month"
-                placeholder="Start Date"
+                placeholder="Start Date (Optional)"
                 value={form.startDate}
                 onChange={handleChange}
               />
@@ -197,7 +197,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
                 className="border rounded px-3 py-2 flex-1"
                 name="endDate"
                 type="month"
-                placeholder="End Date"
+                placeholder="End Date (Optional)"
                 value={form.endDate}
                 onChange={handleChange}
               />
@@ -270,7 +270,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
                     className="border rounded px-3 py-2 flex-1"
                     name="startDate"
                     type="month"
-                    placeholder="Start Date"
+                    placeholder="Start Date (Optional)"
                     value={form.startDate}
                     onChange={handleChange}
                   />
@@ -278,7 +278,7 @@ const ProjectSection = ({ projects, onAdd, onDelete, onEdit }) => {
                     className="border rounded px-3 py-2 flex-1"
                     name="endDate"
                     type="month"
-                    placeholder="End Date"
+                    placeholder="End Date (Optional)"
                     value={form.endDate}
                     onChange={handleChange}
                   />
