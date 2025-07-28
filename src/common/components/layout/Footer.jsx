@@ -1,5 +1,6 @@
 import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const appVersion = import.meta.env.VITE_APP_VERSION || '1.0.0';
@@ -17,7 +18,7 @@ const Footer = () => {
       { name: "Templates", href: "#templates" }
     ],
     company: [
-      { name: "About", href: "#about" },
+      { name: "About", href: "/about", isRoute: true },
       { name: "Blog", href: "#blog" },
       { name: "Careers", href: "#careers" },
       { name: "Contact", href: "#contact" }
@@ -87,9 +88,15 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
-                    {link.name}
-                  </a>
+                  {link.isRoute ? (
+                    <Link to={link.href} className="text-gray-400 hover:text-white transition-colors">
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a href={link.href} onClick={handleFooterClick} className="text-gray-400 hover:text-white transition-colors">
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
