@@ -69,7 +69,7 @@ const CreateResumeDialog = ({ open, onOpenChange }) => {
 
       // Start progress simulation immediately
       const startTime = Date.now();
-      const maxDuration = 20000; // 20 seconds
+      const maxDuration = 30000; 
       
       const progressInterval = setInterval(() => {
         const elapsed = Date.now() - startTime;

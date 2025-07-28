@@ -26,6 +26,7 @@ import ProfileFlow from './features/profile/pages/ProfileFlow';
 import SignUp from './features/auth/components/SignUp/signup';
 import { useEffect } from 'react';
 import useUserStore from './store/userStore';
+import About from './pages/About';
 
 // Component to initialize user data from cookies
 const UserInitializer = () => {
@@ -85,6 +86,7 @@ function AppContent() {
           <Route path='/set-password' element={<SetPassword />} />
           <Route path='/email-verification' element={<SetPassword />} />
           <Route path='/oauth2-success' element={<OAuth2Success />} />
+          <Route path='/about' element={<About />} />
           {/* Protected routes with sidebar */}
           <Route element={<AuthLayout />}>
             <Route path='/dashboard' element={<Dashboard />} />
